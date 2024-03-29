@@ -1,0 +1,10 @@
+# Dependency directories
+node_modules/
+
+# Build outputs
+backend/bin/
+backend/obj/
+frontend/build/
+
+# Environment files
+*.env
