@@ -1,2 +1,0 @@
-dla reacta - npm start
-dla .net - dotnet run
