@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import Home from './Home';
 import { checkTypePassword, fetchData, loginUser, checkLogin, registerUser } from './services/apiService';
+import CreateCourse from './CreateCourse';
 
 function App() {
   const navigate = useNavigate();
@@ -108,7 +109,7 @@ function App() {
       }
     }
 
-    const registerResponse = await registerUser(login, password, parseInt(typeValue), name, surname);
+    const registerResponse = await registerUser(login.trim(), password.trim(), parseInt(typeValue), name.trim(), surname.trim());
     alert(registerResponse.message);
     if (registerResponse.isSuccess)
       setShowRegistrationPopup(false);
@@ -225,6 +226,7 @@ function App() {
           </div>
         } />
         <Route path="/home" element={<Home />} />
+        <Route path="/createCourse" element={<CreateCourse />} />
       </Routes>
   );
 }

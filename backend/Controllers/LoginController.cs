@@ -19,64 +19,74 @@ namespace backend.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
         {
+            bool isSuccess = false;
             try
             {
                 var user = await _context.Users.FirstOrDefaultAsync(users => users.Login == loginModel.Login);
-
+                
                 if (user == null)
                 {
-                    return BadRequest(new { message = "Incorrect login!" });
+                    return Ok(new { message = "Incorrect login!", isSuccess });
                 }
 
                 if (!VerifyPassword(loginModel.Password, user.Password))
                 {
-                    return BadRequest(new { message = "Incorrect password!" });
+                    return Ok(new { message = "Incorrect password!", isSuccess });
                 }
 
-                return Ok(new { message = "You are now logged in!" });
+                isSuccess = true;
+                return Ok(new { message = "You are now logged in!", isSuccess });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { error = ex.Message });
+                return BadRequest(new { error = ex.Message, isSuccess });
             }
         }
 
         [HttpPost("checkLogin")]
         public async Task<IActionResult> CheckLogin([FromBody] PlainLoginModel login)
         {
+            bool isSuccess = false;
             try
             {
                 var user = await _context.Users.FirstOrDefaultAsync(users => users.Login == login.Login);
 
                 if (user == null)
-                    return Ok(new { message = "Login is available!" });
+                {
+                    isSuccess = true;
+                    return Ok(new { message = "Login is available!", isSuccess });
+                }
                 else
-                    return BadRequest(new { message = "Selected login is already taken!" });
+                    return Ok(new { message = "Selected login is already taken!", isSuccess });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { error = ex.Message });
+                return BadRequest(new { error = ex.Message, isSuccess });
             }
         }
 
         [HttpPost("checkTypePassword")]
         public async Task<IActionResult> CheckTypePassword([FromBody] TypeModel typeModel)
         {
+            bool isSuccess = false;
             try
             {
                 var type = await _context.user_types.FirstOrDefaultAsync(type => type.TypeID == typeModel.TypeID);
 
                 if (type == null)
-                    return BadRequest(new { message = "No described user type found!" });
-                
-                if (VerifyPassword(typeModel.Password, type.TypePassword))
-                    return Ok(new { message = "User type password is correct!" });
+                    return Ok(new { message = "No described user type found!", isSuccess });
+
+                if (type.TypePassword != null && VerifyPassword(typeModel.Password, type.TypePassword))
+                {
+                    isSuccess = true;
+                    return Ok(new { message = "User type password is correct!", isSuccess });
+                }
                 else
-                    return BadRequest(new { message = "Wrong user type password!" });
+                    return Ok(new { message = "Wrong user type password!", isSuccess });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { error = ex.Message });
+                return BadRequest(new { error = ex.Message, isSuccess });
             }
         }
 
@@ -97,6 +107,33 @@ namespace backend.Controllers
                 await _context.SaveChangesAsync();
 
                 return Ok(new { message = "User registered successfully!" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+        [HttpPost("checkIfTeacher")]
+        public async Task<IActionResult> CheckIfTeacher([FromBody] PlainLoginModel loginModel)
+        {
+            try
+            {
+                var userWithRole = await _context.Users.Include(u => u.UserType)
+                    .FirstOrDefaultAsync(users => users.Login == loginModel.Login);
+
+                if (userWithRole != null)
+                {
+                    string role = userWithRole.UserType.TypeName;
+                    bool isAdminOrTeacher = role.Equals("Administrator", StringComparison.OrdinalIgnoreCase) ||
+                                            role.Equals("Teacher", StringComparison.OrdinalIgnoreCase);
+
+                    return Ok(new { isAdminOrTeacher, role });
+                }
+                else
+                {
+                    return NotFound(new { message = "User not found." });
+                }
             }
             catch (Exception ex)
             {

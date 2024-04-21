@@ -1,9 +1,11 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { checkIfTeacher } from './services/apiService';
 
 function Navbar() {
     const navigate = useNavigate();
     const [username, setUsername] = React.useState(localStorage.getItem('username') || null);
+    const [isTeacherOrAdmin, setIsTeacherOrAdmin] = useState(false);
 
     const handleLogout = () => {
         if (username) {
@@ -17,7 +19,19 @@ function Navbar() {
             alert('You must log in firstly!');
             navigate('/');
         }
+        else {
+            handleCheckIfTeacherSubmit();
+        }
     }, [username, navigate]);
+
+    const handleCheckIfTeacherSubmit = async (event) => {
+        const registerResponse = await checkIfTeacher(username);
+
+        if (!registerResponse.isAdminOrTeacher)
+            setIsTeacherOrAdmin(false);
+        else
+            setIsTeacherOrAdmin(true);
+    }
 
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -33,7 +47,8 @@ function Navbar() {
                         <ul className="dropdown-menu" aria-labelledby="navbarCourses">
                             <li><a className="dropdown-item" href="#abc">Join Course</a></li>
                             <li><a className="dropdown-item" href="#">Manage Courses</a></li>
-                            <li><a className="dropdown-item" href="#">Create Course</a></li>
+                            {isTeacherOrAdmin && (
+                            <Link className="dropdown-item" to="/createCourse">Create Course</Link>)}
                         </ul>
                     </li>
                 </ul>
