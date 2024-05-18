@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { checkIfTeacher } from './services/apiService';
+import { checkIfTeacher } from '../services/apiService';
 
 function Navbar() {
     const navigate = useNavigate();
@@ -45,7 +45,7 @@ function Navbar() {
                             Courses
                         </a>
                         <ul className="dropdown-menu" aria-labelledby="navbarCourses">
-                            <li><a className="dropdown-item" href="#abc">Join Course</a></li>
+                            <Link className="dropdown-item" to="/joinCourse">Join Course</Link>
                             <li><a className="dropdown-item" href="#">Manage Courses</a></li>
                             {isTeacherOrAdmin && (
                             <Link className="dropdown-item" to="/createCourse">Create Course</Link>)}

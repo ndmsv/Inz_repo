@@ -109,3 +109,18 @@ export const registerCourse = async (name, description, ownerName, password) => 
         }
     }
 };
+
+export const getCourses = async (login) => {
+    try {
+        const response = await axios.post(`${API_URL}Course/getCourses`, {
+            login
+        });
+        return { data: response.data, isSuccess: true};
+    } catch (error) {
+        if (error.response) {
+            return { message: error.response.data.message, isSuccess: false };
+        } else {
+            return { message: "An error occurred. Please try again.", isSuccess: false };
+        }
+    }
+};

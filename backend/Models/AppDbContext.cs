@@ -15,6 +15,7 @@ namespace backend.Models
         public DbSet<User> Users { get; set; }
         public DbSet<Type> user_types { get; set; }
         public DbSet<Course> courses { get; set; }
+        public DbSet<UsersInCourse> users_in_course { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -44,7 +45,10 @@ namespace backend.Models
         public string? Surname { get; set; }
 
         public Type? UserType { get; set; }
+
         public ICollection<Course>? Courses { get; set; }
+
+        public ICollection<UsersInCourse>? UsersInCourse { get; set; }
     }
 
     public class Type
@@ -87,5 +91,30 @@ namespace backend.Models
 
         public User? User { get; set; }
 
+        public ICollection<UsersInCourse>? UsersInCourse { get; set; }
+    }
+
+    public class UsersInCourse
+    {
+        [Key]
+        public int ID { get; set; }
+
+        [ForeignKey("User")]
+        [Column("USER_ID")]
+        public required int UserID { get; set; }
+
+        [ForeignKey("Course")]
+        [Column("COURSE_ID")]
+        public required int CourseID { get; set; }
+
+        [Column("IS_OWNER")]
+        public required bool IsOwner { get; set; }
+
+        [Column("IS_DELETED")]
+        public required bool IsDeleted { get; set; }
+
+        public User? User { get; set; }
+
+        public Course? Course { get; set; }
     }
 }

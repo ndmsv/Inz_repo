@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
-import Home from './Home';
+import Home from './sides/Home';
 import { checkTypePassword, fetchData, loginUser, checkLogin, registerUser } from './services/apiService';
-import CreateCourse from './CreateCourse';
+import CreateCourse from './sides/CreateCourse';
+import JoinCourse from './sides/JoinCourse';
 
 function App() {
   const navigate = useNavigate();
@@ -171,7 +172,6 @@ function App() {
                             <div className='col-md-6 text-end'>
                               <button type="button" className="btn-close" data-dismiss="modal" aria-label="Close" onClick={() => setShowRegistrationPopup(false)}></button>
                             </div>
-
                           </div>
                           <form onSubmit={handleRegistrationSubmit}>
                             <div className="modal-body">
@@ -227,6 +227,7 @@ function App() {
         } />
         <Route path="/home" element={<Home />} />
         <Route path="/createCourse" element={<CreateCourse />} />
+        <Route path="/joinCourse" element={<JoinCourse />} />
       </Routes>
   );
 }

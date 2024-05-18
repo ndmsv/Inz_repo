@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Navbar from './Navbar';
-import { checkIfTeacher, registerCourse } from './services/apiService';
+import { checkIfTeacher, registerCourse } from '../services/apiService';
 import { useNavigate } from 'react-router-dom';
 
 function CreateCourse() {
