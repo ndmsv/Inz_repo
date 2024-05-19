@@ -46,7 +46,7 @@ function Navbar() {
                         </a>
                         <ul className="dropdown-menu" aria-labelledby="navbarCourses">
                             <Link className="dropdown-item" to="/joinCourse">Join Course</Link>
-                            <li><a className="dropdown-item" href="#">Manage Courses</a></li>
+                            <Link className="dropdown-item" to="/myCourses">My Courses</Link>
                             {isTeacherOrAdmin && (
                             <Link className="dropdown-item" to="/createCourse">Create Course</Link>)}
                         </ul>

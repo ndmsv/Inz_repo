@@ -110,12 +110,60 @@ export const registerCourse = async (name, description, ownerName, password) => 
     }
 };
 
-export const getCourses = async (login) => {
+export const getJoinCourses = async (login) => {
     try {
-        const response = await axios.post(`${API_URL}Course/getCourses`, {
+        const response = await axios.post(`${API_URL}Course/getJoinCourses`, {
             login
         });
         return { data: response.data, isSuccess: true};
+    } catch (error) {
+        if (error.response) {
+            return { message: error.response.data.message, isSuccess: false };
+        } else {
+            return { message: "An error occurred. Please try again.", isSuccess: false };
+        }
+    }
+};
+
+export const getMyCourses = async (login) => {
+    try {
+        const response = await axios.post(`${API_URL}Course/getMyCourses`, {
+            login
+        });
+        return { data: response.data, isSuccess: true};
+    } catch (error) {
+        if (error.response) {
+            return { message: error.response.data.message, isSuccess: false };
+        } else {
+            return { message: "An error occurred. Please try again.", isSuccess: false };
+        }
+    }
+};
+
+export const joinCourse = async (courseID, login) => {
+    try {
+        const response = await axios.post(`${API_URL}Course/joinCourse`, {
+            courseID,
+            login
+        });
+        return { message: response.data.message, isSuccess: true };
+    } catch (error) {
+        if (error.response) {
+            return { message: error.response.data.message, isSuccess: false };
+        } else {
+            return { message: "An error occurred. Please try again.", isSuccess: false };
+        }
+    }
+};
+
+export const checkJoinPassword = async (courseID, login, password) => {
+    try {
+        const response = await axios.post(`${API_URL}Course/checkJoinPassword`, {
+            courseID,
+            login,
+            password
+        });
+        return { message: response.data.message, isSuccess: response.data.isSuccess };
     } catch (error) {
         if (error.response) {
             return { message: error.response.data.message, isSuccess: false };

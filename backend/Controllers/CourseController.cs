@@ -26,7 +26,7 @@ namespace backend.Controllers
                 string? hashedPassword = null;
 
                 if (courseModel.Password != null)
-                    hashedPassword = HashPassword(courseModel.Password);
+                    hashedPassword = LoginController.HashPassword(courseModel.Password);
 
                 var user = await _context.Users.FirstOrDefaultAsync(users => users.Login == courseModel.OwnerName);
 
@@ -71,8 +71,8 @@ namespace backend.Controllers
             }
         }
 
-        [HttpPost("getCourses")]
-        public async Task<IActionResult> GetCourses([FromBody] PlainLoginModel username)
+        [HttpPost("getJoinCourses")]
+        public async Task<IActionResult> GetJoinCourses([FromBody] PlainLoginModel username)
         {
             try
             {
@@ -84,7 +84,42 @@ namespace backend.Controllers
                 }
 
                 var courses = await _context.courses
-                    .Where(course => !course.IsDeleted)
+                    .Where(course => !course.IsDeleted && !_context.users_in_course.Any(uic => uic.CourseID == course.ID && uic.UserID == user.ID && !uic.IsDeleted))
+                    .Select(course => new CourseModelExtended
+                    {
+                        Id = course.ID,
+                        Name = course.Name,
+                        Description = course.Description == null ? "" : course.Description,
+                        IsOwner = _context.users_in_course.Any(uic => uic.CourseID == course.ID && uic.UserID == user.ID && !uic.IsDeleted && uic.IsOwner),
+                        IsInGroup = _context.users_in_course.Any(uic => uic.CourseID == course.ID && uic.UserID == user.ID && !uic.IsDeleted),
+                        IsPasswordProtected = course.Password != null,
+                        OwnersCount = _context.users_in_course.Count(uic => uic.CourseID == course.ID && uic.IsOwner)
+                    })
+                    .ToListAsync();
+
+
+                return Ok(courses);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("getMyCourses")]
+        public async Task<IActionResult> GetMyCourses([FromBody] PlainLoginModel username)
+        {
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == username.Login);
+
+                if (user == null)
+                {
+                    return NotFound(new { message = "User not found" });
+                }
+
+                var courses = await _context.courses
+                    .Where(course => !course.IsDeleted && _context.users_in_course.Any(uic => uic.CourseID == course.ID && uic.UserID == user.ID && !uic.IsDeleted))
                     .Select(course => new CourseModelExtended
                     {
                         Id = course.ID,
@@ -105,9 +140,110 @@ namespace backend.Controllers
             }
         }
 
-        public static string HashPassword(string password)
+        [HttpPost("joinCourse")]
+        public async Task<IActionResult> JoinCourse([FromBody] CourseJoinModel courseJoinModel)
         {
-            return BCrypt.Net.BCrypt.HashPassword(password);
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == courseJoinModel.Login);
+
+                if (user == null)
+                {
+                    return NotFound(new { message = "User was not found!" });
+                }
+
+                var existingLink = await _context.users_in_course
+                    .FirstOrDefaultAsync(uc => uc.UserID == user.ID && uc.CourseID == courseJoinModel.CourseID);
+
+                if (existingLink != null)
+                {
+                    if (!existingLink.IsDeleted)
+                    {
+                        return BadRequest(new { message = "You are already registered to that course!" });
+                    }
+                    else
+                    {
+                        existingLink.IsDeleted = false;
+                        await _context.SaveChangesAsync();
+                        return Ok(new { message = "You have been re-registered to the course!" });
+                    }
+                }
+
+                var usersInCourse = new UsersInCourse
+                {
+                    UserID = user.ID,
+                    CourseID = courseJoinModel.CourseID,
+                    IsOwner = false,
+                    IsDeleted = false
+                };
+                _context.users_in_course.Add(usersInCourse);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "You are registered to the course!" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("checkJoinPassword")]
+        public async Task<IActionResult> CheckJoinPassword([FromBody] CoursePasswordJoinModel coursePasswordJoinModel)
+        {
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == coursePasswordJoinModel.Login);
+
+                if (user == null)
+                {
+                    return NotFound(new { isSuccess = false, message = "User was not found!" });
+                }
+
+                var course = await _context.courses.FirstOrDefaultAsync(c => c.ID == coursePasswordJoinModel.CourseID);
+
+                if (course == null)
+                {
+                    return NotFound(new { isSuccess = false, message = "Course was not found!" });
+                }
+
+                if (course.Password != null && !LoginController.VerifyPassword(coursePasswordJoinModel.Password, course.Password))
+                {
+                    return Ok(new { isSuccess = false, message = "Wrong password!" });
+                }
+
+                var existingLink = await _context.users_in_course
+                    .FirstOrDefaultAsync(uc => uc.UserID == user.ID && uc.CourseID == coursePasswordJoinModel.CourseID);
+
+                if (existingLink != null)
+                {
+                    if (!existingLink.IsDeleted)
+                    {
+                        return BadRequest(new { isSuccess = false, message = "You are already registered to that course!" });
+                    }
+                    else
+                    {
+                        existingLink.IsDeleted = false;
+                        await _context.SaveChangesAsync();
+                        return Ok(new { isSuccess = true, message = "You have been re-registered to the course!" });
+                    }
+                }
+
+                var usersInCourse = new UsersInCourse
+                {
+                    UserID = user.ID,
+                    CourseID = coursePasswordJoinModel.CourseID,
+                    IsOwner = false,
+                    IsDeleted = false
+                };
+                _context.users_in_course.Add(usersInCourse);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { isSuccess = true, message = "You are registered to the course!" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 
@@ -132,5 +268,18 @@ namespace backend.Controllers
         public bool IsInGroup { get; set; }
         public bool IsPasswordProtected { get; set; }
         public int OwnersCount { get; set; }
+    }
+
+    public class CourseJoinModel
+    {
+        public int CourseID { get; set; }
+        public required string Login { get; set; }
+    }
+
+    public class CoursePasswordJoinModel
+    {
+        public int CourseID { get; set; }
+        public required string Login { get; set; }
+        public required string Password { get; set; }
     }
 }

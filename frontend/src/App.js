@@ -4,6 +4,7 @@ import Home from './sides/Home';
 import { checkTypePassword, fetchData, loginUser, checkLogin, registerUser } from './services/apiService';
 import CreateCourse from './sides/CreateCourse';
 import JoinCourse from './sides/JoinCourse';
+import MyCourses from './sides/MyCourses';
 
 function App() {
   const navigate = useNavigate();
@@ -162,8 +163,10 @@ function App() {
                   </form>
 
                   {showRegistrationPopup && (
-                    <div className="position-absolute top-50 start-50 translate-middle" style={{ zIndex: 1050, backgroundColor: 'white', width: "60%" }}>
-                      <div className="modal-dialog">
+                    <>
+                    <div className="modal-backdrop show" style={{ zIndex: 1049 }} onClick={() => setShowRegistrationPopup(false)}></div>
+                    <div className="modal d-block" tabIndex="-1" style={{ zIndex: 1050 }}>
+                      <div className="modal-dialog" style={{ "max-width": "50%" }}>
                         <div className="modal-content">
                           <div className="modal-header">
                             <div className='col-md-6'>
@@ -218,6 +221,7 @@ function App() {
                         </div>
                       </div>
                     </div>
+                    </>
                   )}
 
                 </div>
@@ -228,6 +232,7 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/createCourse" element={<CreateCourse />} />
         <Route path="/joinCourse" element={<JoinCourse />} />
+        <Route path="/myCourses" element={<MyCourses />} />
       </Routes>
   );
 }
