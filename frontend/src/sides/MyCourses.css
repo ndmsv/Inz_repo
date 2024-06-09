@@ -1,0 +1,13 @@
+.cursor-pointer {
+    cursor: pointer;
+    transition: box-shadow 0.3s ease;
+}
+
+.cursor-pointer:hover {
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.bg-selected td {
+    background-color: #e9ecef !important;
+}

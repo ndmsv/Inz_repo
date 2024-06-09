@@ -2,6 +2,14 @@ import axios from 'axios';
 
 const API_URL = 'https://localhost:5000/';
 
+const handleAxiosError = (error) => {
+    if (error.response) {
+        return { message: error.response.data.message, isSuccess: false };
+    } else {
+        return { message: "An error occurred. Please try again.", isSuccess: false };
+    }
+};
+
 export const fetchData = async () => {
     try {
         const response = await axios.get(`${API_URL}test`);
@@ -19,11 +27,7 @@ export const loginUser = async (login, password) => {
         });
         return { message: response.data.message, isSuccess: response.data.isSuccess };
     } catch (error) {
-        if (error.response) {
-            return { message: error.response.data.message, isSuccess: error.response.data.isSuccess };
-        } else {
-            return { message: "An error occurred. Please try again.", isSuccess: false };
-        }
+        return handleAxiosError(error);
     }
 };
 
@@ -34,11 +38,7 @@ export const checkLogin = async (login) => {
         });
         return { message: response.data.message, isSuccess: response.data.isSuccess };
     } catch (error) {
-        if (error.response) {
-            return { message: error.response.data.message, isSuccess: error.response.data.isSuccess };
-        } else {
-            return { message: "An error occurred. Please try again.", isSuccess: false };
-        }
+        return handleAxiosError(error);
     }
 };
 
@@ -50,11 +50,7 @@ export const checkTypePassword = async (typeID, Password) => {
         });
         return { message: response.data.message, isSuccess: response.data.isSuccess };
     } catch (error) {
-        if (error.response) {
-            return { message: error.response.data.message, isSuccess: error.response.data.isSuccess };
-        } else {
-            return { message: "An error occurred. Please try again.", isSuccess: false };
-        }
+        return handleAxiosError(error);
     }
 };
 
@@ -69,11 +65,7 @@ export const registerUser = async (login, password, type, name, surname) => {
         });
         return { message: response.data.message, isSuccess: true };
     } catch (error) {
-        if (error.response) {
-            return { message: error.response.data.message, isSuccess: false };
-        } else {
-            return { message: "An error occurred. Please try again.", isSuccess: false };
-        }
+        return handleAxiosError(error);
     }
 };
 
@@ -84,11 +76,7 @@ export const checkIfTeacher = async (login) => {
         });
         return { isAdminOrTeacher: response.data.isAdminOrTeacher, role: response.data.role };
     } catch (error) {
-        if (error.response) {
-            return { message: error.response.data.message, isAdminOrTeacher: false, role: null };
-        } else {
-            return { message: "An error occurred. Please try again.", isAdminOrTeacher: false, role: null };
-        }
+        return handleAxiosError(error);
     }
 };
 
@@ -102,11 +90,7 @@ export const registerCourse = async (name, description, ownerName, password) => 
         });
         return { message: response.data.message, isSuccess: true };
     } catch (error) {
-        if (error.response) {
-            return { message: error.response.data.message, isSuccess: false };
-        } else {
-            return { message: "An error occurred. Please try again.", isSuccess: false };
-        }
+        return handleAxiosError(error);
     }
 };
 
@@ -117,11 +101,7 @@ export const getJoinCourses = async (login) => {
         });
         return { data: response.data, isSuccess: true};
     } catch (error) {
-        if (error.response) {
-            return { message: error.response.data.message, isSuccess: false };
-        } else {
-            return { message: "An error occurred. Please try again.", isSuccess: false };
-        }
+        return handleAxiosError(error);
     }
 };
 
@@ -132,11 +112,7 @@ export const getMyCourses = async (login) => {
         });
         return { data: response.data, isSuccess: true};
     } catch (error) {
-        if (error.response) {
-            return { message: error.response.data.message, isSuccess: false };
-        } else {
-            return { message: "An error occurred. Please try again.", isSuccess: false };
-        }
+        return handleAxiosError(error);
     }
 };
 
@@ -148,11 +124,7 @@ export const joinCourse = async (courseID, login) => {
         });
         return { message: response.data.message, isSuccess: true };
     } catch (error) {
-        if (error.response) {
-            return { message: error.response.data.message, isSuccess: false };
-        } else {
-            return { message: "An error occurred. Please try again.", isSuccess: false };
-        }
+        return handleAxiosError(error);
     }
 };
 
@@ -165,10 +137,53 @@ export const checkJoinPassword = async (courseID, login, password) => {
         });
         return { message: response.data.message, isSuccess: response.data.isSuccess };
     } catch (error) {
-        if (error.response) {
-            return { message: error.response.data.message, isSuccess: false };
-        } else {
-            return { message: "An error occurred. Please try again.", isSuccess: false };
-        }
+        return handleAxiosError(error);
+    }
+};
+
+export const leaveCourse = async (courseID, login) => {
+    try {
+        const response = await axios.post(`${API_URL}Course/leaveCourse`, {
+            courseID,
+            login
+        });
+        return { message: response.data.message, isSuccess: true };
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};
+
+export const getEligibleUsers = async (courseID) => {
+    try {
+        const response = await axios.post(`${API_URL}Course/getEligibleUsers`, {
+            courseID
+        });
+        return { data: response.data, isSuccess: true };
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};
+
+export const addNewOwners = async (courseId, userIds) => {
+    try {
+        const response = await axios.post(`${API_URL}Course/addNewOwners`, {
+            courseId,
+            userIds
+        });
+        return { data: response.data, isSuccess: true };
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};
+
+export const stopOwnership = async (courseID, login) => {
+    try {
+        const response = await axios.post(`${API_URL}Course/stopOwnership`, {
+            courseID,
+            login
+        });
+        return { message: response.data.message, isSuccess: true };
+    } catch (error) {
+        return handleAxiosError(error);
     }
 };

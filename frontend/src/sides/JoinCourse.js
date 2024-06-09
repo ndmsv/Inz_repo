@@ -10,10 +10,12 @@ function JoinCourse() {
     const [currentPage, setCurrentPage] = useState(1);
     const coursesPerPage = 10;
     const [showPopup, setShowPopup] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
+                setIsLoading(true);
                 const data = await getJoinCourses(username);
                 if (data.isSuccess) {
                     setCourses(data.data);
@@ -23,6 +25,8 @@ function JoinCourse() {
                 }
             } catch (error) {
                 alert('Error fetching courses:', error);
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -88,7 +92,13 @@ function JoinCourse() {
             <div className="panel panel-default">
                 <div className="panel-body">
                     <div className="container mt-4">
-                        {currentCourses.length > 0 ? (
+                        {isLoading ? (
+                            <div className="d-flex justify-content-center align-items-center" style={{ height: "30vh" }}>
+                                <div className="spinner-border text-primary" role="status">
+                                    <span className="sr-only"></span>
+                                </div>
+                            </div>
+                        ) : currentCourses.length > 0 ? (
                             currentCourses.map((course) => (
                                 <div className="card mb-4" key={course.id}>
                                     <div className="card-body">

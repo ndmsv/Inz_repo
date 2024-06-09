@@ -111,7 +111,7 @@ namespace backend.Controllers
         {
             try
             {
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == username.Login);
+                var user = await _context.Users.Include(u => u.UserType).FirstOrDefaultAsync(u => u.Login == username.Login);
 
                 if (user == null)
                 {
@@ -128,7 +128,8 @@ namespace backend.Controllers
                         IsOwner = _context.users_in_course.Any(uic => uic.CourseID == course.ID && uic.UserID == user.ID && !uic.IsDeleted && uic.IsOwner),
                         IsInGroup = _context.users_in_course.Any(uic => uic.CourseID == course.ID && uic.UserID == user.ID && !uic.IsDeleted),
                         IsPasswordProtected = course.Password != null,
-                        OwnersCount = _context.users_in_course.Count(uic => uic.CourseID == course.ID && uic.IsOwner)
+                        OwnersCount = _context.users_in_course.Count(uic => uic.CourseID == course.ID && uic.IsOwner),
+                        CanAddOwners = _context.users_in_course.Any(uic => uic.CourseID == course.ID && uic.UserID == user.ID && !uic.IsDeleted && (uic.IsOwner || (user.UserType != null && user.UserType.TypeName == "Administrator")))
                     })
                     .ToListAsync();
 
@@ -245,6 +246,142 @@ namespace backend.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        [HttpPost("leaveCourse")]
+        public async Task<IActionResult> LeaveCourse([FromBody] CourseJoinModel courseJoinModel)
+        {
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == courseJoinModel.Login);
+
+                if (user == null)
+                {
+                    return NotFound(new { message = "User was not found!" });
+                }
+
+                var link = await _context.users_in_course
+                    .FirstOrDefaultAsync(uc => uc.UserID == user.ID && uc.CourseID == courseJoinModel.CourseID);
+
+                if (link == null)
+                {
+                    return NotFound(new { message = "You are not registered in this course!" });
+                }
+                else
+                {
+                    if (link.IsDeleted)
+                    {
+                        return BadRequest(new { message = "You have already left this course!" });
+                    }
+                    else
+                    {
+                        link.IsDeleted = true;
+                        await _context.SaveChangesAsync();
+                        return Ok(new { message = "You have successfully left the course!" });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("getEligibleUsers")]
+        public async Task<IActionResult> GetEligibleUsers([FromBody] CourseIDModel courseIDModel)
+        {
+            try
+            {
+                var courseUsers = _context.users_in_course
+                    .Where(uic => uic.CourseID == courseIDModel.CourseID && !uic.IsDeleted && !uic.IsOwner)
+                    .Select(uic => uic.UserID);
+
+                var eligibleUsers = await _context.Users
+                    .Where(u => courseUsers.Contains(u.ID) 
+                        && u.UserType != null && (u.UserType.TypeName == "Teacher" || u.UserType.TypeName == "Administrator"))
+                    .Select(u => new { u.ID, u.Login, Name = u.Name + " " + u.Surname, TypeName = u.UserType.TypeName })
+                    .ToListAsync();
+
+                return Ok(eligibleUsers);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("addNewOwners")]
+        public async Task<IActionResult> AddNewOwners([FromBody] AddOwnerModel model)
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var usersInCourse = await _context.users_in_course
+                        .Where(uic => model.UserIds.Contains(uic.UserID) && uic.CourseID == model.CourseId)
+                        .ToListAsync();
+
+                    if (!usersInCourse.Any())
+                    {
+                        return NotFound("No eligible users or course found.");
+                    }
+
+                    foreach (var userInCourse in usersInCourse)
+                    {
+                        userInCourse.IsOwner = true;
+                    }
+
+                    _context.UpdateRange(usersInCourse);
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return Ok("Owners added successfully.");
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    return BadRequest(new { message = ex.Message });
+                }
+            }
+        }
+
+        [HttpPost("stopOwnership")]
+        public async Task<IActionResult> StopOwnership([FromBody] CourseJoinModel courseJoinModel)
+        {
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == courseJoinModel.Login);
+
+                if (user == null)
+                {
+                    return NotFound(new { message = "User was not found!" });
+                }
+
+                var link = await _context.users_in_course
+                    .FirstOrDefaultAsync(uc => uc.UserID == user.ID && uc.CourseID == courseJoinModel.CourseID);
+
+                if (link == null)
+                {
+                    return NotFound(new { message = "You are not registered in this course!" });
+                }
+                else
+                {
+                    if (!link.IsOwner)
+                    {
+                        return BadRequest(new { message = "You are not an owner of this course!" });
+                    }
+                    else
+                    {
+                        link.IsOwner = false;
+                        await _context.SaveChangesAsync();
+                        return Ok(new { message = "You have stopped being an owner of the course!" });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 
     public class CourseModel
@@ -268,6 +405,7 @@ namespace backend.Controllers
         public bool IsInGroup { get; set; }
         public bool IsPasswordProtected { get; set; }
         public int OwnersCount { get; set; }
+        public bool CanAddOwners { get; set; }
     }
 
     public class CourseJoinModel
@@ -281,5 +419,16 @@ namespace backend.Controllers
         public int CourseID { get; set; }
         public required string Login { get; set; }
         public required string Password { get; set; }
+    }
+
+    public class CourseIDModel
+    {
+        public int CourseID { get; set; }
+    }
+
+    public class AddOwnerModel
+    {
+        public int CourseId { get; set; }
+        public required List<int> UserIds { get; set; }
     }
 }
