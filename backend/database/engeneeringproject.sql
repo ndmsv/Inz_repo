@@ -16,6 +16,34 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `course_tasks`
+--
+
+DROP TABLE IF EXISTS `course_tasks`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `course_tasks` (
+  `ID` int NOT NULL AUTO_INCREMENT,
+  `COURSE_ID` int NOT NULL,
+  `TASK_NAME` varchar(255) NOT NULL,
+  `TASK_DESCRIPTION` varchar(500) DEFAULT NULL,
+  `CREATION_DATE` datetime NOT NULL,
+  `OPENING_DATE` datetime NOT NULL,
+  `CLOSING_DATE` datetime NOT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `course_tasks`
+--
+
+LOCK TABLES `course_tasks` WRITE;
+/*!40000 ALTER TABLE `course_tasks` DISABLE KEYS */;
+/*!40000 ALTER TABLE `course_tasks` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `courses`
 --
 
@@ -111,7 +139,7 @@ CREATE TABLE `users_in_course` (
   `IS_OWNER` bit(1) NOT NULL,
   `IS_DELETED` bit(1) NOT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -120,7 +148,7 @@ CREATE TABLE `users_in_course` (
 
 LOCK TABLES `users_in_course` WRITE;
 /*!40000 ALTER TABLE `users_in_course` DISABLE KEYS */;
-INSERT INTO `users_in_course` VALUES (1,1,1,_binary '',_binary '\0'),(2,4,2,_binary '',_binary '\0'),(3,4,3,_binary '',_binary '\0'),(4,4,9,_binary '',_binary '\0'),(5,4,10,_binary '',_binary '\0'),(6,1,2,_binary '\0',_binary '\0'),(7,1,9,_binary '\0',_binary '\0'),(8,2,1,_binary '\0',_binary '\0'),(9,1,3,_binary '\0',_binary '\0'),(10,1,10,_binary '\0',_binary '\0'),(11,3,1,_binary '\0',_binary '\0'),(12,3,3,_binary '\0',_binary '\0');
+INSERT INTO `users_in_course` VALUES (1,1,1,_binary '',_binary '\0'),(2,4,2,_binary '',_binary '\0'),(3,4,3,_binary '',_binary '\0'),(4,4,9,_binary '',_binary '\0'),(5,4,10,_binary '',_binary '\0'),(6,1,2,_binary '\0',_binary '\0'),(7,1,9,_binary '',_binary '\0'),(8,2,1,_binary '',_binary '\0'),(9,1,3,_binary '\0',_binary '\0'),(10,1,10,_binary '\0',_binary '\0'),(11,3,1,_binary '\0',_binary '\0'),(12,3,3,_binary '\0',_binary '\0'),(13,4,1,_binary '',_binary '\0');
 /*!40000 ALTER TABLE `users_in_course` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -133,4 +161,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-05-19 17:58:20
+-- Dump completed on 2024-06-09 23:27:35

@@ -128,6 +128,10 @@ function MyCourses() {
         }
     };
 
+    const handleNavigateToCourseDetails = (course) => {
+        navigate('/courseDetails', { state: { course } });
+    };
+
     const indexOfLastCourse = currentPage * coursesPerPage;
     const indexOfFirstCourse = indexOfLastCourse - coursesPerPage;
     const currentCourses = courses.slice(indexOfFirstCourse, indexOfLastCourse);
@@ -157,6 +161,9 @@ function MyCourses() {
                                                 Add Owners
                                             </button>
                                         )}
+                                        <button className="btn btn-primary me-1" onClick={() => handleNavigateToCourseDetails(course)}>
+                                            Course details
+                                        </button>
                                         {course.isOwner ? (
                                             <button className="btn btn-danger me-1" onClick={() => handleStopOwnership(course)}>
                                                 Stop Ownership

@@ -187,3 +187,14 @@ export const stopOwnership = async (courseID, login) => {
         return handleAxiosError(error);
     }
 };
+
+export const getCourseTasks = async (courseID) => {
+    try {
+        const response = await axios.post(`${API_URL}Task/getCourseTasks`, {
+            courseID
+        });
+        return { data: response.data, isSuccess: true};
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};

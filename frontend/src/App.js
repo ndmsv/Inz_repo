@@ -5,6 +5,7 @@ import { checkTypePassword, fetchData, loginUser, checkLogin, registerUser } fro
 import CreateCourse from './sides/CreateCourse';
 import JoinCourse from './sides/JoinCourse';
 import MyCourses from './sides/MyCourses';
+import CourseDetails from './sides/CourseDetails';
 
 function App() {
   const navigate = useNavigate();
@@ -233,6 +234,7 @@ function App() {
         <Route path="/createCourse" element={<CreateCourse />} />
         <Route path="/joinCourse" element={<JoinCourse />} />
         <Route path="/myCourses" element={<MyCourses />} />
+        <Route path="/courseDetails" element={<CourseDetails />} />
       </Routes>
   );
 }

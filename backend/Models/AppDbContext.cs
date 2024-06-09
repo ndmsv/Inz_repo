@@ -16,6 +16,7 @@ namespace backend.Models
         public DbSet<Type> user_types { get; set; }
         public DbSet<Course> courses { get; set; }
         public DbSet<UsersInCourse> users_in_course { get; set; }
+        public DbSet<CourseTasks> course_tasks { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -92,6 +93,8 @@ namespace backend.Models
         public User? User { get; set; }
 
         public ICollection<UsersInCourse>? UsersInCourse { get; set; }
+
+        public ICollection<CourseTasks>? CourseTasks { get; set; }
     }
 
     public class UsersInCourse
@@ -114,6 +117,33 @@ namespace backend.Models
         public required bool IsDeleted { get; set; }
 
         public User? User { get; set; }
+
+        public Course? Course { get; set; }
+    }
+
+    public class CourseTasks
+    {
+        [Key]
+        public int ID { get; set; }
+
+        [ForeignKey("Course")]
+        [Column("COURSE_ID")]
+        public required int CourseID { get; set; }
+
+        [Column("TASK_NAME")]
+        public required string TaskName { get; set; }
+
+        [Column("TASK_DESCRIPTION")]
+        public string? TaskDescription { get; set; }
+
+        [Column("CREATION_DATE")]
+        public required DateTime CreationDate { get; set; }
+
+        [Column("OPENING_DATE")]
+        public required DateTime OpeningDate { get; set; }
+
+        [Column("CLOSING_DATE")]
+        public required DateTime ClosingDate { get; set; }
 
         public Course? Course { get; set; }
     }
