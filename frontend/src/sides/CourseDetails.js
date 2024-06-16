@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './Navbar';
-import { getCourseTasks } from '../services/apiService';
+import { getCourseTasks, checkIfOwnerOrAdmin, saveCourseTask } from '../services/apiService';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
+import './CourseDetails.css';
+import { format, parseISO } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz';
 
 function CourseDetails() {
     const navigate = useNavigate();
@@ -14,9 +17,15 @@ function CourseDetails() {
     const [isLoading, setIsLoading] = useState(true);
     const location = useLocation();
     const selectedCourse = location.state.course;
-    const [showPopup, setShowPopup] = useState(false);
+    const [showNewTaskPopup, setShowNewTaskPopup] = useState(false);
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
+    const [isOwnerOrAdmin, setIsOwnerOrAdmin] = useState(false);
+    const [isLimitedAttachments, setIsLimitedAttachments] = useState(false);
+    const [attachmentNumber, setAttachmentNumber] = useState('');
+    const [isLimitedAttachmentType, setIsLimitedAttachmentType] = useState(false);
+    const [attachmentTypes, setAttachmentTypes] = useState([]);
+    const [attachmentTypeInput, setAttachmentTypeInput] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -34,8 +43,16 @@ function CourseDetails() {
                 else {
                     alert(data.message)
                 }
+
+                const ownerData = await checkIfOwnerOrAdmin(username, selectedCourse.id);
+                if (ownerData.isSuccess) {
+                    setIsOwnerOrAdmin(ownerData.data.isOwnerOrAdmin);
+                }
+                else {
+                    alert(ownerData.message)
+                }
             } catch (error) {
-                alert('Error fetching course details:', error);
+                alert('Error fetching data:', error);
             } finally {
                 setIsLoading(false);
             }
@@ -48,20 +65,110 @@ function CourseDetails() {
         navigate("/myCourses");
     };
 
-    const togglePopup = () => {
-        setShowPopup(!showPopup);
+    const toggleNewTaskPopup = () => {
+        setAttachmentNumber('');
+        setAttachmentTypeInput('');
+        setAttachmentTypes([]);
+        setIsLimitedAttachments(false);
+        setIsLimitedAttachmentType(false);
+        setShowNewTaskPopup(!showNewTaskPopup);
     };
 
     const saveTask = async () => {
-        const taskDetails = {
-            name: document.getElementById('taskNameInput').value,
-            description: document.getElementById('taskDescriptionInput').value,
-            openingDate: startDate,
-            closingDate: endDate,
-        };
-        // Make an API call or handle the data submission as needed
-        console.log(taskDetails); // Replace with actual API call
-        togglePopup(); // Close the modal after saving
+        const taskName = document.getElementById('taskNameInput').value;
+        const taskDescription = document.getElementById('taskDescriptionInput').value;
+        const openingDate = startDate;
+        const closingDate = endDate;
+        const courseID = selectedCourse.id;
+
+        if (taskName === "") {
+            alert("You cannot create a task without a task name!");
+            return;
+        }
+
+        if (openingDate === null || closingDate === null) {
+            alert("Both dates must have assigned value!");
+            return;
+        }
+
+        if (openingDate >= closingDate) {
+            alert("Closing date must come after opening date!");
+            return;
+        }
+
+        if (isLimitedAttachments) {
+            if (!attachmentNumber) {
+                alert("You must specify the maximum number of attachments!");
+                return;
+            }
+
+            const attachmentNum = parseInt(attachmentNumber);
+            if (isNaN(attachmentNum) || attachmentNum <= 0) {
+                alert("Maximum number of attachments must be a positive integer!");
+                return;
+            }
+
+            setAttachmentNumber(attachmentNum);
+        }
+
+        if (isLimitedAttachmentType) {
+            if (attachmentTypes.length === 0) {
+                alert("You must specify at least one file type!");
+                return;
+            }
+        }
+
+        const attachmentTypesString = attachmentTypes.join(';') === '' ? null : attachmentTypes.join(';');
+        const attachmentNumberResult = attachmentNumber === '' ? null : attachmentNumber;
+
+        const saveCourseTaskResponse = await saveCourseTask(courseID, taskName, taskDescription, openingDate, closingDate, isLimitedAttachments, attachmentNumberResult,
+            isLimitedAttachmentType, attachmentTypesString);
+
+        alert(saveCourseTaskResponse.message);
+
+        if (saveCourseTaskResponse.isSuccess) {
+            const data = await getCourseTasks(selectedCourse.id);
+            if (data.isSuccess) {
+                setTasks(data.data);
+            }
+            else {
+                alert(data.message)
+            }
+
+            toggleNewTaskPopup();
+        }
+    };
+
+    const handleAddAttachmentType = () => {
+        if (attachmentTypeInput.startsWith('.') && !attachmentTypeInput.includes(' ') && !attachmentTypeInput.includes(';') && !attachmentTypeInput.includes(',')
+            && attachmentTypeInput.trim() !== '.') {
+            setAttachmentTypes(prev => [...prev, attachmentTypeInput.trim()]);
+            setAttachmentTypeInput('');
+        } else {
+            alert("Invalid file type. It must start with a '.' and contain no spaces or any special signs.");
+        }
+    };
+
+    const handleDeleteAttachmentType = (index) => {
+        setAttachmentTypes(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const handleLimitedAttachments = (limitedAttachments) => {
+        setAttachmentNumber('');
+        setIsLimitedAttachments(limitedAttachments);
+    };
+
+
+    const handleLimitedAttachmentTypes = (limitedAttachmentTypes) => {
+        setAttachmentTypeInput('');
+        setAttachmentTypes([]);
+        setIsLimitedAttachmentType(limitedAttachmentTypes);
+    };
+
+    const formatDate = (dateString) => {
+        const date = parseISO(dateString);
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        return formatInTimeZone(date, timezone, 'dd MMMM yyyy HH:mm');
     };
 
     const indexOfLastCourse = currentPage * tasksPerPage;
@@ -77,7 +184,9 @@ function CourseDetails() {
                 <div className="panel-heading">
                     <div className="row mt-3 me-0">
                         <div className="col-md-2">
-                            <button type="button" className="btn btn-primary ms-2" onClick={() => togglePopup()}>New task</button>
+                            {isOwnerOrAdmin &&
+                                <button type="button" className="btn btn-primary ms-2" onClick={() => toggleNewTaskPopup()}>New task</button>
+                            }
                         </div>
                         <div className="col-md-8 text-center">
                             <h5 className="card-title ms-3 mb-2">{selectedCourse.name}</h5>
@@ -98,10 +207,12 @@ function CourseDetails() {
                             </div>
                         ) : currentTasks.length > 0 ? (
                             currentTasks.map((task) => (
-                                <div className="card mb-4" key={task.id}>
+                                <div className="card mb-4" key={task.taskId}>
                                     <div className="card-body">
-                                        <h5 className="card-title">{task.name}</h5>
-                                        <p className="card-text">{task.description}</p>
+                                        <h5 className="card-title">{task.taskName}</h5>
+                                        <p className="card-text">{task.taskDescription}</p>
+                                        <p className="card-text">Opening date: {formatDate(task.openingDate)}</p>
+                                        <p className="card-text">Closing date: {formatDate(task.closingDate)}</p>
                                     </div>
                                 </div>
                             ))
@@ -121,15 +232,15 @@ function CourseDetails() {
                                 ))}
                             </ul>
                         </nav>
-                        {showPopup && (
+                        {showNewTaskPopup && (
                             <>
-                                <div className="modal-backdrop show" style={{ zIndex: 1049 }} onClick={togglePopup}></div>
+                                <div className="modal-backdrop show" style={{ zIndex: 1049 }} onClick={toggleNewTaskPopup}></div>
                                 <div className="modal d-block" tabIndex="-1" style={{ zIndex: 1050 }}>
                                     <div className="modal-dialog">
                                         <div className="modal-content">
                                             <div className="modal-header">
                                                 <h5 className="modal-title">Create New Task</h5>
-                                                <button type="button" className="btn-close" aria-label="Close" onClick={togglePopup}></button>
+                                                <button type="button" className="btn-close" aria-label="Close" onClick={toggleNewTaskPopup}></button>
                                             </div>
                                             <div className="modal-body">
                                                 <div className="mb-3">
@@ -141,35 +252,73 @@ function CourseDetails() {
                                                     <textarea className="form-control" id="taskDescriptionInput" placeholder="Enter task description"></textarea>
                                                 </div>
                                                 <div className="mb-3">
-                                                    <label htmlFor="taskOpeningDateInput" className="form-label">Opening Date</label>
+                                                    <label className="form-label">Opening Date</label>
+                                                    <br />
                                                     <DatePicker
                                                         selected={startDate}
                                                         onChange={date => setStartDate(date)}
-                                                        showTimeSelect
-                                                        timeFormat="HH:mm"
-                                                        timeIntervals={15}
                                                         timeCaption="time"
-                                                        dateFormat="MMMM d, yyyy h:mm aa"
+                                                        dateFormat="dd MMMM yyyy HH:mm"
                                                         className="form-control"
+                                                        wrapperClassName='wrapper-class'
+                                                        timeInputLabel='Time: '
+                                                        showTimeInput
                                                     />
                                                 </div>
                                                 <div className="mb-3">
-                                                    <label htmlFor="taskClosingDateInput" className="form-label">Closing Date</label>
+                                                    <label className="form-label">Closing Date</label>
+                                                    <br />
                                                     <DatePicker
                                                         selected={endDate}
                                                         onChange={date => setEndDate(date)}
-                                                        showTimeSelect
-                                                        timeFormat="HH:mm"
-                                                        timeIntervals={15}
                                                         timeCaption="time"
-                                                        dateFormat="MMMM d, yyyy h:mm aa"
+                                                        dateFormat="dd MMMM yyyy HH:mm"
                                                         className="form-control"
+                                                        wrapperClassName='wrapper-class'
+                                                        timeInputLabel='Time: '
+                                                        timeClassName="form-control"
+                                                        showTimeInput
                                                     />
                                                 </div>
+                                                <div className="form-check mb-2">
+                                                    <input className="form-check-input" type="checkbox" checked={isLimitedAttachments} onChange={() => handleLimitedAttachments(!isLimitedAttachments)} id="limitedAttachmentsCheck" />
+                                                    <label className="form-check-label" htmlFor="limitedAttachmentsCheck">
+                                                        Limited Attachments Number
+                                                    </label>
+                                                </div>
+                                                {isLimitedAttachments && (
+                                                    <div className="mb-3">
+                                                        <input type="number" className="form-control" value={attachmentNumber} onChange={(e) => setAttachmentNumber(e.target.value)} placeholder="Enter max number of attachments" />
+                                                    </div>
+                                                )}
+                                                <div className="form-check mb-2">
+                                                    <input className="form-check-input" type="checkbox" checked={isLimitedAttachmentType} onChange={() => handleLimitedAttachmentTypes(!isLimitedAttachmentType)} id="limitedAttachmentTypeCheck" />
+                                                    <label className="form-check-label" htmlFor="limitedAttachmentTypeCheck">
+                                                        Limited Attachment Types
+                                                    </label>
+                                                </div>
+                                                {isLimitedAttachmentType && (
+                                                    <div className="mb-3">
+                                                        <input type="text" className="form-control" value={attachmentTypeInput} onChange={(e) => setAttachmentTypeInput(e.target.value)} onKeyPress={(e) => {
+                                                            if (e.key === 'Enter' || e.key === ' ') {
+                                                                handleAddAttachmentType();
+                                                                e.preventDefault();
+                                                            }
+                                                        }} placeholder="Enter file type (e.g., .jpg) and press Enter or Space" />
+                                                        <div className="mt-2">
+                                                            {attachmentTypes.map((type, index) => (
+                                                                <div key={index} className="badge bg-secondary me-2 align-items-center">
+                                                                    {type}
+                                                                    <button className="btn btn-sm btn-close" style={{ background: "transparent var(--bs-btn-close-bg) center/0.7em auto no-repeat" }} onClick={() => handleDeleteAttachmentType(index)} aria-label="Remove"></button>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
                                             <div className="modal-footer">
                                                 <button type="button" className="btn btn-primary" style={{ marginRight: "5px" }} onClick={() => saveTask()}>Save</button>
-                                                <button type="button" className="btn btn-secondary" onClick={togglePopup}>Cancel</button>
+                                                <button type="button" className="btn btn-secondary" onClick={toggleNewTaskPopup}>Cancel</button>
                                             </div>
                                         </div>
                                     </div>

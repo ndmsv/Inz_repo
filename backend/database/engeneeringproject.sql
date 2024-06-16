@@ -30,8 +30,12 @@ CREATE TABLE `course_tasks` (
   `CREATION_DATE` datetime NOT NULL,
   `OPENING_DATE` datetime NOT NULL,
   `CLOSING_DATE` datetime NOT NULL,
+  `LIMITED_ATTACHMENTS` bit(1) NOT NULL,
+  `ATTACHMENTS_NUMBER` int DEFAULT NULL,
+  `LIMITED_ATTACHMENT_TYPES` bit(1) NOT NULL,
+  `ATTACHMENT_TYPES` varchar(500) DEFAULT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,6 +44,7 @@ CREATE TABLE `course_tasks` (
 
 LOCK TABLES `course_tasks` WRITE;
 /*!40000 ALTER TABLE `course_tasks` DISABLE KEYS */;
+INSERT INTO `course_tasks` VALUES (1,1,'first task','test task','2024-06-16 18:53:54','2024-06-15 16:42:19','2024-06-16 19:45:19',_binary '\0',NULL,_binary '\0',NULL),(2,1,'another task','','2024-06-16 18:59:44','2024-06-16 16:55:10','2024-06-27 16:55:09',_binary '',5,_binary '','.txt;.jpg;.png;.pdf'),(3,1,'test','','2024-06-16 19:12:20','2024-06-16 16:55:10','2024-06-27 16:56:09',_binary '\0',NULL,_binary '\0',NULL),(4,1,'test2','','2024-06-16 19:18:04','2024-06-16 17:14:32','2024-06-17 17:14:32',_binary '\0',NULL,_binary '\0',NULL),(5,1,'test3','','2024-06-16 17:24:53','2024-06-16 17:14:32','2024-06-18 17:14:32',_binary '\0',NULL,_binary '\0',NULL);
 /*!40000 ALTER TABLE `course_tasks` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -148,7 +153,7 @@ CREATE TABLE `users_in_course` (
 
 LOCK TABLES `users_in_course` WRITE;
 /*!40000 ALTER TABLE `users_in_course` DISABLE KEYS */;
-INSERT INTO `users_in_course` VALUES (1,1,1,_binary '',_binary '\0'),(2,4,2,_binary '',_binary '\0'),(3,4,3,_binary '',_binary '\0'),(4,4,9,_binary '',_binary '\0'),(5,4,10,_binary '',_binary '\0'),(6,1,2,_binary '\0',_binary '\0'),(7,1,9,_binary '',_binary '\0'),(8,2,1,_binary '',_binary '\0'),(9,1,3,_binary '\0',_binary '\0'),(10,1,10,_binary '\0',_binary '\0'),(11,3,1,_binary '\0',_binary '\0'),(12,3,3,_binary '\0',_binary '\0'),(13,4,1,_binary '',_binary '\0');
+INSERT INTO `users_in_course` VALUES (1,1,1,_binary '',_binary '\0'),(2,4,2,_binary '',_binary '\0'),(3,4,3,_binary '',_binary '\0'),(4,4,9,_binary '',_binary '\0'),(5,4,10,_binary '',_binary '\0'),(6,1,2,_binary '\0',_binary '\0'),(7,1,9,_binary '',_binary '\0'),(8,2,1,_binary '',_binary '\0'),(9,1,3,_binary '\0',_binary '\0'),(10,1,10,_binary '\0',_binary '\0'),(11,3,1,_binary '\0',_binary '\0'),(12,3,3,_binary '\0',_binary '\0'),(13,4,1,_binary '\0',_binary '\0');
 /*!40000 ALTER TABLE `users_in_course` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -161,4 +166,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-06-09 23:27:35
+-- Dump completed on 2024-06-16 21:48:21

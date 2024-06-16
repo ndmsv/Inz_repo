@@ -198,3 +198,34 @@ export const getCourseTasks = async (courseID) => {
         return handleAxiosError(error);
     }
 };
+
+export const checkIfOwnerOrAdmin = async (login, courseID) => {
+    try {
+        const response = await axios.post(`${API_URL}Task/checkIfOwnerOrAdmin`, {
+            login,
+            courseID
+        });
+        return { data: response.data, isSuccess: true};
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};
+
+export const saveCourseTask = async (courseID, taskName, taskDescription, openingDate, closingDate, limitedAttachments, attachmentsNumber, limitedAttachmentTypes, attachmentTypes) => {
+    try {
+        const response = await axios.post(`${API_URL}Task/saveCourseTask`, {
+            courseID,
+            taskName,
+            taskDescription,
+            openingDate: openingDate.toISOString(),
+            closingDate: closingDate.toISOString(),
+            limitedAttachments,
+            attachmentsNumber,
+            limitedAttachmentTypes,
+            attachmentTypes
+        });
+        return { message: response.data.message, isSuccess: true};
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};

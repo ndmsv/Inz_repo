@@ -145,6 +145,18 @@ namespace backend.Models
         [Column("CLOSING_DATE")]
         public required DateTime ClosingDate { get; set; }
 
+        [Column("LIMITED_ATTACHMENTS")]
+        public required bool LimitedAttachments { get; set; }
+
+        [Column("ATTACHMENTS_NUMBER")]
+        public int? AttachmentsNumber { get; set; }
+
+        [Column("LIMITED_ATTACHMENT_TYPES")]
+        public required bool LimitedAttachmentTypes { get; set; }
+
+        [Column("ATTACHMENT_TYPES")]
+        public string? AttachmentTypes { get; set; }
+
         public Course? Course { get; set; }
     }
 }
