@@ -26,16 +26,16 @@ CREATE TABLE `course_tasks` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `COURSE_ID` int NOT NULL,
   `TASK_NAME` varchar(255) NOT NULL,
-  `TASK_DESCRIPTION` varchar(500) DEFAULT NULL,
-  `CREATION_DATE` datetime NOT NULL,
-  `OPENING_DATE` datetime NOT NULL,
-  `CLOSING_DATE` datetime NOT NULL,
+  `TASK_DESCRIPTION` varchar(1500) DEFAULT NULL,
+  `CREATION_DATE` timestamp NOT NULL,
+  `OPENING_DATE` timestamp NOT NULL,
+  `CLOSING_DATE` timestamp NOT NULL,
   `LIMITED_ATTACHMENTS` bit(1) NOT NULL,
   `ATTACHMENTS_NUMBER` int DEFAULT NULL,
   `LIMITED_ATTACHMENT_TYPES` bit(1) NOT NULL,
   `ATTACHMENT_TYPES` varchar(500) DEFAULT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -44,7 +44,7 @@ CREATE TABLE `course_tasks` (
 
 LOCK TABLES `course_tasks` WRITE;
 /*!40000 ALTER TABLE `course_tasks` DISABLE KEYS */;
-INSERT INTO `course_tasks` VALUES (1,1,'first task','test task','2024-06-16 18:53:54','2024-06-15 16:42:19','2024-06-16 19:45:19',_binary '\0',NULL,_binary '\0',NULL),(2,1,'another task','','2024-06-16 18:59:44','2024-06-16 16:55:10','2024-06-27 16:55:09',_binary '',5,_binary '','.txt;.jpg;.png;.pdf'),(3,1,'test','','2024-06-16 19:12:20','2024-06-16 16:55:10','2024-06-27 16:56:09',_binary '\0',NULL,_binary '\0',NULL),(4,1,'test2','','2024-06-16 19:18:04','2024-06-16 17:14:32','2024-06-17 17:14:32',_binary '\0',NULL,_binary '\0',NULL),(5,1,'test3','','2024-06-16 17:24:53','2024-06-16 17:14:32','2024-06-18 17:14:32',_binary '\0',NULL,_binary '\0',NULL);
+INSERT INTO `course_tasks` VALUES (1,1,'first task','test task','2024-06-16 16:53:54','2024-06-15 14:42:19','2024-06-16 17:45:19',_binary '\0',NULL,_binary '\0',NULL),(2,1,'another task','','2024-06-16 16:59:44','2024-06-16 14:55:10','2024-06-27 14:55:09',_binary '',5,_binary '','.txt;.jpg;.png;.pdf'),(3,1,'test','','2024-06-16 17:12:20','2024-06-16 14:55:10','2024-06-27 14:56:09',_binary '\0',NULL,_binary '\0',NULL),(4,1,'test2','','2024-06-16 17:18:04','2024-06-16 15:14:32','2024-06-17 15:14:32',_binary '\0',NULL,_binary '\0',NULL),(5,1,'test3','','2024-06-16 15:24:53','2024-06-16 15:14:32','2024-06-18 15:14:32',_binary '\0',NULL,_binary '\0',NULL),(6,1,'test4','','2024-06-18 16:26:22','2024-06-17 16:22:34','2024-06-18 16:22:34',_binary '\0',NULL,_binary '\0',NULL),(7,1,'test','a','2024-06-18 17:03:32','2024-06-14 17:00:54','2024-06-18 17:00:54',_binary '\0',NULL,_binary '\0',NULL),(8,1,'a','','2024-06-18 17:19:16','2024-06-17 17:18:49','2024-06-18 17:18:50',_binary '\0',NULL,_binary '\0',NULL),(9,1,'abc','','2024-06-18 17:22:22','2024-06-17 17:21:00','2024-06-18 17:21:00',_binary '\0',NULL,_binary '\0',NULL),(10,1,'litwa','Litwo, Ojczyzno moja! ty jesteś jak zdrowie; Ile cię trzeba cenić, ten tylko się dowie, Kto cię stracił. Dziś piękność twą w całej ozdobie Widzę i opisuję, bo tęsknię po tobie. Panno święta, co Jasnej bronisz Częstochowy I w Ostrej świecisz Bramie! Ty, co gród zamkowy Nowogródzki ochraniasz z jego wiernym ludem! Jak mnie dziecko do zdrowia powróciłaś cudem (— Gdy od płaczącej matki, pod Twoją opiekę Ofiarowany martwą podniosłem powiekę; I zaraz mogłem pieszo, do Twych świątyń progu Iść za wrócone życie podziękować Bogu —) Tak nas powrócisz cudem na Ojczyzny łono!... Tymczasem, przenoś moją duszę utęsknioną Do tych pagórków leśnych, do tych łąk zielonych, Szeroko nad błękitnym Niemnem rozciągnionych; Do tych pól malowanych zbożem rozmaitem, Wyzłacanych pszenicą, posrebrzanych żytem; Gdzie bursztynowy świerzop, gryka jak śnieg biała, Gdzie panieńskim rumieńcem dzięcielina pała, A wszystko przepasane jakby wstęgą, miedzą Zieloną, na niej zrzadka ciche grusze siedzą.','2024-06-18 17:32:36','2024-06-18 17:31:00','2024-06-20 17:31:00',_binary '\0',NULL,_binary '\0',NULL),(11,10,'test','sprawdzam czy tu też działa gites','2024-06-18 17:37:03','2024-06-18 17:36:00','2024-06-18 17:37:00',_binary '\0',NULL,_binary '\0',NULL);
 /*!40000 ALTER TABLE `course_tasks` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -166,4 +166,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-06-16 21:48:21
+-- Dump completed on 2024-06-18 21:39:02

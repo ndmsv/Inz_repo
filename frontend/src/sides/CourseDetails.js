@@ -16,7 +16,7 @@ function CourseDetails() {
     const tasksPerPage = 10;
     const [isLoading, setIsLoading] = useState(true);
     const location = useLocation();
-    const selectedCourse = location.state.course;
+    const selectedCourse = location.state ? location.state.course : null;
     const [showNewTaskPopup, setShowNewTaskPopup] = useState(false);
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
@@ -28,13 +28,14 @@ function CourseDetails() {
     const [attachmentTypeInput, setAttachmentTypeInput] = useState('');
 
     useEffect(() => {
+        if (selectedCourse === null) {
+            alert("Course is not defined correctly!");
+            navigate("/myCourses");
+            return;
+        }
+
         const fetchData = async () => {
             try {
-                if (!selectedCourse) {
-                    alert("Course is not defined correctly!");
-                    navigate("/myCourses");
-                }
-
                 setIsLoading(true);
                 const data = await getCourseTasks(selectedCourse.id);
                 if (data.isSuccess) {
@@ -59,7 +60,7 @@ function CourseDetails() {
         };
 
         fetchData();
-    }, []);
+    }, [selectedCourse, navigate]);
 
     const handleReturn = () => {
         navigate("/myCourses");
@@ -72,6 +73,11 @@ function CourseDetails() {
         setIsLimitedAttachments(false);
         setIsLimitedAttachmentType(false);
         setShowNewTaskPopup(!showNewTaskPopup);
+
+        const now = new Date();
+        now.setSeconds(0, 0);
+        setStartDate(now);
+        setEndDate(now);
     };
 
     const saveTask = async () => {
@@ -189,8 +195,8 @@ function CourseDetails() {
                             }
                         </div>
                         <div className="col-md-8 text-center">
-                            <h5 className="card-title ms-3 mb-2">{selectedCourse.name}</h5>
-                            <p className="card-text ms-3">{selectedCourse.description}</p>
+                            <h5 className="card-title mb-2">{selectedCourse ? selectedCourse.name : ""}</h5>
+                            <p className="card-subtitle mb-2 text-muted">{selectedCourse ? selectedCourse.description : ""}</p>
                         </div>
                         <div className="col-md-2 text-end">
                             <button type="button" className="btn btn-secondary" onClick={() => handleReturn()}>Back</button>
@@ -210,7 +216,7 @@ function CourseDetails() {
                                 <div className="card mb-4" key={task.taskId}>
                                     <div className="card-body">
                                         <h5 className="card-title">{task.taskName}</h5>
-                                        <p className="card-text">{task.taskDescription}</p>
+                                        <p className="card-subtitle mb-2 text-muted">{task.taskDescription}</p>
                                         <p className="card-text">Opening date: {formatDate(task.openingDate)}</p>
                                         <p className="card-text">Closing date: {formatDate(task.closingDate)}</p>
                                     </div>

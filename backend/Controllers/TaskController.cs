@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Threading.Tasks;
 
 namespace backend.Controllers
 {
@@ -41,7 +42,16 @@ namespace backend.Controllers
                     .OrderBy(t => t.OpeningDate)
                     .ToListAsync();
 
-                return Ok(tasks);
+                var result = tasks.Select(t => new {
+                    t.TaskId,
+                    t.TaskName,
+                    t.TaskDescription,
+                    CreationDate = DateTime.SpecifyKind(t.CreationDate, DateTimeKind.Utc),
+                    OpeningDate = DateTime.SpecifyKind(t.OpeningDate, DateTimeKind.Utc),
+                    ClosingDate = DateTime.SpecifyKind(t.ClosingDate, DateTimeKind.Utc)
+                }).ToList();
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -93,14 +103,17 @@ namespace backend.Controllers
                     return BadRequest(new { message = "Closing date must come after opening date!" });
                 }
 
+                DateTime openingDate = DateTime.SpecifyKind(newTask.OpeningDate, DateTimeKind.Utc);
+                DateTime closingDate = DateTime.SpecifyKind(newTask.ClosingDate, DateTimeKind.Utc);
+
                 var task = new CourseTasks
                 {
                     CourseID = newTask.CourseID,
                     TaskName = newTask.TaskName,
                     TaskDescription = newTask.TaskDescription,
                     CreationDate = DateTime.UtcNow,
-                    OpeningDate = DateTime.SpecifyKind(newTask.OpeningDate, DateTimeKind.Utc),
-                    ClosingDate = DateTime.SpecifyKind(newTask.ClosingDate, DateTimeKind.Utc),
+                    OpeningDate = openingDate,
+                    ClosingDate = closingDate,
                     LimitedAttachments = newTask.LimitedAttachments,
                     AttachmentsNumber = newTask.LimitedAttachments ? newTask.AttachmentsNumber : null,
                     LimitedAttachmentTypes = newTask.LimitedAttachmentTypes,
