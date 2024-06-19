@@ -33,11 +33,15 @@ namespace backend.Controllers
                     .Select(t => new
                     {
                         TaskId = t.ID,
-                        TaskName = t.TaskName,
-                        TaskDescription = t.TaskDescription,
-                        CreationDate = t.CreationDate,
-                        OpeningDate = t.OpeningDate,
-                        ClosingDate = t.ClosingDate
+                        t.TaskName,
+                        t.TaskDescription,
+                        t.CreationDate,
+                        t.OpeningDate,
+                        t.ClosingDate,
+                        t.LimitedAttachments,
+                        t.AttachmentsNumber,
+                        t.LimitedAttachmentTypes,
+                        t.AttachmentTypes
                     })
                     .OrderBy(t => t.OpeningDate)
                     .ToListAsync();
@@ -48,7 +52,11 @@ namespace backend.Controllers
                     t.TaskDescription,
                     CreationDate = DateTime.SpecifyKind(t.CreationDate, DateTimeKind.Utc),
                     OpeningDate = DateTime.SpecifyKind(t.OpeningDate, DateTimeKind.Utc),
-                    ClosingDate = DateTime.SpecifyKind(t.ClosingDate, DateTimeKind.Utc)
+                    ClosingDate = DateTime.SpecifyKind(t.ClosingDate, DateTimeKind.Utc),
+                    t.LimitedAttachments,
+                    t.AttachmentsNumber,
+                    t.LimitedAttachmentTypes,
+                    t.AttachmentTypes
                 }).ToList();
 
                 return Ok(result);
@@ -130,6 +138,48 @@ namespace backend.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        [HttpPost("updateCourseTask")]
+        public async Task<IActionResult> UpdateCourseTask([FromBody] FullTaskModel updatedTask)
+        {
+            try
+            {
+                var courseExists = await _context.courses.AnyAsync(c => c.ID == updatedTask.CourseID);
+                if (!courseExists)
+                {
+                    return NotFound(new { message = $"No course found with ID {updatedTask.CourseID}" });
+                }
+
+                if (updatedTask.OpeningDate >= updatedTask.ClosingDate)
+                {
+                    return BadRequest(new { message = "Closing date must come after opening date!" });
+                }
+
+                var task = await _context.course_tasks.FirstOrDefaultAsync(t => t.ID == updatedTask.TaskID);
+                if (task == null)
+                {
+                    return NotFound(new { message = $"No task found with ID {updatedTask.TaskID}" });
+                }
+
+                task.TaskName = updatedTask.TaskName;
+                task.TaskDescription = updatedTask.TaskDescription;
+                task.OpeningDate = DateTime.SpecifyKind(updatedTask.OpeningDate, DateTimeKind.Utc);
+                task.ClosingDate = DateTime.SpecifyKind(updatedTask.ClosingDate, DateTimeKind.Utc);
+                task.LimitedAttachments = updatedTask.LimitedAttachments;
+                task.AttachmentsNumber = updatedTask.LimitedAttachments ? updatedTask.AttachmentsNumber : null;
+                task.LimitedAttachmentTypes = updatedTask.LimitedAttachmentTypes;
+                task.AttachmentTypes = updatedTask.LimitedAttachmentTypes ? updatedTask.AttachmentTypes : null;
+
+                _context.course_tasks.Update(task);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Task updated successfully", taskId = task.ID });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 
     public class LoginWithCourseID
@@ -149,5 +199,6 @@ namespace backend.Controllers
         public int? AttachmentsNumber { get; set; }
         public required bool LimitedAttachmentTypes { get; set; }
         public string? AttachmentTypes { get; set; }
+        public int? TaskID { get; set; }
     }
 }

@@ -155,7 +155,7 @@ function MyCourses() {
                                 <div className="card mb-4" key={course.id}>
                                     <div className="card-body">
                                         <h5 className="card-title">{course.name}</h5>
-                                        <p className="card-text">{course.description}</p>
+                                        <p className="card-subtitle mb-2 text-muted">{course.description}</p>
                                         {course.canAddOwners && (
                                             <button className="btn btn-success me-1" onClick={() => handleAddOwners(course)}>
                                                 Add Owners

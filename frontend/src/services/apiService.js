@@ -222,7 +222,28 @@ export const saveCourseTask = async (courseID, taskName, taskDescription, openin
             limitedAttachments,
             attachmentsNumber,
             limitedAttachmentTypes,
-            attachmentTypes
+            attachmentTypes,
+            taskID: null
+        });
+        return { message: response.data.message, isSuccess: true};
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};
+
+export const updateCourseTask = async (taskID, courseID, taskName, taskDescription, openingDate, closingDate, limitedAttachments, attachmentsNumber, limitedAttachmentTypes, attachmentTypes) => {
+    try {
+        const response = await axios.post(`${API_URL}Task/updateCourseTask`, {
+            courseID,
+            taskName,
+            taskDescription,
+            openingDate: openingDate.toISOString(),
+            closingDate: closingDate.toISOString(),
+            limitedAttachments,
+            attachmentsNumber,
+            limitedAttachmentTypes,
+            attachmentTypes,
+            taskID
         });
         return { message: response.data.message, isSuccess: true};
     } catch (error) {

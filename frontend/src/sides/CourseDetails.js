@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './Navbar';
-import { getCourseTasks, checkIfOwnerOrAdmin, saveCourseTask } from '../services/apiService';
+import { getCourseTasks, checkIfOwnerOrAdmin, saveCourseTask, updateCourseTask } from '../services/apiService';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
@@ -26,6 +26,10 @@ function CourseDetails() {
     const [isLimitedAttachmentType, setIsLimitedAttachmentType] = useState(false);
     const [attachmentTypes, setAttachmentTypes] = useState([]);
     const [attachmentTypeInput, setAttachmentTypeInput] = useState('');
+    const [currentSelectedTask, setCurrentSelectedTask] = useState([]);
+    const [isTaskInEdit, setIsTaskInEdit] = useState(false);
+    const [taskName, setTaskName] = useState('');
+    const [taskDescription, setTaskDescription] = useState('');
 
     useEffect(() => {
         if (selectedCourse === null) {
@@ -67,22 +71,26 @@ function CourseDetails() {
     };
 
     const toggleNewTaskPopup = () => {
+        setIsTaskInEdit(false);
+        setCurrentSelectedTask([]);
+
+        setTaskName('');
+        setTaskDescription('');
         setAttachmentNumber('');
         setAttachmentTypeInput('');
         setAttachmentTypes([]);
         setIsLimitedAttachments(false);
         setIsLimitedAttachmentType(false);
-        setShowNewTaskPopup(!showNewTaskPopup);
 
         const now = new Date();
         now.setSeconds(0, 0);
         setStartDate(now);
         setEndDate(now);
+
+        setShowNewTaskPopup(!showNewTaskPopup);
     };
 
     const saveTask = async () => {
-        const taskName = document.getElementById('taskNameInput').value;
-        const taskDescription = document.getElementById('taskDescriptionInput').value;
         const openingDate = startDate;
         const closingDate = endDate;
         const courseID = selectedCourse.id;
@@ -127,8 +135,14 @@ function CourseDetails() {
         const attachmentTypesString = attachmentTypes.join(';') === '' ? null : attachmentTypes.join(';');
         const attachmentNumberResult = attachmentNumber === '' ? null : attachmentNumber;
 
-        const saveCourseTaskResponse = await saveCourseTask(courseID, taskName, taskDescription, openingDate, closingDate, isLimitedAttachments, attachmentNumberResult,
-            isLimitedAttachmentType, attachmentTypesString);
+        let saveCourseTaskResponse; 
+        
+        if (!isTaskInEdit)
+            saveCourseTaskResponse = await saveCourseTask(courseID, taskName, taskDescription, openingDate, closingDate, isLimitedAttachments, attachmentNumberResult,
+                isLimitedAttachmentType, attachmentTypesString);
+        else
+            saveCourseTaskResponse = await updateCourseTask(currentSelectedTask.taskId, courseID, taskName, taskDescription, openingDate, closingDate, isLimitedAttachments, attachmentNumberResult,
+                isLimitedAttachmentType, attachmentTypesString);
 
         alert(saveCourseTaskResponse.message);
 
@@ -177,6 +191,27 @@ function CourseDetails() {
         return formatInTimeZone(date, timezone, 'dd MMMM yyyy HH:mm');
     };
 
+
+    const toggleEditTaskPopup = (task) => {
+        setIsTaskInEdit(!isTaskInEdit);
+        setCurrentSelectedTask(task);
+
+        const attachmentTypes = task.attachmentTypes ? task.attachmentTypes.split(';') : [];
+        setAttachmentTypes(attachmentTypes);
+        setAttachmentTypeInput('');
+        setIsLimitedAttachments(task.limitedAttachments);
+        setIsLimitedAttachmentType(task.limitedAttachmentTypes);
+        setAttachmentNumber(task.attachmentsNumber);
+
+        setTaskName(task.taskName);
+        setTaskDescription(task.taskDescription);
+
+        setStartDate(new Date(task.openingDate));
+        setEndDate(new Date(task.closingDate));
+        
+        setShowNewTaskPopup(!showNewTaskPopup);
+    };
+
     const indexOfLastCourse = currentPage * tasksPerPage;
     const indexOfFirstCourse = indexOfLastCourse - tasksPerPage;
     const currentTasks = tasks.slice(indexOfFirstCourse, indexOfLastCourse);
@@ -219,6 +254,11 @@ function CourseDetails() {
                                         <p className="card-subtitle mb-2 text-muted">{task.taskDescription}</p>
                                         <p className="card-text">Opening date: {formatDate(task.openingDate)}</p>
                                         <p className="card-text">Closing date: {formatDate(task.closingDate)}</p>
+                                        {isOwnerOrAdmin && (
+                                            <button className="btn btn-primary me-1" onClick={() => toggleEditTaskPopup(task)}>
+                                                Edit task
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             ))
@@ -251,11 +291,11 @@ function CourseDetails() {
                                             <div className="modal-body">
                                                 <div className="mb-3">
                                                     <label htmlFor="taskNameInput" className="form-label">Task Name</label>
-                                                    <input type="text" className="form-control" id="taskNameInput" placeholder="Enter task name" />
+                                                    <input type="text" className="form-control" id="taskNameInput" value={taskName} onChange={(e) => setTaskName(e.target.value)} placeholder="Enter task name" />
                                                 </div>
                                                 <div className="mb-3">
                                                     <label htmlFor="taskDescriptionInput" className="form-label">Task Description</label>
-                                                    <textarea className="form-control" id="taskDescriptionInput" placeholder="Enter task description"></textarea>
+                                                    <textarea className="form-control" id="taskDescriptionInput" value={taskDescription} onChange={(e) => setTaskDescription(e.target.value)} placeholder="Enter task description"></textarea>
                                                 </div>
                                                 <div className="mb-3">
                                                     <label className="form-label">Opening Date</label>
