@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Navbar from './Navbar';
 import { getJoinCourses, joinCourse, checkJoinPassword } from '../services/apiService';
 import { useNavigate } from 'react-router-dom';
+import './Global.css';
 
 function JoinCourse() {
     const [username, setUsername] = React.useState(localStorage.getItem('username') || null);
@@ -119,7 +120,7 @@ function JoinCourse() {
                             <ul className="pagination justify-content-center">
                                 {[...Array(Math.ceil(courses.length / coursesPerPage)).keys()].map(number => (
                                     <li key={number + 1} className="page-item">
-                                        <button onClick={() => paginate(number + 1)} className="page-link">
+                                        <button onClick={() => paginate(number + 1)} className={`page-link ${currentPage === number + 1 ? 'page-link-active' : ''}`}>
                                             {number + 1}
                                         </button>
                                     </li>

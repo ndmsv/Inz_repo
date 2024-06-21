@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './Navbar';
-import { getCourseTasks, checkIfOwnerOrAdmin, saveCourseTask, updateCourseTask } from '../services/apiService';
+import { getCourseTasks, checkIfOwnerOrAdmin, saveCourseTask, updateCourseTask, deleteTask } from '../services/apiService';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import './CourseDetails.css';
+import './Global.css';
 import { format, parseISO } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
 
@@ -135,8 +136,8 @@ function CourseDetails() {
         const attachmentTypesString = attachmentTypes.join(';') === '' ? null : attachmentTypes.join(';');
         const attachmentNumberResult = attachmentNumber === '' ? null : attachmentNumber;
 
-        let saveCourseTaskResponse; 
-        
+        let saveCourseTaskResponse;
+
         if (!isTaskInEdit)
             saveCourseTaskResponse = await saveCourseTask(courseID, taskName, taskDescription, openingDate, closingDate, isLimitedAttachments, attachmentNumberResult,
                 isLimitedAttachmentType, attachmentTypesString);
@@ -208,8 +209,32 @@ function CourseDetails() {
 
         setStartDate(new Date(task.openingDate));
         setEndDate(new Date(task.closingDate));
-        
+
         setShowNewTaskPopup(!showNewTaskPopup);
+    };
+
+    const handleDelete = async (task) => {
+        const confirmStop = window.confirm("Are you sure you want to delete the task?");
+        if (!confirmStop) {
+            return;
+        }
+
+        const deleteTaskResponse = await deleteTask(task.taskId, username);
+        alert(deleteTaskResponse.message);
+
+        if (deleteTaskResponse.isSuccess) {
+            const data = await getCourseTasks(selectedCourse.id);
+            if (data.isSuccess) {
+                setTasks(data.data);
+            }
+            else {
+                alert(data.message)
+            }
+        }
+    };
+
+    const handleNavigateToTaskSubmissions = (task) => {
+        navigate('/taskSubmissions', { state: { task, course: selectedCourse } });
     };
 
     const indexOfLastCourse = currentPage * tasksPerPage;
@@ -254,10 +279,18 @@ function CourseDetails() {
                                         <p className="card-subtitle mb-2 text-muted">{task.taskDescription}</p>
                                         <p className="card-text">Opening date: {formatDate(task.openingDate)}</p>
                                         <p className="card-text">Closing date: {formatDate(task.closingDate)}</p>
+                                        <button className="btn btn-success me-1" onClick={() => handleNavigateToTaskSubmissions(task)}>
+                                            Submit data
+                                        </button>
                                         {isOwnerOrAdmin && (
-                                            <button className="btn btn-primary me-1" onClick={() => toggleEditTaskPopup(task)}>
-                                                Edit task
-                                            </button>
+                                            <>
+                                                <button className="btn btn-primary me-1" onClick={() => toggleEditTaskPopup(task)}>
+                                                    Edit task
+                                                </button>
+                                                <button className="btn btn-danger me-1" onClick={() => handleDelete(task)}>
+                                                    Delete task
+                                                </button>
+                                            </>
                                         )}
                                     </div>
                                 </div>
@@ -271,7 +304,7 @@ function CourseDetails() {
                             <ul className="pagination justify-content-center">
                                 {[...Array(Math.ceil(tasks.length / tasksPerPage)).keys()].map(number => (
                                     <li key={number + 1} className="page-item">
-                                        <button onClick={() => paginate(number + 1)} className="page-link">
+                                        <button onClick={() => paginate(number + 1)} className={`page-link ${currentPage === number + 1 ? 'page-link-active' : ''}`}>
                                             {number + 1}
                                         </button>
                                     </li>

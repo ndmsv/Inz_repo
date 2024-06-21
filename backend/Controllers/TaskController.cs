@@ -41,8 +41,10 @@ namespace backend.Controllers
                         t.LimitedAttachments,
                         t.AttachmentsNumber,
                         t.LimitedAttachmentTypes,
-                        t.AttachmentTypes
+                        t.AttachmentTypes,
+                        t.IsDeleted
                     })
+                    .Where(t => !t.IsDeleted)
                     .OrderBy(t => t.OpeningDate)
                     .ToListAsync();
 
@@ -56,7 +58,8 @@ namespace backend.Controllers
                     t.LimitedAttachments,
                     t.AttachmentsNumber,
                     t.LimitedAttachmentTypes,
-                    t.AttachmentTypes
+                    t.AttachmentTypes,
+                    t.IsDeleted
                 }).ToList();
 
                 return Ok(result);
@@ -68,7 +71,7 @@ namespace backend.Controllers
         }
 
         [HttpPost("checkIfOwnerOrAdmin")]
-        public async Task<IActionResult> CheckIfOwnerOrAdmin([FromBody] LoginWithCourseID loginWithCourseID)
+        public async Task<IActionResult> CheckIfOwnerOrAdmin([FromBody] CourseJoinModel loginWithCourseID)
         {
             try
             {
@@ -125,7 +128,8 @@ namespace backend.Controllers
                     LimitedAttachments = newTask.LimitedAttachments,
                     AttachmentsNumber = newTask.LimitedAttachments ? newTask.AttachmentsNumber : null,
                     LimitedAttachmentTypes = newTask.LimitedAttachmentTypes,
-                    AttachmentTypes = newTask.LimitedAttachmentTypes ? newTask.AttachmentTypes : null
+                    AttachmentTypes = newTask.LimitedAttachmentTypes ? newTask.AttachmentTypes : null,
+                    IsDeleted = false
                 };
 
                 _context.course_tasks.Add(task);
@@ -180,12 +184,50 @@ namespace backend.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        [HttpPost("deleteTask")]
+        public async Task<IActionResult> DeleteTask([FromBody] LeaveTaskModel leaveTaskModel)
+        {
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == leaveTaskModel.Login);
+
+                if (user == null)
+                {
+                    return NotFound(new { message = "User was not found!" });
+                }
+
+                var task = await _context.course_tasks.FirstOrDefaultAsync(ct => ct.ID == leaveTaskModel.TaskID);
+
+                if (task == null)
+                {
+                    return NotFound(new { message = "Task with said ID doesn't exist!" });
+                }
+                else
+                {
+                    if (task.IsDeleted)
+                    {
+                        return BadRequest(new { message = "Task with said ID is already deleted!" });
+                    }
+                    else
+                    {
+                        task.IsDeleted = true;
+                        await _context.SaveChangesAsync();
+                        return Ok(new { message = "You have successfully deleted the task!" });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 
-    public class LoginWithCourseID
+    public class LeaveTaskModel
     {
         public required string Login { get; set; }
-        public int CourseID { get; set; }
+        public int TaskID { get; set; }
     }
 
     public class FullTaskModel

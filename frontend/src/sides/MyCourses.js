@@ -3,6 +3,7 @@ import Navbar from './Navbar';
 import { getMyCourses, leaveCourse, stopOwnership, getEligibleUsers, addNewOwners } from '../services/apiService';
 import { useNavigate } from 'react-router-dom';
 import './MyCourses.css';
+import './Global.css';
 
 function MyCourses() {
     const navigate = useNavigate();
@@ -44,6 +45,11 @@ function MyCourses() {
     };
 
     const handleLeave = async (course) => {
+        const confirmStop = window.confirm("Are you sure you want to leave the course?");
+        if (!confirmStop) {
+            return;
+        }
+
         const leaveCourseResponse = await leaveCourse(course.id, username);
         alert(leaveCourseResponse.message);
 
@@ -187,7 +193,7 @@ function MyCourses() {
                             <ul className="pagination justify-content-center">
                                 {[...Array(Math.ceil(courses.length / coursesPerPage)).keys()].map(number => (
                                     <li key={number + 1} className="page-item">
-                                        <button onClick={() => paginate(number + 1)} className="page-link">
+                                        <button onClick={() => paginate(number + 1)} className={`page-link ${currentPage === number + 1 ? 'page-link-active' : ''}`}>
                                             {number + 1}
                                         </button>
                                     </li>

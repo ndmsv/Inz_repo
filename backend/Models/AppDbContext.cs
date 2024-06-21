@@ -157,6 +157,9 @@ namespace backend.Models
         [Column("ATTACHMENT_TYPES")]
         public string? AttachmentTypes { get; set; }
 
+        [Column("IS_DELETED")]
+        public required bool IsDeleted { get; set; }
+
         public Course? Course { get; set; }
     }
 }

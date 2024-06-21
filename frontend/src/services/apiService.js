@@ -250,3 +250,15 @@ export const updateCourseTask = async (taskID, courseID, taskName, taskDescripti
         return handleAxiosError(error);
     }
 };
+
+export const deleteTask = async (taskID, login) => {
+    try {
+        const response = await axios.post(`${API_URL}Task/deleteTask`, {
+            taskID,
+            login
+        });
+        return { message: response.data.message, isSuccess: true };
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};

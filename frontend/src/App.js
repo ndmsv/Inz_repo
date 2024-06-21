@@ -6,6 +6,7 @@ import CreateCourse from './sides/CreateCourse';
 import JoinCourse from './sides/JoinCourse';
 import MyCourses from './sides/MyCourses';
 import CourseDetails from './sides/CourseDetails';
+import TaskSubmissions from './sides/TaskSubmissions';
 
 function App() {
   const navigate = useNavigate();
@@ -235,6 +236,7 @@ function App() {
         <Route path="/joinCourse" element={<JoinCourse />} />
         <Route path="/myCourses" element={<MyCourses />} />
         <Route path="/courseDetails" element={<CourseDetails />} />
+        <Route path="/taskSubmissions" element={<TaskSubmissions />} />
       </Routes>
   );
 }
