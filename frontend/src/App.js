@@ -183,7 +183,7 @@ function App() {
                               {accountType === "2" && (
                                 <div className="mb-3">
                                   <label htmlFor="accountTypePassword" className="form-label">Account Type Password</label>
-                                  <input type="text" className="form-control" id="accountTypePassword" placeholder="Account type password" />
+                                  <input type="password" className="form-control" id="accountTypePassword" placeholder="Account type password" />
                                 </div>
                               )}
                             </div>
