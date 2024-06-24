@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import Navbar from './Navbar';
-import { checkIfTeacher, registerCourse } from '../services/apiService';
+import { checkUserDetails, registerCourse } from '../services/apiService';
 import { useNavigate } from 'react-router-dom';
 
 function CreateCourse() {
     const navigate = useNavigate();
     const [username, setUsername] = React.useState(localStorage.getItem('username') || null);
+    const [hashedPassword, setHashedPassword] = React.useState(localStorage.getItem('hashedPassword') || null);
     const [isPasswordProtected, setIsPasswordProtected] = useState(false);
 
     const handleCheckIfTeacherSubmit = async (event) => {
-        const registerResponse = await checkIfTeacher(username);
+        const registerResponse = await checkUserDetails(username, hashedPassword);
 
         if (!registerResponse.isAdminOrTeacher) {
             if (registerResponse.message)

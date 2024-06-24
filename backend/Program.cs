@@ -27,6 +27,11 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 52428800;
+});
+
 var app = builder.Build();
 
 app.UseCors("CorsPolicy");

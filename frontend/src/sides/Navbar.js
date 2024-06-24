@@ -1,11 +1,13 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { checkIfTeacher } from '../services/apiService';
+import { checkUserDetails } from '../services/apiService';
 
 function Navbar() {
     const navigate = useNavigate();
     const [username, setUsername] = React.useState(localStorage.getItem('username') || null);
+    const [hashedPassword, setHashedPassword] = React.useState(localStorage.getItem('hashedPassword') || null);
     const [isTeacherOrAdmin, setIsTeacherOrAdmin] = useState(false);
+    const [fullname, setFullname] = useState('');
 
     const handleLogout = () => {
         if (username) {
@@ -15,22 +17,29 @@ function Navbar() {
     };
 
     React.useEffect(() => {
-        if (!username) {
+        if (!username || !hashedPassword) {
             alert('You must log in firstly!');
             navigate('/');
         }
         else {
-            handleCheckIfTeacherSubmit();
+            handleCheckUserDetailsSubmit();
         }
     }, [username, navigate]);
 
-    const handleCheckIfTeacherSubmit = async (event) => {
-        const registerResponse = await checkIfTeacher(username);
+    const handleCheckUserDetailsSubmit = async (event) => {
+        const registerResponse = await checkUserDetails(username, hashedPassword);
 
-        if (!registerResponse.isAdminOrTeacher)
-            setIsTeacherOrAdmin(false);
-        else
-            setIsTeacherOrAdmin(true);
+        if (registerResponse.isSuccess) {
+            setIsTeacherOrAdmin(registerResponse.isAdminOrTeacher);
+
+            if (registerResponse.fullname)
+                setFullname(registerResponse.fullname)
+
+        }
+        else {
+            alert('Login credentials are not correct!');
+            navigate('/');
+        }
     }
 
     return (
@@ -48,14 +57,14 @@ function Navbar() {
                             <Link className="dropdown-item" to="/joinCourse">Join Course</Link>
                             <Link className="dropdown-item" to="/myCourses">My Courses</Link>
                             {isTeacherOrAdmin && (
-                            <Link className="dropdown-item" to="/createCourse">Create Course</Link>)}
+                                <Link className="dropdown-item" to="/createCourse">Create Course</Link>)}
                         </ul>
                     </li>
                 </ul>
                 <ul className="navbar-nav ms-auto">
                     <li className="nav-item dropdown">
                         <a className="nav-link dropdown-toggle" id="navbarUser" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            {username}
+                            {fullname ? fullname : username}
                         </a>
                         <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="navbarUser">
                             <Link className="dropdown-item" to="/" onClick={handleLogout}>Log out</Link>

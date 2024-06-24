@@ -17,6 +17,8 @@ namespace backend.Models
         public DbSet<Course> courses { get; set; }
         public DbSet<UsersInCourse> users_in_course { get; set; }
         public DbSet<CourseTasks> course_tasks { get; set; }
+        public DbSet<TaskSubmissions> task_submissions { get; set; }
+        public DbSet<SubmissionAttachments> submission_attachments { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -48,8 +50,8 @@ namespace backend.Models
         public Type? UserType { get; set; }
 
         public ICollection<Course>? Courses { get; set; }
-
         public ICollection<UsersInCourse>? UsersInCourse { get; set; }
+        public ICollection<TaskSubmissions>? TaskSubmissions { get; set; }
     }
 
     public class Type
@@ -161,5 +163,55 @@ namespace backend.Models
         public required bool IsDeleted { get; set; }
 
         public Course? Course { get; set; }
+        public ICollection<TaskSubmissions>? TaskSubmissions { get; set; }
+
+    }
+
+    public class TaskSubmissions
+    {
+        [Key]
+        public int ID { get; set; }
+
+        [ForeignKey("CourseTask")]
+        [Column("TASK_ID")]
+        public int TaskID { get; set; }
+
+        [ForeignKey("User")]
+        [Column("USER_ID")]
+        public int UserID { get; set; }
+
+        [Column("ADDED_ON")]
+        public DateTime AddedOn { get; set; }
+
+        [Column("SUBMISSION_NOTE")]
+        public string? SubmissionNote { get; set; }
+
+        [Column("IS_DELETED")]
+        public bool IsDeleted { get; set; }
+
+        public virtual User? User { get; set; }
+        public virtual CourseTasks? CourseTask { get; set; }
+        public ICollection<SubmissionAttachments>? SubmissionAttachments { get; set; }
+    }
+
+    public class SubmissionAttachments
+    {
+        [Key]
+        public int ID { get; set; }
+
+        [ForeignKey("TaskSubmission")]
+        [Column("SUBMISSION_ID")]
+        public int SubmissionID { get; set; }
+
+        [Column("ADDED_ON")]
+        public DateTime AddedOn { get; set; }
+
+        [Column("FILE_NAME")]
+        public required string FileName { get; set; }
+
+        [Column("FILE_PATH")]
+        public required string FilePath { get; set; }
+
+        public virtual TaskSubmissions? TaskSubmission { get; set; }
     }
 }

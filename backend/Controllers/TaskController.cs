@@ -18,18 +18,24 @@ namespace backend.Controllers
         }
 
         [HttpPost("getCourseTasks")]
-        public async Task<IActionResult> GetCourseTasks([FromBody] CourseIDModel courseIDModel)
+        public async Task<IActionResult> GetCourseTasks([FromBody] CourseJoinModel model)
         {
             try
             {
-                var courseExists = await _context.courses.AnyAsync(c => c.ID == courseIDModel.CourseID);
+                var courseExists = await _context.courses.AnyAsync(c => c.ID == model.CourseID);
                 if (!courseExists)
                 {
-                    return NotFound(new { message = $"No course found with ID {courseIDModel.CourseID}" });
+                    return NotFound(new { message = $"No course found with ID {model.CourseID}" });
+                }
+
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == model.Login);
+                if (user == null)
+                {
+                    return NotFound(new { message = "User was not found!" });
                 }
 
                 var tasks = await _context.course_tasks
-                    .Where(t => t.CourseID == courseIDModel.CourseID)
+                    .Where(t => t.CourseID == model.CourseID)
                     .Select(t => new
                     {
                         TaskId = t.ID,
@@ -42,7 +48,12 @@ namespace backend.Controllers
                         t.AttachmentsNumber,
                         t.LimitedAttachmentTypes,
                         t.AttachmentTypes,
-                        t.IsDeleted
+                        t.IsDeleted,
+                        Submissions = _context.task_submissions
+                            .Where(s => s.TaskID == t.ID && s.UserID == user.ID && !s.IsDeleted)
+                            .Select(s => new {
+                                s.AddedOn
+                            }).ToList()
                     })
                     .Where(t => !t.IsDeleted)
                     .OrderBy(t => t.OpeningDate)
@@ -59,7 +70,12 @@ namespace backend.Controllers
                     t.AttachmentsNumber,
                     t.LimitedAttachmentTypes,
                     t.AttachmentTypes,
-                    t.IsDeleted
+                    t.IsDeleted,
+                    IsSubmission = t.Submissions.Any(),
+                    IsSubmissionTimeCorrect = t.Submissions.Any(s => s.AddedOn <= t.ClosingDate),
+                    SubmissionTimeDifference = t.Submissions.Any() ? FormatTimeDifference(t.ClosingDate, t.Submissions.First().AddedOn) : null,
+                    IsOpened = DateTime.UtcNow >= t.OpeningDate,
+                    AddedOn = t.Submissions.Any() ? t.Submissions.First().AddedOn : (DateTime?)null
                 }).ToList();
 
                 return Ok(result);
@@ -68,6 +84,12 @@ namespace backend.Controllers
             {
                 return BadRequest(new { message = ex.Message });
             }
+        }
+
+        private string FormatTimeDifference(DateTime closingDate, DateTime submissionDate)
+        {
+            var timeSpan = closingDate - submissionDate;
+            return $"{Math.Abs(timeSpan.Days)} days, {Math.Abs(timeSpan.Hours)} hours, {Math.Abs(timeSpan.Minutes)} minutes, {Math.Abs(timeSpan.Seconds)} seconds";
         }
 
         [HttpPost("checkIfOwnerOrAdmin")]
@@ -222,6 +244,45 @@ namespace backend.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        [HttpPost("checkSubmissionsInCourse")]
+        public async Task<IActionResult> CheckSubmissionsInCourse([FromBody] CourseWithTaskModel courseWithTaskModel)
+        {
+            try
+            {
+                var courseUsers = await _context.users_in_course
+                    .Where(uic => uic.CourseID == courseWithTaskModel.CourseID && !uic.IsDeleted)
+                    .Select(uic => new {
+                        uic.UserID,
+                        uic.User.Login,
+                        FullName = uic.User.Name + " " + uic.User.Surname,
+                        TypeName = uic.User.UserType.TypeName
+                    })
+                    .ToListAsync();
+
+                var taskSubmissions = await _context.task_submissions
+                    .Include(ts => ts.CourseTask)
+                    .Where(ts => ts.CourseTask.CourseID == courseWithTaskModel.CourseID 
+                        && ts.CourseTask.ID == courseWithTaskModel.TaskID 
+                        && !ts.IsDeleted)
+                    .ToListAsync();
+
+                var usersWithSubmissions = courseUsers.Select(u => new {
+                    u.UserID,
+                    u.Login,
+                    u.FullName,
+                    u.TypeName,
+                    IsSubmitted = taskSubmissions.Any(ts => ts.UserID == u.UserID),
+                    IsSubmissionTimeCorrect = taskSubmissions.Where(ts => ts.UserID == u.UserID).Any(ts => ts.AddedOn <= ts.CourseTask.ClosingDate)
+                }).ToList();
+
+                return Ok(usersWithSubmissions);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 
     public class LeaveTaskModel
@@ -242,5 +303,11 @@ namespace backend.Controllers
         public required bool LimitedAttachmentTypes { get; set; }
         public string? AttachmentTypes { get; set; }
         public int? TaskID { get; set; }
+    }
+
+    public class CourseWithTaskModel
+    {
+        public int CourseID { get; set; }
+        public int TaskID { get; set; }
     }
 }

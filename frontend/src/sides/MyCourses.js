@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './Navbar';
-import { getMyCourses, leaveCourse, stopOwnership, getEligibleUsers, addNewOwners } from '../services/apiService';
+import { getMyCourses, leaveCourse, stopOwnership, getEligibleUsers, addNewOwners, deleteCourse } from '../services/apiService';
 import { useNavigate } from 'react-router-dom';
 import './MyCourses.css';
 import './Global.css';
@@ -88,6 +88,7 @@ function MyCourses() {
             }
         }
     };
+
     const handleAddOwners = async (course) => {
         const response = await getEligibleUsers(course.id);
         if (response.isSuccess) {
@@ -138,6 +139,26 @@ function MyCourses() {
         navigate('/courseDetails', { state: { course } });
     };
 
+    const handleDeleteCourse = async (course) => {
+        const confirmStop = window.confirm("Are you sure you want to delete course?");
+        if (!confirmStop) {
+            return;
+        }
+
+        const deleteCourseResponse = await deleteCourse(course.id);
+        alert(deleteCourseResponse.message);
+
+        if (deleteCourseResponse.isSuccess) {
+            const data = await getMyCourses(username);
+            if (data.isSuccess) {
+                setCourses(data.data);
+            }
+            else {
+                alert(data.message)
+            }
+        }
+    };
+
     const indexOfLastCourse = currentPage * coursesPerPage;
     const indexOfFirstCourse = indexOfLastCourse - coursesPerPage;
     const currentCourses = courses.slice(indexOfFirstCourse, indexOfLastCourse);
@@ -149,46 +170,64 @@ function MyCourses() {
             <Navbar />
             <div className="panel panel-default">
                 <div className="panel-body">
-                    <div className="container mt-4">
-                        {isLoading ? (
-                            <div className="d-flex justify-content-center align-items-center" style={{ height: "30vh" }}>
-                                <div className="spinner-border text-primary" role="status">
-                                    <span className="sr-only"></span>
-                                </div>
-                            </div>
-                        ) : currentCourses.length > 0 ? (
-                            currentCourses.map((course) => (
-                                <div className="card mb-4" key={course.id}>
-                                    <div className="card-body">
-                                        <h5 className="card-title">{course.name}</h5>
-                                        <p className="card-subtitle mb-2 text-muted">{course.description}</p>
-                                        {course.canAddOwners && (
-                                            <button className="btn btn-success me-1" onClick={() => handleAddOwners(course)}>
-                                                Add Owners
-                                            </button>
-                                        )}
-                                        <button className="btn btn-primary me-1" onClick={() => handleNavigateToCourseDetails(course)}>
-                                            Course details
-                                        </button>
-                                        {course.isOwner ? (
-                                            <button className="btn btn-danger me-1" onClick={() => handleStopOwnership(course)}>
-                                                Stop Ownership
-                                            </button>
-                                        ) : (
-                                            <button className="btn btn-danger me-1" onClick={() => handleLeave(course)}>
-                                                Leave
-                                            </button>
-                                        )}
+                        <div className="col-md-12 mt-5">
+                            <div className="d-flex flex-wrap">
+                                {isLoading ? (
+                                    <div className="d-flex justify-content-center align-items-center" style={{ height: "30vh" }}>
+                                        <div className="spinner-border text-primary" role="status">
+                                            <span className="sr-only"></span>
+                                        </div>
                                     </div>
-                                </div>
-                            ))
-                        ) : (
-                            <div className="d-flex flex-column justify-content-center align-items-center" style={{ height: "30vh" }}>
-                                <h3>You are not a member of any course now!</h3>
-                                <br />
-                                <h5>Go to 'Join Course' page to become a member.</h5>
+                                ) : currentCourses.length > 0 ? (
+                                    currentCourses.map((course, index) => (
+                                        <div key={course.id} className="card mb-4 me-2" style={{ width: '40%' }}>
+                                            <div className="card-body text-center d-flex flex-column"> {/* Flex column container */}
+                                                <div className="card-content">
+                                                    <h5 className="card-title">{course.name}</h5>
+                                                    <p className="card-subtitle mb-2 text-muted">{course.description}</p>
+                                                </div>
+                                                <div className="card-actions">
+                                                    <div className="row">
+                                                        <div className="col-md-6 text-start">
+                                                            {course.canAddOwners && (
+                                                                <button className="btn btn-success me-1" onClick={() => handleAddOwners(course)}>
+                                                                    Add owners
+                                                                </button>
+                                                            )}
+                                                            <button className="btn btn-primary me-1" onClick={() => handleNavigateToCourseDetails(course)}>
+                                                                Course details
+                                                            </button>
+                                                        </div>
+                                                        <div className="col-md-6 text-end">
+                                                            {course.isOwner ? (
+                                                                <button className="btn btn-danger me-1" onClick={() => handleStopOwnership(course)}>
+                                                                    Stop ownership
+                                                                </button>
+                                                            ) : (
+                                                                <button className="btn btn-danger me-1" onClick={() => handleLeave(course)}>
+                                                                    Leave course
+                                                                </button>
+                                                            )}
+                                                            {course.canAddOwners && (
+                                                                <button className="btn btn-danger me-1" onClick={() => handleDeleteCourse(course)}>
+                                                                    Delete course
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="d-flex flex-column justify-content-center align-items-center" style={{ height: "30vh" }}>
+                                        <h3>You are not a member of any course now!</h3>
+                                        <br />
+                                        <h5>Go to 'Join Course' page to become a member.</h5>
+                                    </div>
+                                )}
                             </div>
-                        )}
+                        </div>
                         <nav>
                             <ul className="pagination justify-content-center">
                                 {[...Array(Math.ceil(courses.length / coursesPerPage)).keys()].map(number => (
@@ -207,10 +246,10 @@ function MyCourses() {
                                     <div className="modal-dialog">
                                         <div className="modal-content">
                                             <div className="modal-header">
-                                                <div className='col-md-6'>
+                                                <div className='col-md'>
                                                     <h5 className="modal-title">Select New Owners</h5>
                                                 </div>
-                                                <div className='col-md-6 text-end'>
+                                                <div className='col-md text-end'>
                                                     <button type="button" className="btn-close" aria-label="Close" onClick={toggleAddUsersPopup}></button>
                                                 </div>
                                             </div>
@@ -257,7 +296,6 @@ function MyCourses() {
                     </div>
                 </div>
             </div>
-        </div>
     );
 }
 

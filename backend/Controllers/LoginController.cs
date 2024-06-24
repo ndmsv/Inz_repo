@@ -35,7 +35,7 @@ namespace backend.Controllers
                 }
 
                 isSuccess = true;
-                return Ok(new { message = "You are now logged in!", isSuccess });
+                return Ok(new { message = "You are now logged in!", isSuccess, password = user.Password });
             }
             catch (Exception ex)
             {
@@ -114,25 +114,29 @@ namespace backend.Controllers
             }
         }
 
-        [HttpPost("checkIfTeacher")]
-        public async Task<IActionResult> CheckIfTeacher([FromBody] PlainLoginModel loginModel)
+        [HttpPost("checkUserDetails")]
+        public async Task<IActionResult> CheckUserDetails([FromBody] LoginModel loginModel)
         {
             try
             {
                 var userWithRole = await _context.Users.Include(u => u.UserType)
-                    .FirstOrDefaultAsync(users => users.Login == loginModel.Login);
+                    .FirstOrDefaultAsync(users => users.Login == loginModel.Login && users.Password == loginModel.Password);
 
                 if (userWithRole != null)
                 {
                     string role = userWithRole.UserType.TypeName;
                     bool isAdminOrTeacher = role.Equals("Administrator", StringComparison.OrdinalIgnoreCase) ||
                                             role.Equals("Teacher", StringComparison.OrdinalIgnoreCase);
+                    
+                    string fullname = null;
+                    if (!string.IsNullOrEmpty(userWithRole.Name) && !string.IsNullOrEmpty(userWithRole.Surname))
+                        fullname = userWithRole.Name + " " + userWithRole.Surname;
 
-                    return Ok(new { isAdminOrTeacher, role });
+                    return Ok(new { isAdminOrTeacher, role, fullname, isSuccess = true });
                 }
                 else
                 {
-                    return NotFound(new { message = "User not found." });
+                    return Ok(new { message = "User data are not correct.", isSuccess = false });
                 }
             }
             catch (Exception ex)

@@ -25,7 +25,7 @@ export const loginUser = async (login, password) => {
             login,
             password
         });
-        return { message: response.data.message, isSuccess: response.data.isSuccess };
+        return { message: response.data.message, isSuccess: response.data.isSuccess, password: response.data.password };
     } catch (error) {
         return handleAxiosError(error);
     }
@@ -69,12 +69,13 @@ export const registerUser = async (login, password, type, name, surname) => {
     }
 };
 
-export const checkIfTeacher = async (login) => {
+export const checkUserDetails = async (login, password) => {
     try {
-        const response = await axios.post(`${API_URL}Login/checkIfTeacher`, {
-            login
+        const response = await axios.post(`${API_URL}Login/checkUserDetails`, {
+            login,
+            password
         });
-        return { isAdminOrTeacher: response.data.isAdminOrTeacher, role: response.data.role };
+        return { isAdminOrTeacher: response.data.isAdminOrTeacher, role: response.data.role, isSuccess: response.data.isSuccess, fullname: response.data.fullname };
     } catch (error) {
         return handleAxiosError(error);
     }
@@ -188,10 +189,11 @@ export const stopOwnership = async (courseID, login) => {
     }
 };
 
-export const getCourseTasks = async (courseID) => {
+export const getCourseTasks = async (courseID, login) => {
     try {
         const response = await axios.post(`${API_URL}Task/getCourseTasks`, {
-            courseID
+            courseID,
+            login
         });
         return { data: response.data, isSuccess: true};
     } catch (error) {
@@ -256,6 +258,75 @@ export const deleteTask = async (taskID, login) => {
         const response = await axios.post(`${API_URL}Task/deleteTask`, {
             taskID,
             login
+        });
+        return { message: response.data.message, isSuccess: true };
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};
+
+export const saveTaskSubmission = async (taskId, login, submissionNote, files) => {
+    const formData = new FormData();
+    formData.append('TaskID', taskId);
+    formData.append('Login', login);
+    formData.append('SubmissionNote', submissionNote);
+    files.forEach(file => {
+        formData.append('Files', file);
+    });
+
+    try {
+        const response = await axios.post(`${API_URL}Submission/saveTaskSubmission`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        return { message: response.data.message, isSuccess: true, submissionId: response.data.submissionId };
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};
+
+export const getTaskSubmissions = async (taskID, login) => {
+    try {
+        const response = await axios.post(`${API_URL}Submission/getTaskSubmissions`, {
+            taskID,
+            login
+        });
+        return { data: response.data, isSuccess: true};
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};
+
+export const downloadFile = async (attachmentID) => {
+    try {
+        const response = await axios.post(`${API_URL}Submission/downloadFile`, {
+            attachmentID
+        }, {
+            responseType: 'blob'
+        });
+        return { data: response.data, isSuccess: true};
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};
+
+export const checkSubmissionsInCourse = async (courseID, taskID) => {
+    try {
+        const response = await axios.post(`${API_URL}Task/checkSubmissionsInCourse`, {
+            courseID,
+            taskID
+        });
+        return { data: response.data, isSuccess: true};
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};
+
+export const deleteCourse = async (courseID) => {
+    try {
+        const response = await axios.post(`${API_URL}Course/deleteCourse`, {
+            courseID
         });
         return { message: response.data.message, isSuccess: true };
     } catch (error) {

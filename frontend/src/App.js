@@ -12,7 +12,6 @@ function App() {
   const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
-  const [showPopup, setShowPopup] = useState(false);
   const [showRegistrationPopup, setShowRegistrationPopup] = useState(false);
   const [accountType, setAccountType] = useState('');
 
@@ -31,6 +30,7 @@ function App() {
 
       if (response.isSuccess) {
         localStorage.setItem('username', login);
+        localStorage.setItem('hashedPassword', response.password);
         navigate('/home');
       } else {
         alert(response.message);
@@ -51,10 +51,6 @@ function App() {
   if (error) {
     return <div>Error: {error.message}</div>;
   }
-
-  const togglePopup = () => {
-    setShowPopup(!showPopup);
-  };
 
   const handleRegistrationSubmit = async (event) => {
     event.preventDefault();
@@ -123,30 +119,6 @@ function App() {
       <Routes>
         <Route path="/" element={
           <div className="panel panel-default">
-            <div className="panel-heading">
-              <div className="text-end">
-                <button type="button" className="btn btn-info" onClick={togglePopup}>Show Data</button>
-              </div>
-              {showPopup && (
-                <div className="position-fixed start-50 translate-middle" style={{ zIndex: 1050 }}>
-                  <div className="modal-dialog">
-                    <div className="modal-content">
-                      <div className="modal-header">
-                        <div className='col-md-6'>
-                          <h5 className="modal-title">Data:</h5>
-                        </div>
-                        <div className='col-md-6 text-end'>
-                          <button type="button" className="btn-close" aria-label="Close" onClick={togglePopup}></button>
-                        </div>
-                      </div>
-                      <div className="modal-body">
-                        {data ? <p>{data.message}</p> : <div>Loading...</div>}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
             <div className="panel-body">
               <div className="col-md-12">
                 <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "80vh" }}>

@@ -382,6 +382,37 @@ namespace backend.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        [HttpPost("deleteCourse")]
+        public async Task<IActionResult> DeleteCourse([FromBody] CourseIDModel courseIDModel)
+        {
+            try
+            {
+                var course = await _context.courses.FirstOrDefaultAsync(ct => ct.ID == courseIDModel.CourseID);
+
+                if (course == null)
+                {
+                    return NotFound(new { message = "Course with said ID doesn't exist!" });
+                }
+                else
+                {
+                    if (course.IsDeleted)
+                    {
+                        return BadRequest(new { message = "Course with said ID is already deleted!" });
+                    }
+                    else
+                    {
+                        course.IsDeleted = true;
+                        await _context.SaveChangesAsync();
+                        return Ok(new { message = "You have successfully deleted the course!" });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 
     public class CourseModel

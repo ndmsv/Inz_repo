@@ -11,3 +11,8 @@
 .bg-selected td {
     background-color: #e9ecef !important;
 }
+
+.card-actions {
+    margin-top: auto;
+    align-content: end;
+}

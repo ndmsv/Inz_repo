@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './Navbar';
 import { getJoinCourses, joinCourse, checkJoinPassword } from '../services/apiService';
-import { useNavigate } from 'react-router-dom';
 import './Global.css';
 
 function JoinCourse() {
