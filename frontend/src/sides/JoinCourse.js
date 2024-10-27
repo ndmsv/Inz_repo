@@ -87,7 +87,7 @@ function JoinCourse() {
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     return (
-        <div>
+        <div className='parent-div'>
             <Navbar />
             <div className="panel panel-default">
                 <div className="panel-body">

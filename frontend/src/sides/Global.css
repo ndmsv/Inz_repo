@@ -3,3 +3,11 @@
     color: #999999 !important;
     pointer-events: none;
 }
+
+.parent-div, html {
+    background-color: gainsboro;
+}
+
+.card {
+    background-color: whitesmoke;
+}

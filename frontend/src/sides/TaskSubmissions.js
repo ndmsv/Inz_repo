@@ -157,7 +157,7 @@ function TaskSubmissions() {
     };
 
     return (
-        <div>
+        <div className='parent-div'>
             <Navbar />
             <div className="panel panel-default">
                 <div className="panel-heading">

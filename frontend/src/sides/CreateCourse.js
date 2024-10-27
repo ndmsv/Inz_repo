@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Navbar from './Navbar';
 import { checkUserDetails, registerCourse } from '../services/apiService';
 import { useNavigate } from 'react-router-dom';
+import './Global.css';
 
 function CreateCourse() {
     const navigate = useNavigate();
@@ -68,43 +69,47 @@ function CreateCourse() {
     };
 
     return (
-        <div>
+        <div className='parent-div'>
             <Navbar />
             <div className="panel panel-default">
                 <div className="panel-body">
                     <div className="position-absolute top-50 start-50 translate-middle" style={{ zIndex: 1050, width: "60%" }}>
-                        <form onSubmit={handleCourseCreationSubmit}>
-                            <div className="mb-3">
-                                <h5 className="panel-title">Create Course</h5>
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor="txtCourseName" className="form-label">Course name</label>
-                                <input type="text" className="form-control" id="txtCourseName" placeholder="Enter course name" />
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor="txtCourseDescription" className="form-label">Course description</label>
-                                <textarea type="text" className="form-control" id="txtCourseDescription" rows="3" placeholder="Enter course description" />
-                            </div>
-                            <div className="form-check mb-2">
-                                <input type="checkbox" className="form-check-input" id="cbPasswordProtected" checked={isPasswordProtected} onChange={togglePasswordProtection} />
-                                <label htmlFor="cbPasswordProtected" className="form-check-label"> Password protected course </label>
-                            </div>
-                            {isPasswordProtected && (
-                                <div>
+                        <div className='card'>
+                            <div className='card-body'>
+                                <form onSubmit={handleCourseCreationSubmit}>
                                     <div className="mb-3">
-                                        <label htmlFor="txtCoursePassword" className="form-label">Course password</label>
-                                        <input type="password" className="form-control" id="txtCoursePassword" placeholder="Enter course password" />
+                                        <h5 className="panel-title">Create Course</h5>
                                     </div>
                                     <div className="mb-3">
-                                        <label htmlFor="txtCoursePasswordRepetition" className="form-label">Course password repetition</label>
-                                        <input type="password" className="form-control" id="txtCoursePasswordRepetition" placeholder="Repeat course password" />
+                                        <label htmlFor="txtCourseName" className="form-label">Course name</label>
+                                        <input type="text" className="form-control" id="txtCourseName" placeholder="Enter course name" />
                                     </div>
-                                </div>
-                            )}
-                            <div className="mb-3 text-end">
-                                <button type="submit" className="btn btn-primary">Save course</button>
+                                    <div className="mb-3">
+                                        <label htmlFor="txtCourseDescription" className="form-label">Course description</label>
+                                        <textarea type="text" className="form-control" id="txtCourseDescription" rows="3" placeholder="Enter course description" />
+                                    </div>
+                                    <div className="form-check mb-2">
+                                        <input type="checkbox" className="form-check-input" id="cbPasswordProtected" checked={isPasswordProtected} onChange={togglePasswordProtection} />
+                                        <label htmlFor="cbPasswordProtected" className="form-check-label"> Password protected course </label>
+                                    </div>
+                                    {isPasswordProtected && (
+                                        <div>
+                                            <div className="mb-3">
+                                                <label htmlFor="txtCoursePassword" className="form-label">Course password</label>
+                                                <input type="password" className="form-control" id="txtCoursePassword" placeholder="Enter course password" />
+                                            </div>
+                                            <div className="mb-3">
+                                                <label htmlFor="txtCoursePasswordRepetition" className="form-label">Course password repetition</label>
+                                                <input type="password" className="form-control" id="txtCoursePasswordRepetition" placeholder="Repeat course password" />
+                                            </div>
+                                        </div>
+                                    )}
+                                    <div className="text-end">
+                                        <button type="submit" className="btn btn-primary">Save course</button>
+                                    </div>
+                                </form>
                             </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>

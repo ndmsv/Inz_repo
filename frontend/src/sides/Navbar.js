@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { checkUserDetails } from '../services/apiService';
+import './Global.css';
 
 function Navbar() {
     const navigate = useNavigate();
@@ -43,7 +44,7 @@ function Navbar() {
     }
 
     return (
-        <nav className="navbar navbar-expand-lg navbar-light bg-light">
+        <nav className="navbar navbar-expand-lg navbar-light bg-light sticky-top">
             <div className="container-fluid">
                 <ul className="navbar-nav">
                     <Link className="nav-link" to="/home">Home</Link>
@@ -58,6 +59,16 @@ function Navbar() {
                             <Link className="dropdown-item" to="/myCourses">My Courses</Link>
                             {isTeacherOrAdmin && (
                                 <Link className="dropdown-item" to="/createCourse">Create Course</Link>)}
+                        </ul>
+                    </li>
+                </ul>
+                <ul className="navbar-nav">
+                    <li className="nav-item dropdown">
+                        <a className="nav-link dropdown-toggle" id="navbarCourses" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Forum
+                        </a>
+                        <ul className="dropdown-menu" aria-labelledby="navbarCourses">
+                            <Link className="dropdown-item" to="/mainForum">General page</Link>
                         </ul>
                     </li>
                 </ul>
