@@ -9,3 +9,8 @@ frontend/build/
 # Environment files
 *.env
 /.vs/Projekt_inz/FileContentIndex
+
+
+*.wsuo
+*.v2
+*.vsidx
