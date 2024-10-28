@@ -1,6 +1,7 @@
 ﻿using backend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 namespace backend.Controllers
 {
@@ -109,7 +110,11 @@ namespace backend.Controllers
     public class GetForumPostsModel
     {
         public required string Login { get; set; }
-        public required PostType Type { get; set; } 
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public required PostType Type { get; set; }
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public Timeframe? Timeframe { get; set; }
     }
 
