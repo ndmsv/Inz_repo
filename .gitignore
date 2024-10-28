@@ -14,3 +14,4 @@ frontend/build/
 *.wsuo
 *.v2
 *.vsidx
+/backend/.vs/backend/v17/.suo

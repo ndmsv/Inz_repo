@@ -19,6 +19,7 @@ namespace backend.Models
         public DbSet<CourseTasks> course_tasks { get; set; }
         public DbSet<TaskSubmissions> task_submissions { get; set; }
         public DbSet<SubmissionAttachments> submission_attachments { get; set; }
+        public DbSet<ForumPosts> forum_posts { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -213,5 +214,29 @@ namespace backend.Models
         public required string FilePath { get; set; }
 
         public virtual TaskSubmissions? TaskSubmission { get; set; }
+    }
+
+    public class ForumPosts
+    {
+        [Key]
+        public int ID { get; set; }
+
+        [Column("POST_TITLE")]
+        public required string PostTitle { get; set; }
+
+        [Column("POST_DESCRIPTION")]
+        public string? PostDescription { get; set; }
+
+        [Column("CREATED_ON")]
+        public required DateTime CreatedOn { get; set; }
+
+        [Column("USER_ID")]
+        public required int UserID { get; set; }
+
+        [Column("IS_DELETED")]
+        public required bool IsDeleted { get; set; }
+
+        [Column("VOTES_COUNT")]
+        public required int VotesCount { get; set; }
     }
 }
