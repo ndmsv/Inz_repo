@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
-import Home from './sides/Home';
-import { checkTypePassword, fetchData, loginUser, checkLogin, registerUser } from './services/apiService';
-import CreateCourse from './sides/CreateCourse';
-import JoinCourse from './sides/JoinCourse';
-import MyCourses from './sides/MyCourses';
-import CourseDetails from './sides/CourseDetails';
-import TaskSubmissions from './sides/TaskSubmissions';
-import MainForum from './sides/MainForum';
+import Home from '../Home/Home';
+import { checkTypePassword, fetchData, loginUser, checkLogin, registerUser } from '../../services/apiService';
+import CreateCourse from '../Courses/CreateCourse';
+import JoinCourse from '../Courses/JoinCourse';
+import MyCourses from '../Courses/MyCourses';
+import CourseDetails from '../Courses/CourseDetails';
+import TaskSubmissions from '../Tasks/TaskSubmissions';
+import MainForum from '../Forum/MainForum';
 
 function App() {
   const navigate = useNavigate();

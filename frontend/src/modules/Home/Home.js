@@ -1,7 +1,7 @@
 import React from 'react';
-import Navbar from './Navbar';
-import logoMS from '../assets/logoMS.png';
-import './Global.css';
+import Navbar from '../Global/Navbar';
+import logoMS from '../../assets/logoMS.png';
+import '../Global/Global.css';
 
 function Home() {
   return (

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from './Navbar';
-import { getJoinCourses, joinCourse, checkJoinPassword } from '../services/apiService';
-import './Global.css';
+import Navbar from '../Global/Navbar';
+import { getForumPosts } from '../../services/apiService';
+import '../Global/Global.css';
 
 function MainForum() {
     const [username, setUsername] = React.useState(localStorage.getItem('username') || null);
@@ -15,11 +15,18 @@ function MainForum() {
         const fetchData = async () => {
             try {
                 setIsLoading(true);
-                const data = await getJoinCourses(username);
+                const btnHot = document.getElementById('btnHot');
+                if (btnHot) {
+                    btnHot.checked = true;
+                }
+
+                const data = await getForumPosts(username, "Hot", "AllTime");
+
                 if (data.isSuccess) {
+                    setPosts(data.data);
                 }
                 else {
-                    alert(data.message)
+                    alert(data.message);
                 }
             } catch (error) {
                 alert('Error fetching posts:', error);
@@ -42,7 +49,24 @@ function MainForum() {
             <Navbar />
             <div className="panel panel-default">
                 <div className="panel-body">
-                    <div className="col-md-12 mt-5">
+                    <div className='row mt-3 me-0'>
+                        <div className='col-md-4 ms-2'>
+                            <button type="button" className="btn btn-primary" onClick=''>New post</button>
+                        </div>
+                        <div className='col-md-4 text-center'>
+                            <div class="btn-group" role="group">
+                                <input type="radio" class="btn-check" name="btnRadio" id="btnHot" autocomplete="off" />
+                                <label class="btn btn-outline-primary" for="btnHot">Hot</label>
+
+                                <input type="radio" class="btn-check" name="btnRadio" id="btnNew" autocomplete="off" />
+                                <label class="btn btn-outline-primary" for="btnNew">New</label>
+
+                                <input type="radio" class="btn-check" name="btnRadio" id="btnTop" autocomplete="off" />
+                                <label class="btn btn-outline-primary" for="btnTop">Top</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-md-12 mt-3">
                         <div className="d-flex flex-wrap">
                             {isLoading ? (
                                 <div className="d-flex justify-content-center align-items-center" style={{ height: "30vh" }}>
@@ -52,12 +76,12 @@ function MainForum() {
                                 </div>
                             ) : currentPosts.length > 0 ? (
                                 currentPosts.map((post) => (
-                                    <div className="card mb-4 me-2" key={post.postId} style={{ width: '45%' }}>
+                                    <div className="card mb-4 me-2" key={post.Id} style={{ width: '90%' }}>
                                         <div className="card-body text-center d-flex flex-column">
                                             <div className="card-content">
                                                 <h5 className="card-title">{post.postTitle}</h5>
                                                 <p className="card-subtitle mb-2 text-muted">{post.postDescription}</p>
-                                                <p className="card-text">Creation date: {post.openingDate}</p>
+                                                <p className="card-text">Creation date: {post.createdOn}</p>
                                             </div>
                                             <div className="card-actions">
                                                 <div className="row">

@@ -333,3 +333,16 @@ export const deleteCourse = async (courseID) => {
         return handleAxiosError(error);
     }
 };
+
+export const getForumPosts = async (login, type, timeframe) => {
+    try {
+        const response = await axios.post(`${API_URL}Forum/getForumPosts`, {
+            login,
+            type,
+            timeframe
+        });
+        return { data: response.data, isSuccess: true};
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};

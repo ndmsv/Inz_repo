@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from './Navbar';
-import { getMyCourses, leaveCourse, stopOwnership, getEligibleUsers, addNewOwners, deleteCourse } from '../services/apiService';
+import Navbar from '../Global/Navbar';
+import { getMyCourses, leaveCourse, stopOwnership, getEligibleUsers, addNewOwners, deleteCourse } from '../../services/apiService';
 import { useNavigate } from 'react-router-dom';
 import './MyCourses.css';
-import './Global.css';
+import '../Global/Global.css';
 
 function MyCourses() {
     const navigate = useNavigate();

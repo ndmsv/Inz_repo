@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from './Navbar';
-import { getJoinCourses, joinCourse, checkJoinPassword } from '../services/apiService';
-import './Global.css';
+import Navbar from '../Global/Navbar';
+import { getJoinCourses, joinCourse, checkJoinPassword } from '../../services/apiService';
+import '../Global/Global.css';
 
 function JoinCourse() {
     const [username, setUsername] = React.useState(localStorage.getItem('username') || null);

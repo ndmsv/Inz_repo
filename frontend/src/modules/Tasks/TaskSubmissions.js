@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from './Navbar';
-import { checkIfOwnerOrAdmin, saveTaskSubmission, getTaskSubmissions, downloadFile } from '../services/apiService';
+import Navbar from '../Global/Navbar';
+import { checkIfOwnerOrAdmin, saveTaskSubmission, getTaskSubmissions, downloadFile } from '../../services/apiService';
 import { useNavigate, useLocation } from 'react-router-dom';
-import './Global.css';
+import '../Global/Global.css';
 import './TaskSubmissions.css';
 import { format, parseISO } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import Navbar from './Navbar';
-import { checkUserDetails, registerCourse } from '../services/apiService';
+import Navbar from '../Global/Navbar';
+import { checkUserDetails, registerCourse } from '../../services/apiService';
 import { useNavigate } from 'react-router-dom';
-import './Global.css';
+import '../Global/Global.css';
 
 function CreateCourse() {
     const navigate = useNavigate();

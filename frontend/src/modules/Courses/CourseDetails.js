@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from './Navbar';
-import { getCourseTasks, checkIfOwnerOrAdmin, saveCourseTask, updateCourseTask, deleteTask, checkSubmissionsInCourse } from '../services/apiService';
+import Navbar from '../Global/Navbar';
+import { getCourseTasks, checkIfOwnerOrAdmin, saveCourseTask, updateCourseTask, deleteTask, checkSubmissionsInCourse } from '../../services/apiService';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import './CourseDetails.css';
-import './Global.css';
+import '../Global/Global.css';
 import { format, parseISO } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
 
