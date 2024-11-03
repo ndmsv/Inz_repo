@@ -20,6 +20,7 @@ namespace backend.Models
         public DbSet<TaskSubmissions> task_submissions { get; set; }
         public DbSet<SubmissionAttachments> submission_attachments { get; set; }
         public DbSet<ForumPosts> forum_posts { get; set; }
+        public DbSet<ForumVotes> forum_votes { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -53,6 +54,7 @@ namespace backend.Models
         public ICollection<Course>? Courses { get; set; }
         public ICollection<UsersInCourse>? UsersInCourse { get; set; }
         public ICollection<TaskSubmissions>? TaskSubmissions { get; set; }
+        public ICollection<ForumVotes>? ForumVotes { get; set; }
     }
 
     public class Type
@@ -238,5 +240,31 @@ namespace backend.Models
 
         [Column("VOTES_COUNT")]
         public required int VotesCount { get; set; }
+
+        public ICollection<ForumVotes>? ForumVotes { get; set; }
+    }
+
+    public class ForumVotes
+    {
+        [Key]
+        public int ID { get; set; }
+
+        [ForeignKey("Post")]
+        [Column("POST_ID")]
+        public required int PostID { get; set; }
+
+        [ForeignKey("User")]
+        [Column("USER_ID")]
+        public required int UserID { get; set; }
+
+        [Column("IS_LIKED")]
+        public required bool IsLiked { get; set; }
+
+        [Column("IS_DELETED")]
+        public required bool IsDeleted { get; set; }
+
+        public User? User { get; set; }
+
+        public ForumPosts? Post { get; set; }
     }
 }

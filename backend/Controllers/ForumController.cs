@@ -40,30 +40,46 @@ namespace backend.Controllers
                     };
                 }
 
-                var query = _context.forum_posts.AsQueryable();
-
-                switch (request.Type)
+                if (request.Type == PostType.Hot)
                 {
-                    case PostType.Hot:
-                        query = query
-                            .Where(post => !post.IsDeleted)
-                            .OrderByDescending(post => (double)post.VotesCount / Math.Max((DateTime.Now - post.CreatedOn).TotalHours, 1));
-                        break;
+                    var postsHot = _context.forum_posts
+                        .Where(post => !post.IsDeleted)
+                        .AsEnumerable()
+                        .OrderByDescending(post => (double)post.VotesCount / Math.Max((DateTime.Now - post.CreatedOn).TotalHours, 1))
+                        .Take(100)
+                        .Select(post => new ForumPostModelExtended
+                        {
+                            Id = post.ID,
+                            PostTitle = post.PostTitle,
+                            PostDescription = post.PostDescription,
+                            CreatedOn = post.CreatedOn,
+                            IsDeleted = post.IsDeleted,
+                            VotesCount = post.VotesCount,
+                            IsPostedByUser = post.UserID == user.ID,
+                            Voted = _context.forum_votes.Any(vote => vote.PostID == post.ID && vote.UserID == user.ID && !vote.IsDeleted),
+                            Liked = _context.forum_votes.Any(vote => vote.PostID == post.ID && vote.UserID == user.ID && !vote.IsDeleted && vote.IsLiked)
+                        })
+                        .ToList();
+                    return Ok(postsHot);
+                }
 
-                    case PostType.Top:
-                        query = query
-                            .Where(post => !post.IsDeleted && post.CreatedOn >= timeframeLimit)
-                            .OrderByDescending(post => post.VotesCount);
-                        break;
+                IQueryable<ForumPosts> query = _context.forum_posts;
 
-                    case PostType.New:
-                        query = query
-                            .Where(post => !post.IsDeleted)
-                            .OrderByDescending(post => post.CreatedOn);
-                        break;
-
-                    default:
-                        return BadRequest(new { message = "Invalid post type." });
+                if (request.Type == PostType.Top)
+                {
+                    query = query
+                        .Where(post => !post.IsDeleted && post.CreatedOn >= timeframeLimit)
+                        .OrderByDescending(post => post.VotesCount);
+                }
+                else if (request.Type == PostType.New)
+                {
+                    query = query
+                        .Where(post => !post.IsDeleted)
+                        .OrderByDescending(post => post.CreatedOn);
+                }
+                else
+                {
+                    return BadRequest(new { message = "Invalid post type." });
                 }
 
                 var posts = await query.Take(100)
@@ -75,7 +91,9 @@ namespace backend.Controllers
                         CreatedOn = post.CreatedOn,
                         IsDeleted = post.IsDeleted,
                         VotesCount = post.VotesCount,
-                        IsPostedByUser = post.UserID == user.ID
+                        IsPostedByUser = post.UserID == user.ID,
+                        Voted = _context.forum_votes.Any(vote => vote.PostID == post.ID && vote.UserID == user.ID && !vote.IsDeleted),
+                        Liked = _context.forum_votes.Any(vote => vote.PostID == post.ID && vote.UserID == user.ID && !vote.IsDeleted && vote.IsLiked)
                     })
                     .ToListAsync();
 
@@ -127,5 +145,7 @@ namespace backend.Controllers
         public bool IsDeleted { get; set; }
         public int VotesCount { get; set; }
         public bool IsPostedByUser { get; set; }
+        public bool Voted { get; set; }
+        public bool Liked { get; set; }
     }
 }
