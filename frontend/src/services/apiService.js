@@ -3,7 +3,10 @@ import axios from 'axios';
 const API_URL = 'https://localhost:5000/';
 
 const handleAxiosError = (error) => {
-    if (error.response) {
+    if (error.message) {
+        return { message: error.message, isSuccess: false };
+    }
+    else if (error.response) {
         return { message: error.response.data.message, isSuccess: false };
     } else {
         return { message: "An error occurred. Please try again.", isSuccess: false };
@@ -261,7 +264,7 @@ export const deleteTask = async (taskID, login) => {
         });
         return { message: response.data.message, isSuccess: true };
     } catch (error) {
-        return handleAxiosError(error);
+        return handleAxiosError(error.message);
     }
 };
 
@@ -340,6 +343,41 @@ export const getForumPosts = async (login, type, timeframe) => {
             login,
             type,
             timeframe
+        });
+        return { data: response.data, isSuccess: true};
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};
+
+export const savePostSubmission = async (postId, login, postTitle, postDescription, files) => {
+    const formData = new FormData();
+    formData.append('PostID', postId);
+    formData.append('Login', login);
+    formData.append('PostTitle', postTitle);
+    formData.append('PostDescription', postDescription);
+    files.forEach(file => {
+        formData.append('Files', file);
+    });
+
+    try {
+        const response = await axios.post(`${API_URL}Forum/savePostSubmission`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        return { message: response.data.message, isSuccess: true, postId: response.data.postId };
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};
+
+export const downloadPostFile = async (attachmentID) => {
+    try {
+        const response = await axios.post(`${API_URL}Forum/downloadPostFile`, {
+            attachmentID
+        }, {
+            responseType: 'blob'
         });
         return { data: response.data, isSuccess: true};
     } catch (error) {

@@ -21,6 +21,7 @@ namespace backend.Models
         public DbSet<SubmissionAttachments> submission_attachments { get; set; }
         public DbSet<ForumPosts> forum_posts { get; set; }
         public DbSet<ForumVotes> forum_votes { get; set; }
+        public DbSet<PostsAttachments> posts_attachments { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -242,6 +243,7 @@ namespace backend.Models
         public required int VotesCount { get; set; }
 
         public ICollection<ForumVotes>? ForumVotes { get; set; }
+        public ICollection<PostsAttachments>? PostAttachments { get; set; }
     }
 
     public class ForumVotes
@@ -266,5 +268,26 @@ namespace backend.Models
         public User? User { get; set; }
 
         public ForumPosts? Post { get; set; }
+    }
+
+    public class PostsAttachments
+    {
+        [Key]
+        public int ID { get; set; }
+
+        [ForeignKey("ForumPost")]
+        [Column("POST_ID")]
+        public int PostID { get; set; }
+
+        [Column("ADDED_ON")]
+        public DateTime AddedOn { get; set; }
+
+        [Column("FILE_NAME")]
+        public required string FileName { get; set; }
+
+        [Column("FILE_PATH")]
+        public required string FilePath { get; set; }
+
+        public virtual ForumPosts? ForumPost { get; set; }
     }
 }

@@ -79,11 +79,15 @@ namespace backend.Controllers
 
                 if (model.Files != null)
                 {
+                    var currentDirectory = AppContext.BaseDirectory;
+                    var projectRoot = FindProjectRoot(currentDirectory);
+                    var encryptedFilesDirectory = Path.Combine(projectRoot, "encrypted_files");
+
                     foreach (var file in model.Files)
                     {
                         if (file.Length > 0)
                         {
-                            var encryptedFilePath = Path.Combine("D:\\Projekt_inz\\encrypted_files", Guid.NewGuid().ToString() + Path.GetExtension(file.FileName));
+                            var encryptedFilePath = Path.Combine(encryptedFilesDirectory, Guid.NewGuid().ToString() + Path.GetExtension(file.FileName));
 
                             using (var fileStream = new FileStream(encryptedFilePath, FileMode.Create))
                             {
@@ -193,6 +197,23 @@ namespace backend.Controllers
             using var srDecrypt = new MemoryStream();
             csDecrypt.CopyTo(srDecrypt);
             return srDecrypt.ToArray();
+        }
+
+        private string FindProjectRoot(string startDirectory)
+        {
+            var directoryInfo = new DirectoryInfo(startDirectory);
+
+            while (directoryInfo != null && !Directory.Exists(Path.Combine(directoryInfo.FullName, ".git")))
+            {
+                directoryInfo = directoryInfo.Parent;
+            }
+
+            if (directoryInfo == null)
+            {
+                throw new InvalidOperationException("Project root not found.");
+            }
+
+            return directoryInfo.FullName;
         }
     }
     public class SubmissionModel

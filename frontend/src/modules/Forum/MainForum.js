@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../Global/Navbar';
-import { getForumPosts } from '../../services/apiService';
+import NewPostPopup from './PostPopup';
+import { getForumPosts, downloadPostFile } from '../../services/apiService';
 import '../Global/Global.css';
+import { format, parseISO } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz';
 
 function MainForum() {
     const [username, setUsername] = React.useState(localStorage.getItem('username') || null);
@@ -23,7 +26,12 @@ function MainForum() {
                 const data = await getForumPosts(username, "Hot", "AllTime");
 
                 if (data.isSuccess) {
-                    setPosts(data.data);
+                    const updatedPosts = await Promise.all(data.data.map(async post => {
+                        await fetchAndSetFiles(post);
+                        return post;
+                    }));
+
+                    setPosts(updatedPosts);
                 }
                 else {
                     alert(data.message);
@@ -36,7 +44,68 @@ function MainForum() {
         };
 
         fetchData();
+
     }, []);
+
+    const togglePopup = () => {
+        setShowPopup(!showPopup);
+    };
+
+    const reloadPosts = async () => {
+        const data = await getForumPosts(username, "Hot", "AllTime");
+
+        if (data.isSuccess) {
+            const updatedPosts = await Promise.all(data.data.map(async post => {
+                await fetchAndSetFiles(post);
+                return post;
+            }));
+
+            setPosts(updatedPosts);
+        }
+        else {
+            alert(data.message);
+        }
+    };
+
+    const formatDate = (dateString) => {
+        const date = parseISO(dateString);
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        return formatInTimeZone(date, timezone, 'dd MMMM yyyy HH:mm');
+    };
+
+    const handleDownload = (file) => {
+        const url = window.URL.createObjectURL(file);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = file.name || file.fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+    };
+
+    const fetchAndSetFiles = async (post) => {
+        const attachments = post.attachments;
+        let files = [];
+
+        if (attachments !== null) {
+            for (const attachment of attachments) {
+                const result = await downloadPostFile(attachment.attachmentID);
+                if (result.isSuccess && result.data) {
+                    try {
+                        const file = new File([result.data], attachment.fileName, { type: 'application/octet-stream' });
+                        files.push(file);
+                    } catch (error) {
+                        console.error("Error creating file from blob: ", error);
+                    }
+                } else {
+                    console.error("Failed to download file: ", attachment.fileName);
+                }
+            }
+        }
+
+        post.convertedAttachments = files;
+    };
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -51,18 +120,18 @@ function MainForum() {
                 <div className="panel-body">
                     <div className='row mt-3 me-0'>
                         <div className='col-md-4 ms-2'>
-                            <button type="button" className="btn btn-primary" onClick=''>New post</button>
+                            <button type="button" className="btn btn-primary" onClick={togglePopup}>New post</button>
                         </div>
                         <div className='col-md-4 text-center'>
-                            <div class="btn-group" role="group">
-                                <input type="radio" class="btn-check" name="btnRadio" id="btnHot" autocomplete="off" />
-                                <label class="btn btn-outline-primary" for="btnHot">Hot</label>
+                            <div className="btn-group" role="group">
+                                <input type="radio" className="btn-check" name="btnRadio" id="btnHot" />
+                                <label className="btn btn-outline-primary" htmlFor="btnHot">Hot</label>
 
-                                <input type="radio" class="btn-check" name="btnRadio" id="btnNew" autocomplete="off" />
-                                <label class="btn btn-outline-primary" for="btnNew">New</label>
+                                <input type="radio" className="btn-check" name="btnRadio" id="btnNew" />
+                                <label className="btn btn-outline-primary" htmlFor="btnNew">New</label>
 
-                                <input type="radio" class="btn-check" name="btnRadio" id="btnTop" autocomplete="off" />
-                                <label class="btn btn-outline-primary" for="btnTop">Top</label>
+                                <input type="radio" className="btn-check" name="btnRadio" id="btnTop" />
+                                <label className="btn btn-outline-primary" htmlFor="btnTop">Top</label>
                             </div>
                         </div>
                     </div>
@@ -81,7 +150,21 @@ function MainForum() {
                                             <div className="card-content">
                                                 <h5 className="card-title">{post.postTitle}</h5>
                                                 <p className="card-subtitle mb-2 text-muted">{post.postDescription}</p>
-                                                <p className="card-text">Creation date: {post.createdOn}</p>
+                                                <p className="card-text">Creation date: {formatDate(post.createdOn)}</p>
+                                                <div className="row mt-3 ms-2 me-2">
+                                                    <div className="col-md-12">
+                                                        <div className="d-flex flex-wrap">
+                                                            {post.convertedAttachments && post.convertedAttachments.map((file, index) => (
+                                                                <div key={index} className="card mb-4 me-2" style={{ width: '18rem' }}>
+                                                                    <div className="card-body text-center">
+                                                                        <h6 className="card-title">{file.name}</h6>
+                                                                        <button className="btn btn-success btn-sm me-1" onClick={() => handleDownload(file)}>Download</button>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div className="card-actions">
                                                 <div className="row">
@@ -110,6 +193,7 @@ function MainForum() {
                             ))}
                         </ul>
                     </nav>
+                    {showPopup && <NewPostPopup togglePopup={togglePopup} username={username} reloadPosts={reloadPosts} />}
                 </div>
             </div>
         </div>

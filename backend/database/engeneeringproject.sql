@@ -93,7 +93,7 @@ CREATE TABLE `forum_posts` (
   `IS_DELETED` bit(1) NOT NULL DEFAULT b'0',
   `VOTES_COUNT` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -102,7 +102,61 @@ CREATE TABLE `forum_posts` (
 
 LOCK TABLES `forum_posts` WRITE;
 /*!40000 ALTER TABLE `forum_posts` DISABLE KEYS */;
+INSERT INTO `forum_posts` VALUES (1,'Testowy post','Taki post dla testów','2024-11-03 00:00:00',4,_binary '\0',0),(2,'test 2','drugi testowy post','2024-11-03 20:50:56',4,_binary '\0',0);
 /*!40000 ALTER TABLE `forum_posts` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `forum_votes`
+--
+
+DROP TABLE IF EXISTS `forum_votes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `forum_votes` (
+  `ID` int NOT NULL AUTO_INCREMENT,
+  `POST_ID` int NOT NULL,
+  `USER_ID` int NOT NULL,
+  `IS_LIKED` bit(1) NOT NULL,
+  `IS_DELETED` bit(1) NOT NULL DEFAULT b'0',
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `forum_votes`
+--
+
+LOCK TABLES `forum_votes` WRITE;
+/*!40000 ALTER TABLE `forum_votes` DISABLE KEYS */;
+/*!40000 ALTER TABLE `forum_votes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `posts_attachments`
+--
+
+DROP TABLE IF EXISTS `posts_attachments`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `posts_attachments` (
+  `ID` int NOT NULL AUTO_INCREMENT,
+  `POST_ID` int NOT NULL,
+  `ADDED_ON` datetime DEFAULT NULL,
+  `FILE_NAME` varchar(1000) NOT NULL,
+  `FILE_PATH` varchar(1000) NOT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `posts_attachments`
+--
+
+LOCK TABLES `posts_attachments` WRITE;
+/*!40000 ALTER TABLE `posts_attachments` DISABLE KEYS */;
+INSERT INTO `posts_attachments` VALUES (1,2,'2024-11-03 20:50:56','WhatsApp Image 2024-10-31 at 09.00.15.jpeg','D:\\Projekt_inz\\encrypted_files\\9c24a023-cf05-4183-901c-70d9805b18fd.jpeg');
+/*!40000 ALTER TABLE `posts_attachments` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -119,7 +173,7 @@ CREATE TABLE `submission_attachments` (
   `FILE_NAME` varchar(200) NOT NULL,
   `FILE_PATH` varchar(200) NOT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -128,7 +182,7 @@ CREATE TABLE `submission_attachments` (
 
 LOCK TABLES `submission_attachments` WRITE;
 /*!40000 ALTER TABLE `submission_attachments` DISABLE KEYS */;
-INSERT INTO `submission_attachments` VALUES (13,5,'2024-06-24 08:43:19','logoMS.png','D:\\Projekt_inz\\encrypted_files\\962e68ac-6612-474c-9a79-9379b6f35367.png'),(14,5,'2024-06-24 08:43:19','Materiały BV - skanowanie surowców, materiałów.docx','D:\\Projekt_inz\\encrypted_files\\0454f85c-35b7-44ed-882c-4d3759449404.docx'),(15,5,'2024-06-24 08:43:19','unknown.png','D:\\Projekt_inz\\encrypted_files\\0f064bc5-a9e0-4ac6-8de1-8da6c84400dd.png'),(16,5,'2024-06-24 08:43:19','vlc-3.0.21-win64.exe','D:\\Projekt_inz\\encrypted_files\\05236f2d-039b-4555-aa24-416489d85087.exe'),(20,6,'2024-06-24 08:56:19','urocze sarenki (1).docx','D:\\Projekt_inz\\encrypted_files\\4adcd3f8-c4a3-487c-ade8-39106d0f1273.docx'),(21,7,'2024-06-24 09:00:28','Kod źródłowy.zip','D:\\Projekt_inz\\encrypted_files\\45c313bb-5eb1-4376-b216-8484a6e95af9.zip'),(23,9,'2024-06-24 11:10:56','Informatyka_2023_praktyki_zwolnienie_nowy (1).docx','D:\\Projekt_inz\\encrypted_files\\2cc2a13d-0be1-444d-b50b-84b83e6a83eb.docx'),(24,9,'2024-06-24 11:10:56','Jakub Głuszek Lab 5.ipynb','D:\\Projekt_inz\\encrypted_files\\c8ae8ff6-2f90-43a4-8ea1-f587f9721536.ipynb'),(25,9,'2024-06-24 11:10:56','MachineStd-Medium.otf','D:\\Projekt_inz\\encrypted_files\\e080bba5-e895-4efb-b3c4-0d38825176d8.otf'),(26,10,'2024-06-24 12:32:44','unknown.png','D:\\Projekt_inz\\encrypted_files\\abb86c72-790f-48f1-8c0d-a975bfad26f3.png'),(27,10,'2024-06-24 12:32:44','logoMS.png','D:\\Projekt_inz\\encrypted_files\\7862b949-7c00-4dac-8750-cb14ef032c73.png'),(29,11,'2024-06-24 19:30:20','Kwa kwa kwa kwa miauuu miauuu miauuu.docx','D:\\Projekt_inz\\encrypted_files\\268f1a88-6870-4c42-a200-b4fcec7272dd.docx'),(31,12,'2024-06-24 20:12:45','reologia.docx','D:\\Projekt_inz\\encrypted_files\\a3347bd3-6f1c-4a0e-8968-ddc79dbeac2a.docx'),(32,12,'2024-06-24 20:12:45','Time.py','D:\\Projekt_inz\\encrypted_files\\0f48c6eb-f13d-47d4-9ffb-1c734d1dcfc6.py'),(33,8,'2024-06-25 06:54:44','logoMS.png','D:\\Projekt_inz\\encrypted_files\\ffc3843e-bbf5-4aef-b7d3-5acfe08e6a15.png'),(34,8,'2024-06-25 06:54:44','Projekt-Android-Jakub-Głuszek-Filip-Gołyszny-Filip-Gawlas.pdf','D:\\Projekt_inz\\encrypted_files\\08b9c2dd-2edd-4b12-b633-75eb98774dac.pdf'),(35,13,'2024-06-25 06:58:12','Projekt-Android-Jakub-Głuszek-Filip-Gołyszny-Filip-Gawlas.pdf','D:\\Projekt_inz\\encrypted_files\\ab3d114e-6b4c-4ff7-9caa-f0f53d05d056.pdf');
+INSERT INTO `submission_attachments` VALUES (13,5,'2024-06-24 08:43:19','logoMS.png','D:\\Projekt_inz\\encrypted_files\\962e68ac-6612-474c-9a79-9379b6f35367.png'),(14,5,'2024-06-24 08:43:19','Materiały BV - skanowanie surowców, materiałów.docx','D:\\Projekt_inz\\encrypted_files\\0454f85c-35b7-44ed-882c-4d3759449404.docx'),(15,5,'2024-06-24 08:43:19','unknown.png','D:\\Projekt_inz\\encrypted_files\\0f064bc5-a9e0-4ac6-8de1-8da6c84400dd.png'),(16,5,'2024-06-24 08:43:19','vlc-3.0.21-win64.exe','D:\\Projekt_inz\\encrypted_files\\05236f2d-039b-4555-aa24-416489d85087.exe'),(20,6,'2024-06-24 08:56:19','urocze sarenki (1).docx','D:\\Projekt_inz\\encrypted_files\\4adcd3f8-c4a3-487c-ade8-39106d0f1273.docx'),(21,7,'2024-06-24 09:00:28','Kod źródłowy.zip','D:\\Projekt_inz\\encrypted_files\\45c313bb-5eb1-4376-b216-8484a6e95af9.zip'),(23,9,'2024-06-24 11:10:56','Informatyka_2023_praktyki_zwolnienie_nowy (1).docx','D:\\Projekt_inz\\encrypted_files\\2cc2a13d-0be1-444d-b50b-84b83e6a83eb.docx'),(24,9,'2024-06-24 11:10:56','Jakub Głuszek Lab 5.ipynb','D:\\Projekt_inz\\encrypted_files\\c8ae8ff6-2f90-43a4-8ea1-f587f9721536.ipynb'),(25,9,'2024-06-24 11:10:56','MachineStd-Medium.otf','D:\\Projekt_inz\\encrypted_files\\e080bba5-e895-4efb-b3c4-0d38825176d8.otf'),(26,10,'2024-06-24 12:32:44','unknown.png','D:\\Projekt_inz\\encrypted_files\\abb86c72-790f-48f1-8c0d-a975bfad26f3.png'),(27,10,'2024-06-24 12:32:44','logoMS.png','D:\\Projekt_inz\\encrypted_files\\7862b949-7c00-4dac-8750-cb14ef032c73.png'),(29,11,'2024-06-24 19:30:20','Kwa kwa kwa kwa miauuu miauuu miauuu.docx','D:\\Projekt_inz\\encrypted_files\\268f1a88-6870-4c42-a200-b4fcec7272dd.docx'),(31,12,'2024-06-24 20:12:45','reologia.docx','D:\\Projekt_inz\\encrypted_files\\a3347bd3-6f1c-4a0e-8968-ddc79dbeac2a.docx'),(32,12,'2024-06-24 20:12:45','Time.py','D:\\Projekt_inz\\encrypted_files\\0f48c6eb-f13d-47d4-9ffb-1c734d1dcfc6.py'),(33,8,'2024-06-25 06:54:44','logoMS.png','D:\\Projekt_inz\\encrypted_files\\ffc3843e-bbf5-4aef-b7d3-5acfe08e6a15.png'),(34,8,'2024-06-25 06:54:44','Projekt-Android-Jakub-Głuszek-Filip-Gołyszny-Filip-Gawlas.pdf','D:\\Projekt_inz\\encrypted_files\\08b9c2dd-2edd-4b12-b633-75eb98774dac.pdf'),(35,13,'2024-06-25 06:58:12','Projekt-Android-Jakub-Głuszek-Filip-Gołyszny-Filip-Gawlas.pdf','D:\\Projekt_inz\\encrypted_files\\ab3d114e-6b4c-4ff7-9caa-f0f53d05d056.pdf'),(43,16,'2024-11-03 20:11:08','copy-file_icon-icons.com_56095.ico','D:\\Projekt_inz\\encrypted_files\\28fd4520-b0d4-4072-8a57-78a4832d1f32.ico'),(44,16,'2024-11-03 20:11:08','WhatsApp Image 2024-10-31 at 09.00.15.jpeg','D:\\Projekt_inz\\encrypted_files\\bd4d1082-8cc7-44a1-80b2-e18538f10031.jpeg');
 /*!40000 ALTER TABLE `submission_attachments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -147,7 +201,7 @@ CREATE TABLE `task_submissions` (
   `SUBMISSION_NOTE` varchar(1000) DEFAULT NULL,
   `IS_DELETED` bit(1) NOT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -156,7 +210,7 @@ CREATE TABLE `task_submissions` (
 
 LOCK TABLES `task_submissions` WRITE;
 /*!40000 ALTER TABLE `task_submissions` DISABLE KEYS */;
-INSERT INTO `task_submissions` VALUES (5,1,4,'2024-06-24 08:43:19','aaa',_binary '\0'),(6,7,4,'2024-06-24 08:56:19',NULL,_binary '\0'),(7,1,1,'2024-06-24 09:00:28',NULL,_binary '\0'),(8,2,4,'2024-06-25 06:54:44','notatka',_binary '\0'),(9,1,3,'2024-06-24 11:10:56','wrzucamy dane ',_binary '\0'),(10,10,2,'2024-06-24 12:32:44',NULL,_binary '\0'),(11,11,5,'2024-06-24 19:30:20',NULL,_binary '\0'),(12,18,5,'2024-06-24 20:12:45',NULL,_binary '\0'),(13,7,3,'2024-06-25 06:58:12','avc',_binary '\0'),(14,2,3,'2024-10-09 17:05:49','tads',_binary '\0');
+INSERT INTO `task_submissions` VALUES (5,1,4,'2024-06-24 08:43:19','aaa',_binary '\0'),(6,7,4,'2024-06-24 08:56:19',NULL,_binary '\0'),(7,1,1,'2024-06-24 09:00:28',NULL,_binary '\0'),(8,2,4,'2024-06-25 06:54:44','notatka',_binary '\0'),(9,1,3,'2024-06-24 11:10:56','wrzucamy dane ',_binary '\0'),(10,10,2,'2024-06-24 12:32:44',NULL,_binary '\0'),(11,11,5,'2024-06-24 19:30:20',NULL,_binary '\0'),(12,18,5,'2024-06-24 20:12:45',NULL,_binary '\0'),(13,7,3,'2024-06-25 06:58:12','avc',_binary '\0'),(14,2,3,'2024-10-09 17:05:49','tads',_binary '\0'),(16,5,4,'2024-11-03 20:11:08',NULL,_binary '\0');
 /*!40000 ALTER TABLE `task_submissions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -250,4 +304,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-10-28 21:07:11
+-- Dump completed on 2024-11-03 23:04:58
