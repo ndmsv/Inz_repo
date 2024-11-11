@@ -44,41 +44,41 @@ function Navbar() {
     }
 
     return (
-        <nav className="navbar navbar-expand-lg navbar-light bg-light sticky-top">
-            <div className="container-fluid">
-                <ul className="navbar-nav">
-                    <Link className="nav-link" to="/home">Home</Link>
+        <nav className='navbar navbar-expand-lg navbar-light bg-light sticky-top'>
+            <div className='container-fluid'>
+                <ul className='navbar-nav'>
+                    <Link className='nav-link' to='/home'>Home</Link>
                 </ul>
-                <ul className="navbar-nav">
-                    <li className="nav-item dropdown">
-                        <a className="nav-link dropdown-toggle" id="navbarCourses" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <ul className='navbar-nav'>
+                    <li className='nav-item dropdown'>
+                        <a className='nav-link dropdown-toggle' id='navbarCourses' role='button' data-bs-toggle='dropdown' aria-expanded='false'>
                             Courses
                         </a>
-                        <ul className="dropdown-menu" aria-labelledby="navbarCourses">
-                            <Link className="dropdown-item" to="/joinCourse">Join Course</Link>
-                            <Link className="dropdown-item" to="/myCourses">My Courses</Link>
+                        <ul className='dropdown-menu' aria-labelledby='navbarCourses'>
+                            <Link className='dropdown-item' to='/joinCourse'>Join Course</Link>
+                            <Link className='dropdown-item' to='/myCourses'>My Courses</Link>
                             {isTeacherOrAdmin && (
-                                <Link className="dropdown-item" to="/createCourse">Create Course</Link>)}
+                                <Link className='dropdown-item' to='/createCourse'>Create Course</Link>)}
                         </ul>
                     </li>
                 </ul>
-                <ul className="navbar-nav">
-                    <li className="nav-item dropdown">
-                        <a className="nav-link dropdown-toggle" id="navbarCourses" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <ul className='navbar-nav'>
+                    <li className='nav-item dropdown'>
+                        <a className='nav-link dropdown-toggle' id='navbarCourses' role='button' data-bs-toggle='dropdown' aria-expanded='false'>
                             Forum
                         </a>
-                        <ul className="dropdown-menu" aria-labelledby="navbarCourses">
-                            <Link className="dropdown-item" to="/mainForum">General page</Link>
+                        <ul className='dropdown-menu' aria-labelledby='navbarCourses'>
+                            <Link className='dropdown-item' to='/mainForum'>General page</Link>
                         </ul>
                     </li>
                 </ul>
-                <ul className="navbar-nav ms-auto">
-                    <li className="nav-item dropdown">
-                        <a className="nav-link dropdown-toggle" id="navbarUser" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <ul className='navbar-nav ms-auto'>
+                    <li className='nav-item dropdown'>
+                        <a className='nav-link dropdown-toggle' id='navbarUser' role='button' data-bs-toggle='dropdown' aria-expanded='false'>
                             {fullname ? fullname : username}
                         </a>
-                        <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="navbarUser">
-                            <Link className="dropdown-item" to="/" onClick={handleLogout}>Log out</Link>
+                        <ul className='dropdown-menu dropdown-menu-end' aria-labelledby='navbarUser'>
+                            <Link className='dropdown-item' to='/' onClick={handleLogout}>Log out</Link>
                         </ul>
                     </li>
                 </ul>

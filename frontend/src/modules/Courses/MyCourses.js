@@ -45,7 +45,7 @@ function MyCourses() {
     };
 
     const handleLeave = async (course) => {
-        const confirmStop = window.confirm("Are you sure you want to leave the course?");
+        const confirmStop = window.confirm('Are you sure you want to leave the course?');
         if (!confirmStop) {
             return;
         }
@@ -65,13 +65,13 @@ function MyCourses() {
     };
 
     const handleStopOwnership = async (course) => {
-        const confirmStop = window.confirm("Are you sure you want to stop being an owner?");
+        const confirmStop = window.confirm('Are you sure you want to stop being an owner?');
         if (!confirmStop) {
             return;
         }
 
         if (course.ownersCount === 1) {
-            alert("You cannot stop ownership if you are the only owner!");
+            alert('You cannot stop ownership if you are the only owner!');
             return;
         }
 
@@ -140,7 +140,7 @@ function MyCourses() {
     };
 
     const handleDeleteCourse = async (course) => {
-        const confirmStop = window.confirm("Are you sure you want to delete course?");
+        const confirmStop = window.confirm('Are you sure you want to delete course?');
         if (!confirmStop) {
             return;
         }
@@ -168,48 +168,48 @@ function MyCourses() {
     return (
         <div className='parent-div'>
             <Navbar />
-            <div className="panel panel-default">
-                <div className="panel-body">
-                        <div className="col-md-12 mt-5">
-                            <div className="d-flex flex-wrap">
+            <div className='panel panel-default'>
+                <div className='panel-body'>
+                        <div className='col-md-12 mt-5'>
+                            <div className='d-flex flex-wrap'>
                                 {isLoading ? (
-                                    <div className="d-flex justify-content-center align-items-center" style={{ height: "30vh" }}>
-                                        <div className="spinner-border text-primary" role="status">
-                                            <span className="sr-only"></span>
+                                    <div className='d-flex justify-content-center align-items-center' style={{ height: '30vh' }}>
+                                        <div className='spinner-border text-primary' role='status'>
+                                            <span className='sr-only'></span>
                                         </div>
                                     </div>
                                 ) : currentCourses.length > 0 ? (
                                     currentCourses.map((course, index) => (
-                                        <div key={course.id} className="card mb-4 me-2" style={{ width: '40%' }}>
-                                            <div className="card-body text-center d-flex flex-column"> {/* Flex column container */}
-                                                <div className="card-content">
-                                                    <h5 className="card-title">{course.name}</h5>
-                                                    <p className="card-subtitle mb-2 text-muted">{course.description}</p>
+                                        <div key={course.id} className='card mb-4 me-2' style={{ width: '40%' }}>
+                                            <div className='card-body text-center d-flex flex-column'> {/* Flex column container */}
+                                                <div className='card-content'>
+                                                    <h5 className='card-title'>{course.name}</h5>
+                                                    <p className='card-subtitle mb-2 text-muted'>{course.description}</p>
                                                 </div>
-                                                <div className="card-actions">
-                                                    <div className="row">
-                                                        <div className="col-md-6 text-start">
+                                                <div className='card-actions'>
+                                                    <div className='row'>
+                                                        <div className='col-md-6 text-start'>
                                                             {course.canAddOwners && (
-                                                                <button className="btn btn-success me-1" onClick={() => handleAddOwners(course)}>
+                                                                <button className='btn btn-success me-1' onClick={() => handleAddOwners(course)}>
                                                                     Add owners
                                                                 </button>
                                                             )}
-                                                            <button className="btn btn-primary me-1" onClick={() => handleNavigateToCourseDetails(course)}>
+                                                            <button className='btn btn-primary me-1' onClick={() => handleNavigateToCourseDetails(course)}>
                                                                 Course details
                                                             </button>
                                                         </div>
-                                                        <div className="col-md-6 text-end">
+                                                        <div className='col-md-6 text-end'>
                                                             {course.isOwner ? (
-                                                                <button className="btn btn-danger me-1" onClick={() => handleStopOwnership(course)}>
+                                                                <button className='btn btn-danger me-1' onClick={() => handleStopOwnership(course)}>
                                                                     Stop ownership
                                                                 </button>
                                                             ) : (
-                                                                <button className="btn btn-danger me-1" onClick={() => handleLeave(course)}>
+                                                                <button className='btn btn-danger me-1' onClick={() => handleLeave(course)}>
                                                                     Leave course
                                                                 </button>
                                                             )}
                                                             {course.canAddOwners && (
-                                                                <button className="btn btn-danger me-1" onClick={() => handleDeleteCourse(course)}>
+                                                                <button className='btn btn-danger me-1' onClick={() => handleDeleteCourse(course)}>
                                                                     Delete course
                                                                 </button>
                                                             )}
@@ -220,7 +220,7 @@ function MyCourses() {
                                         </div>
                                     ))
                                 ) : (
-                                    <div className="d-flex flex-column justify-content-center align-items-center" style={{ height: "30vh" }}>
+                                    <div className='d-flex flex-column justify-content-center align-items-center' style={{ height: '30vh' }}>
                                         <h3>You are not a member of any course now!</h3>
                                         <br />
                                         <h5>Go to 'Join Course' page to become a member.</h5>
@@ -229,9 +229,9 @@ function MyCourses() {
                             </div>
                         </div>
                         <nav>
-                            <ul className="pagination justify-content-center">
+                            <ul className='pagination justify-content-center'>
                                 {[...Array(Math.ceil(courses.length / coursesPerPage)).keys()].map(number => (
-                                    <li key={number + 1} className="page-item">
+                                    <li key={number + 1} className='page-item'>
                                         <button onClick={() => paginate(number + 1)} className={`page-link ${currentPage === number + 1 ? 'page-link-active' : ''}`}>
                                             {number + 1}
                                         </button>
@@ -241,20 +241,20 @@ function MyCourses() {
                         </nav>
                         {showAddUsersPopup && (
                             <>
-                                <div className="modal-backdrop show" style={{ zIndex: 1049 }} onClick={toggleAddUsersPopup}></div>
-                                <div className="modal d-block" tabIndex="-1" style={{ zIndex: 1050 }}>
-                                    <div className="modal-dialog">
-                                        <div className="modal-content">
-                                            <div className="modal-header">
+                                <div className='modal-backdrop show' style={{ zIndex: 1049 }} onClick={toggleAddUsersPopup}></div>
+                                <div className='modal d-block' tabIndex='-1' style={{ zIndex: 1050 }}>
+                                    <div className='modal-dialog'>
+                                        <div className='modal-content'>
+                                            <div className='modal-header'>
                                                 <div className='col-md'>
-                                                    <h5 className="modal-title">Select New Owners</h5>
+                                                    <h5 className='modal-title'>Select New Owners</h5>
                                                 </div>
                                                 <div className='col-md text-end'>
-                                                    <button type="button" className="btn-close" aria-label="Close" onClick={toggleAddUsersPopup}></button>
+                                                    <button type='button' className='btn-close' aria-label='Close' onClick={toggleAddUsersPopup}></button>
                                                 </div>
                                             </div>
-                                            <div className="modal-body">
-                                                <table className="table">
+                                            <div className='modal-body'>
+                                                <table className='table'>
                                                     <thead>
                                                         <tr>
                                                             <th>Login</th>
@@ -276,17 +276,17 @@ function MyCourses() {
                                                             ))
                                                         ) : (
                                                             <tr>
-                                                                <td colSpan="3" className="text-center">There is no user that can become an owner.</td>
+                                                                <td colSpan='3' className='text-center'>There is no user that can become an owner.</td>
                                                             </tr>
                                                         )}
                                                     </tbody>
                                                 </table>
                                             </div>
-                                            <div className="modal-footer">
+                                            <div className='modal-footer'>
                                                 {eligibleUsers.length > 0 ? (
-                                                    <button type="button" className="btn btn-primary" onClick={() => saveNewOwners()}>Add Selected</button>
-                                                ) : ""}
-                                                <button type="button" className="btn btn-secondary" onClick={toggleAddUsersPopup}>Cancel</button>
+                                                    <button type='button' className='btn btn-primary' onClick={() => saveNewOwners()}>Add Selected</button>
+                                                ) : ''}
+                                                <button type='button' className='btn btn-secondary' onClick={toggleAddUsersPopup}>Cancel</button>
                                             </div>
                                         </div>
                                     </div>

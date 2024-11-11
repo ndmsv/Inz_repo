@@ -9,7 +9,7 @@ const handleAxiosError = (error) => {
     else if (error.response) {
         return { message: error.response.data.message, isSuccess: false };
     } else {
-        return { message: "An error occurred. Please try again.", isSuccess: false };
+        return { message: 'An error occurred. Please try again.', isSuccess: false };
     }
 };
 
@@ -18,7 +18,7 @@ export const fetchData = async () => {
         const response = await axios.get(`${API_URL}test`);
         return response.data;
     } catch (error) {
-        console.error("There was an error fetching the data:", error);
+        console.error('There was an error fetching the data:', error);
     }
 };
 
@@ -378,6 +378,20 @@ export const downloadPostFile = async (attachmentID) => {
             attachmentID
         }, {
             responseType: 'blob'
+        });
+        return { data: response.data, isSuccess: true};
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};
+
+export const voteOnPost = async (postID, login, voted, liked) => {
+    try {
+        const response = await axios.post(`${API_URL}Forum/voteOnPost`, {
+            postID,
+            login,
+            voted,
+            liked
         });
         return { data: response.data, isSuccess: true};
     } catch (error) {

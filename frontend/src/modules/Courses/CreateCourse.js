@@ -17,7 +17,7 @@ function CreateCourse() {
             if (registerResponse.message)
                 alert(registerResponse.message);
             else
-                alert("To access this part of side you must have teacher or administrator permissions!");
+                alert('To access this part of side you must have teacher or administrator permissions!');
 
             navigate('/home');
         }
@@ -39,7 +39,7 @@ function CreateCourse() {
         let password, repeatedPassword;
 
         if (!courseName.trim()) {
-            alert("Course name must not be empty!");
+            alert('Course name must not be empty!');
             return;
         }
 
@@ -49,12 +49,12 @@ function CreateCourse() {
             repeatedPassword = event.target.txtCoursePasswordRepetition.value;
 
             if (password.trim().length < 4) {
-                alert("Password must contain at least 4 characters!");
+                alert('Password must contain at least 4 characters!');
                 return;
             }
 
             if (password.trim() !== repeatedPassword.trim()) {
-                alert("Password and its repetition are not the same!");
+                alert('Password and its repetition are not the same!');
                 return;
             }
         }
@@ -63,49 +63,49 @@ function CreateCourse() {
         if (!registerResponse.isSuccess)
             alert(registerResponse.message);
         else {
-            alert(registerResponse.message + " You will be redirected to home page now.");
-            navigate("/home");
+            alert(registerResponse.message + ' You will be redirected to home page now.');
+            navigate('/home');
         }
     };
 
     return (
         <div className='parent-div'>
             <Navbar />
-            <div className="panel panel-default">
-                <div className="panel-body">
-                    <div className="position-absolute top-50 start-50 translate-middle" style={{ zIndex: 1050, width: "60%" }}>
+            <div className='panel panel-default'>
+                <div className='panel-body'>
+                    <div className='position-absolute top-50 start-50 translate-middle' style={{ zIndex: 1050, width: '60%' }}>
                         <div className='card'>
                             <div className='card-body'>
                                 <form onSubmit={handleCourseCreationSubmit}>
-                                    <div className="mb-3">
-                                        <h5 className="panel-title">Create Course</h5>
+                                    <div className='mb-3'>
+                                        <h5 className='panel-title'>Create Course</h5>
                                     </div>
-                                    <div className="mb-3">
-                                        <label htmlFor="txtCourseName" className="form-label">Course name</label>
-                                        <input type="text" className="form-control" id="txtCourseName" placeholder="Enter course name" />
+                                    <div className='mb-3'>
+                                        <label htmlFor='txtCourseName' className='form-label'>Course name</label>
+                                        <input type='text' className='form-control' id='txtCourseName' placeholder='Enter course name' />
                                     </div>
-                                    <div className="mb-3">
-                                        <label htmlFor="txtCourseDescription" className="form-label">Course description</label>
-                                        <textarea type="text" className="form-control" id="txtCourseDescription" rows="3" placeholder="Enter course description" />
+                                    <div className='mb-3'>
+                                        <label htmlFor='txtCourseDescription' className='form-label'>Course description</label>
+                                        <textarea type='text' className='form-control' id='txtCourseDescription' rows='3' placeholder='Enter course description' />
                                     </div>
-                                    <div className="form-check mb-2">
-                                        <input type="checkbox" className="form-check-input" id="cbPasswordProtected" checked={isPasswordProtected} onChange={togglePasswordProtection} />
-                                        <label htmlFor="cbPasswordProtected" className="form-check-label"> Password protected course </label>
+                                    <div className='form-check mb-2'>
+                                        <input type='checkbox' className='form-check-input' id='cbPasswordProtected' checked={isPasswordProtected} onChange={togglePasswordProtection} />
+                                        <label htmlFor='cbPasswordProtected' className='form-check-label'> Password protected course </label>
                                     </div>
                                     {isPasswordProtected && (
                                         <div>
-                                            <div className="mb-3">
-                                                <label htmlFor="txtCoursePassword" className="form-label">Course password</label>
-                                                <input type="password" className="form-control" id="txtCoursePassword" placeholder="Enter course password" />
+                                            <div className='mb-3'>
+                                                <label htmlFor='txtCoursePassword' className='form-label'>Course password</label>
+                                                <input type='password' className='form-control' id='txtCoursePassword' placeholder='Enter course password' />
                                             </div>
-                                            <div className="mb-3">
-                                                <label htmlFor="txtCoursePasswordRepetition" className="form-label">Course password repetition</label>
-                                                <input type="password" className="form-control" id="txtCoursePasswordRepetition" placeholder="Repeat course password" />
+                                            <div className='mb-3'>
+                                                <label htmlFor='txtCoursePasswordRepetition' className='form-label'>Course password repetition</label>
+                                                <input type='password' className='form-control' id='txtCoursePasswordRepetition' placeholder='Repeat course password' />
                                             </div>
                                         </div>
                                     )}
-                                    <div className="text-end">
-                                        <button type="submit" className="btn btn-primary">Save course</button>
+                                    <div className='text-end'>
+                                        <button type='submit' className='btn btn-primary'>Save course</button>
                                     </div>
                                 </form>
                             </div>

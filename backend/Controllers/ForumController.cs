@@ -48,7 +48,14 @@ namespace backend.Controllers
                         .Include(s => s.PostAttachments)
                         .Where(post => !post.IsDeleted)
                         .AsEnumerable()
-                        .OrderByDescending(post => (double)post.VotesCount / Math.Max((DateTime.Now - post.CreatedOn).TotalHours, 1))
+                        .OrderByDescending(post =>
+                        {
+                            var hoursSinceCreation = Math.Max((DateTime.Now - post.CreatedOn).TotalHours, 1);
+                            return post.VotesCount >= 0
+                                ? (double)post.VotesCount / hoursSinceCreation
+                                : (double)post.VotesCount * hoursSinceCreation;
+                        })
+                        .ThenByDescending(post => post.CreatedOn)
                         .Take(100)
                         .Select(post => new ForumPostModelExtended
                         {
@@ -244,6 +251,79 @@ namespace backend.Controllers
             return File(decryptedContents, "application/octet-stream", attachment.FileName);
         }
 
+        [HttpPost("voteOnPost")]
+        public async Task<IActionResult> VoteOnPost([FromBody] VoteModel model)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                var post = await _context.forum_posts.FirstOrDefaultAsync(u => u.ID == model.PostID);
+                if (post == null)
+                {
+                    return NotFound(new { message = "Post was not found." });
+                }
+
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == model.Login);
+                if (user == null)
+                {
+                    return NotFound(new { message = "User was not found." });
+                }
+
+                var vote = await _context.forum_votes.FirstOrDefaultAsync(u => u.User == user && u.Post == post);
+                if (vote != null)
+                {
+                    if (!model.Voted && !vote.IsDeleted) // Vote cancellation
+                    {
+                        post.VotesCount += vote.IsLiked ? -1 : 1;
+                    }
+                    else if (model.Voted && !vote.IsDeleted) // Opposite vote
+                    {
+                        if (vote.IsLiked && !model.Liked)
+                        {
+                            post.VotesCount -= 2;
+                        }
+                        else if (!vote.IsLiked && model.Liked)
+                        {
+                            post.VotesCount += 2;
+                        }
+                    }
+                    else if (model.Voted && vote.IsDeleted) // Revote
+                    {
+                        post.VotesCount += model.Liked ? 1 : -1;
+                    }
+
+                    vote.IsDeleted = !model.Voted;
+                    vote.IsLiked = model.Voted && model.Liked;
+                }
+                else
+                {
+                    var newVote = new ForumVotes
+                    {
+                        PostID = post.ID,
+                        UserID = user.ID,
+                        IsLiked = model.Liked,
+                        IsDeleted = !model.Voted
+                    };
+                    _context.forum_votes.Add(newVote);
+
+                    if (!newVote.IsDeleted)
+                    {
+                        post.VotesCount += newVote.IsLiked ? 1 : -1;
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return Ok(new { message = "Vote saved successfully" });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         private byte[] DecryptFileContents(byte[] encryptedContents, byte[] key, byte[] iv)
         {
             using var aesAlg = Aes.Create();
@@ -327,5 +407,13 @@ namespace backend.Controllers
         public required string PostTitle { get; set; }
         public string? PostDescription { get; set; }
         public List<IFormFile>? Files { get; set; }
+    }
+
+    public class VoteModel
+    {
+        public int PostID { get; set; }
+        public required string Login { get; set; }
+        public bool Voted { get; set; }
+        public bool Liked { get; set; }
     }
 }

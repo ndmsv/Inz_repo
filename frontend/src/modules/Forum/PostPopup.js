@@ -52,44 +52,44 @@ function PostPopup({ togglePopup, username, reloadPosts }) {
 
     return (
         <>
-            <div className="modal-backdrop show" style={{ zIndex: 1049 }} onClick={togglePopup}></div>
-            <div className="modal d-block" tabIndex="-1" style={{ zIndex: 1050 }}>
-                <div className="modal-dialog" style={{ "max-width": "50%" }}>
-                    <div className="modal-content">
-                        <div className="modal-header">
+            <div className='modal-backdrop show' style={{ zIndex: 1049 }} onClick={togglePopup}></div>
+            <div className='modal d-block' tabIndex='-1' style={{ zIndex: 1050 }}>
+                <div className='modal-dialog' style={{ 'maxWidth': '50%' }}>
+                    <div className='modal-content'>
+                        <div className='modal-header'>
                             <div className='col-md-6'>
-                                <h5 className="modal-title">Create new post</h5>
+                                <h5 className='modal-title'>Create new post</h5>
                             </div>
                             <div className='col-md-6 text-end'>
-                                <button type="button" className="btn-close" data-dismiss="modal" aria-label="Close" onClick={togglePopup}></button>
+                                <button type='button' className='btn-close' data-dismiss='modal' aria-label='Close' onClick={togglePopup}></button>
                             </div>
                         </div>
-                        <div className="modal-body">
-                            <div className="mb-3">
-                                <label htmlFor="txtTitle" className="form-label">Title</label>
-                                <input type="text" className="form-control" id="txtTitle" placeholder="Enter your title" onChange={(e) => setTitle(e.target.value)}/>
+                        <div className='modal-body'>
+                            <div className='mb-3'>
+                                <label htmlFor='txtTitle' className='form-label'>Title</label>
+                                <input type='text' className='form-control' id='txtTitle' placeholder='Enter your title' onChange={(e) => setTitle(e.target.value)}/>
                             </div>
-                            <div className="mb-3">
-                                <label htmlFor="txtContent" className="form-label">Post content</label>
-                                <textarea className="form-control" id="txtContent" placeholder="Enter your post content" rows={12} onChange={(e) => setPostContent(e.target.value)}></textarea>
+                            <div className='mb-3'>
+                                <label htmlFor='txtContent' className='form-label'>Post content</label>
+                                <textarea className='form-control' id='txtContent' placeholder='Enter your post content' rows={12} onChange={(e) => setPostContent(e.target.value)}></textarea>
                             </div>
-                            <div className="row ms-2 me-2 mt-3">
-                                <div className="col-md-4 offset-md-4">
-                                    <label htmlFor="file-upload" className="btn btn-primary form-control">
+                            <div className='row ms-2 me-2 mt-3'>
+                                <div className='col-md-4 offset-md-4'>
+                                    <label htmlFor='file-upload' className='btn btn-primary form-control'>
                                         Choose Files
                                     </label>
-                                    <input id="file-upload" type="file" className="form-control" multiple onChange={handleFileChange} style={{ display: 'none' }} />
+                                    <input id='file-upload' type='file' className='form-control' multiple onChange={handleFileChange} style={{ display: 'none' }} />
                                 </div>
                             </div>
-                            <div className="row mt-3 ms-2 me-2">
-                                <div className="col-md-12">
-                                    <div className="d-flex flex-wrap">
+                            <div className='row mt-3 ms-2 me-2'>
+                                <div className='col-md-12'>
+                                    <div className='d-flex flex-wrap'>
                                         {files.map((file, index) => (
-                                            <div key={index} className="card mb-4 me-2" style={{ width: '18rem' }}>
-                                                <div className="card-body text-center">
-                                                    <h6 className="card-title">{file.name}</h6>
-                                                    <button className="btn btn-success btn-sm me-1" onClick={() => handleDownload(file)}>Download</button>
-                                                    <button className="btn btn-danger btn-sm me-1" onClick={() => handleDelete(file)}>Delete</button>
+                                            <div key={index} className='card mb-4 me-2' style={{ width: '18rem' }}>
+                                                <div className='card-body text-center'>
+                                                    <h6 className='card-title'>{file.name}</h6>
+                                                    <button className='btn btn-success btn-sm me-1' onClick={() => handleDownload(file)}>Download</button>
+                                                    <button className='btn btn-danger btn-sm me-1' onClick={() => handleDelete(file)}>Delete</button>
                                                 </div>
                                             </div>
                                         ))}
@@ -97,9 +97,9 @@ function PostPopup({ togglePopup, username, reloadPosts }) {
                                 </div>
                             </div>
                         </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-primary me-1" onClick={handleSubmit}>Save</button>
-                            <button type="button" className="btn btn-secondary" onClick={togglePopup}>Back</button>
+                        <div className='modal-footer'>
+                            <button type='button' className='btn btn-primary me-1' onClick={handleSubmit}>Save</button>
+                            <button type='button' className='btn btn-secondary' onClick={togglePopup}>Back</button>
                         </div>
                     </div>
                 </div>
