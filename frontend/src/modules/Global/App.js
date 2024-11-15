@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import Home from '../Home/Home';
-import { checkTypePassword, fetchData, loginUser, checkLogin, registerUser } from '../../services/apiService';
+import { checkTypePassword, loginUser, checkLogin, registerUser } from '../../services/apiService';
 import CreateCourse from '../Courses/CreateCourse';
 import JoinCourse from '../Courses/JoinCourse';
 import MyCourses from '../Courses/MyCourses';
@@ -11,8 +11,6 @@ import MainForum from '../Forum/MainForum';
 
 function App() {
   const navigate = useNavigate();
-  const [data, setData] = useState(null);
-  const [error, setError] = useState(null);
   const [showRegistrationPopup, setShowRegistrationPopup] = useState(false);
   const [accountType, setAccountType] = useState('');
 
@@ -40,18 +38,6 @@ function App() {
       alert(error.message);
     }
   };
-
-  useEffect(() => {
-    fetchData().then(data => {
-      setData(data);
-    }).catch(err => {
-      setError(err);
-    });
-  }, []);
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
 
   const handleRegistrationSubmit = async (event) => {
     event.preventDefault();
