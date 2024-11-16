@@ -103,7 +103,7 @@ CREATE TABLE `forum_posts` (
 
 LOCK TABLES `forum_posts` WRITE;
 /*!40000 ALTER TABLE `forum_posts` DISABLE KEYS */;
-INSERT INTO `forum_posts` VALUES (1,'Testowy post','Taki post dla testów','2024-11-03 00:00:00',NULL,4,_binary '\0',0),(2,'test 2','drugi testowy post','2024-11-03 20:50:56',NULL,4,_binary '\0',1),(3,'test 3','Litwo! Ojczyzno moja! ty jesteś jak zdrowie.\r\n\r\nIle cię trzeba cenić, ten tylko się dowie,\r\n\r\nKto cię stracił. Dziś piękność twą w całej ozdobie\r\n\r\nWidzę i opisuję, bo tęsknię po tobie.\r\nPanno Święta, co Jasnej bronisz Częstochowy\r\n\r\nI w Ostrej świecisz Bramie! Ty, co gród zamkowy\r\n\r\nNowogródzki ochraniasz z jego wiernym ludem!\r\n\r\nJak mnie dziecko do zdrowia powróciłaś cudem\r\n\r\n(Gdy od płaczącej matki pod Twoję opiekę\r\n\r\nOfiarowany, martwą podniosłem powiekę\r\n\r\nI zaraz mogłem pieszo do Twych świątyń progu\r\n\r\nIść za wrócone życie podziękować Bogu),\r\n\r\nTak nas powrócisz cudem na Ojczyzny łono.\r\n\r\nTymczasem przenoś moję duszę utęsknioną\r\n\r\nDo tych pagórków leśnych, do tych łąk zielonych,\r\n\r\nSzeroko nad błękitnym Niemnem rozciągnionych;\r\n\r\nDo tych pól malowanych zbożem rozmaitem,\r\n\r\nWyzłacanych pszenicą, posrebrzanych żytem;\r\n\r\nGdzie bursztynowy świerzop, gryka jak śnieg biała,\r\n\r\nGdzie panieńskim rumieńcem dzięcielina pała,\r\n\r\nA wszystko przepasane, jakby wstęgą, miedzą\r\n\r\nZieloną, na niej z rzadka ciche grusze siedzą.','2024-11-11 19:13:27','2024-11-16 12:19:10',4,_binary '\0',0),(4,'post','Gdybym tu faktycznie coś pisał:\r\n\r\nTo jak sie to zapisze?\r\n\r\nBo w sumie','2024-11-11 19:24:57',NULL,4,_binary '\0',1);
+INSERT INTO `forum_posts` VALUES (1,'Testowy post','Taki post dla testów','2024-11-03 00:00:00',NULL,4,_binary '',0),(2,'test 2','drugi testowy post','2024-11-03 20:50:56',NULL,4,_binary '\0',1),(3,'test 3','Litwo! Ojczyzno moja! ty jesteś jak zdrowie.\r\n\r\nIle cię trzeba cenić, ten tylko się dowie,\r\n\r\nKto cię stracił. Dziś piękność twą w całej ozdobie\r\n\r\nWidzę i opisuję, bo tęsknię po tobie.\r\nPanno Święta, co Jasnej bronisz Częstochowy\r\n\r\nI w Ostrej świecisz Bramie! Ty, co gród zamkowy\r\n\r\nNowogródzki ochraniasz z jego wiernym ludem!\r\n\r\nJak mnie dziecko do zdrowia powróciłaś cudem\r\n\r\n(Gdy od płaczącej matki pod Twoję opiekę\r\n\r\nOfiarowany, martwą podniosłem powiekę\r\n\r\nI zaraz mogłem pieszo do Twych świątyń progu\r\n\r\nIść za wrócone życie podziękować Bogu),\r\n\r\nTak nas powrócisz cudem na Ojczyzny łono.\r\n\r\nTymczasem przenoś moję duszę utęsknioną\r\n\r\nDo tych pagórków leśnych, do tych łąk zielonych,\r\n\r\nSzeroko nad błękitnym Niemnem rozciągnionych;\r\n\r\nDo tych pól malowanych zbożem rozmaitem,\r\n\r\nWyzłacanych pszenicą, posrebrzanych żytem;\r\n\r\nGdzie bursztynowy świerzop, gryka jak śnieg biała,\r\n\r\nGdzie panieńskim rumieńcem dzięcielina pała,\r\n\r\nA wszystko przepasane, jakby wstęgą, miedzą\r\n\r\nZieloną, na niej z rzadka ciche grusze siedzą.','2024-11-11 19:13:27','2024-11-16 12:19:10',4,_binary '\0',0),(4,'post','Gdybym tu faktycznie coś pisał:\r\n\r\nTo jak sie to zapisze?\r\n\r\nBo w sumie','2024-11-11 19:24:57',NULL,4,_binary '',1);
 /*!40000 ALTER TABLE `forum_posts` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -130,7 +130,7 @@ CREATE TABLE `forum_votes` (
 
 LOCK TABLES `forum_votes` WRITE;
 /*!40000 ALTER TABLE `forum_votes` DISABLE KEYS */;
-INSERT INTO `forum_votes` VALUES (1,1,4,_binary '',_binary '\0'),(2,2,4,_binary '\0',_binary ''),(3,1,1,_binary '\0',_binary '\0'),(4,2,1,_binary '\0',_binary ''),(5,2,2,_binary '',_binary '\0'),(6,1,2,_binary '\0',_binary ''),(7,3,4,_binary '\0',_binary ''),(8,4,4,_binary '',_binary '\0');
+INSERT INTO `forum_votes` VALUES (1,1,4,_binary '',_binary ''),(2,2,4,_binary '\0',_binary ''),(3,1,1,_binary '\0',_binary ''),(4,2,1,_binary '\0',_binary ''),(5,2,2,_binary '',_binary '\0'),(6,1,2,_binary '\0',_binary ''),(7,3,4,_binary '\0',_binary ''),(8,4,4,_binary '',_binary '');
 /*!40000 ALTER TABLE `forum_votes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -157,7 +157,7 @@ CREATE TABLE `posts_attachments` (
 
 LOCK TABLES `posts_attachments` WRITE;
 /*!40000 ALTER TABLE `posts_attachments` DISABLE KEYS */;
-INSERT INTO `posts_attachments` VALUES (1,2,'2024-11-03 20:50:56','WhatsApp Image 2024-10-31 at 09.00.15.jpeg','D:\\Projekt_inz\\encrypted_files\\9c24a023-cf05-4183-901c-70d9805b18fd.jpeg'),(2,4,'2024-11-11 19:24:57','down-arrow-red.png','D:\\Projekt_inz\\encrypted_files\\5dfb8415-c1d1-45fc-ac29-afd1e3f15658.png'),(6,3,'2024-11-16 12:19:10','up-arrow-green.png','D:\\Projekt_inz\\encrypted_files\\df6062a9-2fea-4e15-911d-d4e6adf202a9.png');
+INSERT INTO `posts_attachments` VALUES (1,2,'2024-11-03 20:50:56','WhatsApp Image 2024-10-31 at 09.00.15.jpeg','D:\\Projekt_inz\\encrypted_files\\9c24a023-cf05-4183-901c-70d9805b18fd.jpeg'),(6,3,'2024-11-16 12:19:10','up-arrow-green.png','D:\\Projekt_inz\\encrypted_files\\df6062a9-2fea-4e15-911d-d4e6adf202a9.png');
 /*!40000 ALTER TABLE `posts_attachments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -306,4 +306,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-16 14:48:50
+-- Dump completed on 2024-11-16 22:16:52

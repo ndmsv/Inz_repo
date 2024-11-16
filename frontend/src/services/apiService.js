@@ -421,3 +421,15 @@ export const getSelectedPost = async (postID, login) => {
         return handleAxiosError(error);
     }
 };
+
+export const deletePost = async (postID, login) => {
+    try {
+        const response = await axios.post(`${API_URL}Forum/deletePost`, {
+            postID,
+            login
+        });
+        return { message: response.data.message, data: response.data, isSuccess: true};
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};

@@ -407,6 +407,59 @@ namespace backend.Controllers
             }
         }
 
+        [HttpPost("deletePost")]
+        public async Task<IActionResult> DeletePost([FromBody] SelectedPostModel model)
+        {
+            try
+            {
+                var post = await _context.forum_posts
+                                       .Include(s => s.PostAttachments)
+                                       .Include(t => t.ForumVotes)
+                                       .FirstOrDefaultAsync(s => s.ID == model.PostID);
+
+                if (post == null)
+                {
+                    return NotFound(new { message = "Course with said ID doesn't exist!" });
+                }
+                else if (post.IsDeleted)
+                {
+                    return BadRequest(new { message = "Course with said ID is already deleted!" });
+                }
+                else
+                {
+                    if (post.ForumVotes != null)
+                    {
+                        foreach (var vote in post.ForumVotes)
+                        {
+                            vote.IsDeleted = true;
+                        }
+                    }
+
+                    if (post.PostAttachments != null)
+                    {
+                        foreach (var attachment in post.PostAttachments)
+                        {
+                            var filePath = attachment.FilePath;
+                            if (System.IO.File.Exists(filePath))
+                            {
+                                System.IO.File.Delete(filePath);
+                            }
+                        }
+
+                        _context.posts_attachments.RemoveRange(post.PostAttachments);
+                    }
+
+                    post.IsDeleted = true;
+                    await _context.SaveChangesAsync();
+                    return Ok(new { message = "You have successfully deleted the post!" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         private byte[] DecryptFileContents(byte[] encryptedContents, byte[] key, byte[] iv)
         {
             using var aesAlg = Aes.Create();
