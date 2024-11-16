@@ -101,8 +101,9 @@ namespace backend.Controllers
             try
             {
                 var hashedPassword = HashPassword(loginModel.Password);
+                var userType = await _context.user_types.FirstOrDefaultAsync(u => u.TypeID == loginModel.Type);
                 var user = new User { Login = loginModel.Login, Password = hashedPassword, Type = loginModel.Type, 
-                    Name = loginModel.Name, Surname = loginModel.Surname };
+                    Name = loginModel.Name, Surname = loginModel.Surname, UserType = userType };
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
 

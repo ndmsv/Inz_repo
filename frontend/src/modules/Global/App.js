@@ -8,6 +8,7 @@ import MyCourses from '../Courses/MyCourses';
 import CourseDetails from '../Courses/CourseDetails';
 import TaskSubmissions from '../Tasks/TaskSubmissions';
 import MainForum from '../Forum/MainForum';
+import UserPosts from '../Forum/UserPosts';
 
 function App() {
   const navigate = useNavigate();
@@ -205,6 +206,7 @@ function App() {
       <Route path='/courseDetails' element={<CourseDetails />} />
       <Route path='/taskSubmissions' element={<TaskSubmissions />} />
       <Route path='/mainForum' element={<MainForum />} />
+      <Route path='/userPosts' element={<UserPosts />} />
     </Routes>
   );
 }

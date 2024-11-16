@@ -50,8 +50,7 @@ namespace backend.Models
         [Column("SURNAME")]
         public string? Surname { get; set; }
 
-        public Type? UserType { get; set; }
-
+        public required Type UserType { get; set; }
         public ICollection<Course>? Courses { get; set; }
         public ICollection<UsersInCourse>? UsersInCourse { get; set; }
         public ICollection<TaskSubmissions>? TaskSubmissions { get; set; }
@@ -232,6 +231,9 @@ namespace backend.Models
 
         [Column("CREATED_ON")]
         public required DateTime CreatedOn { get; set; }
+
+        [Column("EDITED_ON")]
+        public DateTime? EditedOn { get; set; }
 
         [Column("USER_ID")]
         public required int UserID { get; set; }

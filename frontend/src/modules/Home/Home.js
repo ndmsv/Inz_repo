@@ -13,8 +13,9 @@ function Home() {
   const cardData = [
     { id: 1, title: 'Join Course', description: 'Sign up for a new course.', link: '/joinCourse' },
     { id: 2, title: 'My Courses', description: 'View your enrolled courses.', link: '/myCourses' },
-    { id: 3, title: 'Create Course', description: 'Start a new course (For teachers/admins).', link: '/createCourse', isTeacherOrAdmin: true },
-    { id: 4, title: 'Forum', description: 'Access the main forum page.', link: '/mainForum' }
+    { id: 3, title: 'Create Course', description: 'Start a new course.', link: '/createCourse', isTeacherOrAdmin: true },
+    { id: 4, title: 'Forum', description: 'Access the main forum page.', link: '/mainForum' },
+    { id: 5, title: 'Your posts', description: 'Check all your forum posts.', link: '/userPosts' }
   ];
 
   useEffect(() => {
@@ -42,7 +43,7 @@ function Home() {
             <div className='d-flex flex-wrap'>
               {cardData.map((card) => (
                 (card.isTeacherOrAdmin === undefined || isTeacherOrAdmin) && (
-                  <Link to={card.link} key={card.id} style={{ textDecoration: 'none', color: 'inherit', width: '20%', margin: '0.5rem' }}>
+                  <Link to={card.link} key={card.id} style={{ textDecoration: 'none', color: 'inherit', width: '17%', margin: '0.5rem' }}>
                     <div className='card mb-4' style={{ cursor: 'pointer' }}>
                       <div className='card-body text-center d-flex flex-column'>
                         <h5 className='card-title'>{card.title}</h5>
@@ -54,7 +55,7 @@ function Home() {
               ))}
             </div>
           </div>
-          <div className='row mt-3'>
+          <div className='row mt-3 me-0'>
             <div className='text-center'>
               <img src={logoMS} alt='Description' width='400' height='400' />
             </div>

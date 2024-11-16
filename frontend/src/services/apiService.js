@@ -398,3 +398,26 @@ export const voteOnPost = async (postID, login, voted, liked) => {
         return handleAxiosError(error);
     }
 };
+
+export const getUserPosts = async (login) => {
+    try {
+        const response = await axios.post(`${API_URL}Forum/getUserPosts`, {
+            login
+        });
+        return { data: response.data, isSuccess: true};
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};
+
+export const getSelectedPost = async (postID, login) => {
+    try {
+        const response = await axios.post(`${API_URL}Forum/getSelectedPost`, {
+            postID,
+            login
+        });
+        return { data: response.data, isSuccess: true};
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};

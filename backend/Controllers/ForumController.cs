@@ -23,7 +23,7 @@ namespace backend.Controllers
         {
             try
             {
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == request.Login);
+                var user = await _context.Users.Include(s => s.UserType).FirstOrDefaultAsync(u => u.Login == request.Login);
                 if (user == null) return NotFound(new { message = "User not found" });
 
                 DateTime timeframeLimit = DateTime.Now;
@@ -65,7 +65,7 @@ namespace backend.Controllers
                             CreatedOn = DateTime.SpecifyKind(post.CreatedOn, DateTimeKind.Utc),
                             IsDeleted = post.IsDeleted,
                             VotesCount = post.VotesCount,
-                            IsPostedByUser = post.UserID == user.ID,
+                            IsEditible = post.UserID == user.ID || user.UserType.TypeName == "Administrator",
                             Voted = _context.forum_votes.Any(vote => vote.PostID == post.ID && vote.UserID == user.ID && !vote.IsDeleted),
                             Liked = _context.forum_votes.Any(vote => vote.PostID == post.ID && vote.UserID == user.ID && !vote.IsDeleted && vote.IsLiked),
                             Attachments = post.PostAttachments != null ? post.PostAttachments.Select(a => new AttachmentDto
@@ -108,9 +108,10 @@ namespace backend.Controllers
                         PostTitle = post.PostTitle,
                         PostDescription = post.PostDescription,
                         CreatedOn = DateTime.SpecifyKind(post.CreatedOn, DateTimeKind.Utc),
+                        EditedOn = post.EditedOn != null ? DateTime.SpecifyKind(Convert.ToDateTime(post.EditedOn), DateTimeKind.Utc) : null,
                         IsDeleted = post.IsDeleted,
                         VotesCount = post.VotesCount,
-                        IsPostedByUser = post.UserID == user.ID,
+                        IsEditible = post.UserID == user.ID || user.UserType.TypeName == "Administrator",
                         Voted = _context.forum_votes.Any(vote => vote.PostID == post.ID && vote.UserID == user.ID && !vote.IsDeleted),
                         Liked = _context.forum_votes.Any(vote => vote.PostID == post.ID && vote.UserID == user.ID && !vote.IsDeleted && vote.IsLiked),
                         Attachments = post.PostAttachments != null ? post.PostAttachments.Select(a => new AttachmentDto
@@ -155,7 +156,7 @@ namespace backend.Controllers
                 {
                     post.PostTitle = model.PostTitle;
                     post.PostDescription = model.PostDescription;
-                    //post.EditedOn = DateTime.UtcNow; TODO: EditedOn column
+                    post.EditedOn = DateTime.UtcNow;
 
                     if (post.PostAttachments != null)
                     {
@@ -324,6 +325,88 @@ namespace backend.Controllers
             }
         }
 
+        [HttpPost("getUserPosts")]
+        public async Task<IActionResult> GetUserPosts([FromBody] PlainLoginModel model)
+        {
+            try
+            {
+                var user = await _context.Users.Include(s => s.UserType).FirstOrDefaultAsync(u => u.Login == model.Login);
+                if (user == null) return NotFound(new { message = "User not found" });
+
+                var query = _context.forum_posts.Include(s => s.PostAttachments)
+                        .Where(post => !post.IsDeleted && post.UserID == user.ID)
+                        .OrderByDescending(post => post.CreatedOn);
+
+                var posts = await query
+                    .Select(post => new ForumPostModelExtended
+                    {
+                        Id = post.ID,
+                        PostTitle = post.PostTitle,
+                        PostDescription = post.PostDescription,
+                        CreatedOn = DateTime.SpecifyKind(post.CreatedOn, DateTimeKind.Utc),
+                        EditedOn = post.EditedOn != null ? DateTime.SpecifyKind(Convert.ToDateTime(post.EditedOn), DateTimeKind.Utc) : null,
+                        IsDeleted = post.IsDeleted,
+                        VotesCount = post.VotesCount,
+                        IsEditible = post.UserID == user.ID || user.UserType.TypeName == "Administrator",
+                        Attachments = post.PostAttachments != null ? post.PostAttachments.Select(a => new AttachmentDto
+                        {
+                            AttachmentID = a.ID,
+                            FileName = a.FileName,
+                            FilePath = Url.Action("DownloadFile", new { attachmentId = a.ID }),
+                            AddedOn = a.AddedOn
+                        }).ToList() : null
+                    })
+                    .ToListAsync();
+
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("getSelectedPost")]
+        public async Task<IActionResult> GetSelectedPost([FromBody] SelectedPostModel model)
+        {
+            try
+            {
+                var user = await _context.Users.Include(s => s.UserType).FirstOrDefaultAsync(u => u.Login == model.Login);
+                if (user == null) return NotFound(new { message = "User not found" });
+
+                var post = await _context.forum_posts
+                    .Include(p => p.PostAttachments)
+                    .Where(p => !p.IsDeleted && p.UserID == user.ID && p.ID == model.PostID)
+                    .Select(p => new ForumPostModelExtended
+                    {
+                        Id = p.ID,
+                        PostTitle = p.PostTitle,
+                        PostDescription = p.PostDescription,
+                        CreatedOn = DateTime.SpecifyKind(p.CreatedOn, DateTimeKind.Utc),
+                        EditedOn = p.EditedOn != null ? DateTime.SpecifyKind(Convert.ToDateTime(p.EditedOn), DateTimeKind.Utc) : null,
+                        IsDeleted = p.IsDeleted,
+                        VotesCount = p.VotesCount,
+                        IsEditible = p.UserID == user.ID || user.UserType.TypeName == "Administrator",
+                        Attachments = p.PostAttachments != null ? p.PostAttachments.Select(a => new AttachmentDto
+                        {
+                            AttachmentID = a.ID,
+                            FileName = a.FileName,
+                            FilePath = Url.Action("DownloadFile", new { attachmentId = a.ID }),
+                            AddedOn = a.AddedOn
+                        }).ToList() : null
+                    })
+                    .FirstOrDefaultAsync();
+
+                if (post == null) return NotFound(new { message = "Post not found" });
+
+                return Ok(post);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         private byte[] DecryptFileContents(byte[] encryptedContents, byte[] key, byte[] iv)
         {
             using var aesAlg = Aes.Create();
@@ -392,9 +475,10 @@ namespace backend.Controllers
         public required string PostTitle { get; set; }
         public string? PostDescription { get; set; }
         public DateTime CreatedOn { get; set; }
+        public DateTime? EditedOn { get; set; }
         public bool IsDeleted { get; set; }
         public int VotesCount { get; set; }
-        public bool IsPostedByUser { get; set; }
+        public bool IsEditible { get; set; }
         public bool Voted { get; set; }
         public bool Liked { get; set; }
         public List<AttachmentDto>? Attachments { get; set; }
@@ -402,7 +486,7 @@ namespace backend.Controllers
 
     public class PostSubmissionModel
     {
-        public int PostID { get; set; }
+        public int? PostID { get; set; }
         public required string Login { get; set; }
         public required string PostTitle { get; set; }
         public string? PostDescription { get; set; }
@@ -415,5 +499,11 @@ namespace backend.Controllers
         public required string Login { get; set; }
         public bool Voted { get; set; }
         public bool Liked { get; set; }
+    }
+
+    public class SelectedPostModel
+    {
+        public int PostID { get; set; }
+        public required string Login { get; set; }
     }
 }

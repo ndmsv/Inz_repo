@@ -288,7 +288,7 @@ function CourseDetails() {
                         </div>
                         <div className='col-md-8 text-center'>
                             <h5 className='card-title mb-2'>{selectedCourse ? selectedCourse.name : ''}</h5>
-                            <p className='card-subtitle mb-2 text-muted'>{selectedCourse ? selectedCourse.description : ''}</p>
+                            <p className='card-subtitle mb-2 text-muted' style={{ whiteSpace: 'pre-wrap' }}>{selectedCourse ? selectedCourse.description : ''}</p>
                         </div>
                         <div className='col-md-2 text-end'>
                             <button type='button' className='btn btn-secondary' onClick={() => handleReturn()}>Back</button>
@@ -310,6 +310,7 @@ function CourseDetails() {
                                         <div className='card-body text-center d-flex flex-column'>
                                             <div className='card-content'>
                                                 <h5 className='card-title'>{task.taskName}</h5>
+                                                <p className='card-subtitle mb-2 text-muted' style={{ whiteSpace: 'pre-wrap' }}>{task.taskDescription}</p>
                                                 <p className='card-text'>Opening date: {formatDate(task.openingDate)}</p>
                                                 <p className='card-text'>Closing date: {formatDate(task.closingDate)}</p>
                                                 {task.isSubmission &&

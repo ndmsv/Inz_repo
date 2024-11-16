@@ -1,22 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../Global/Navbar';
-import { checkIfOwnerOrAdmin, saveTaskSubmission, getTaskSubmissions, downloadFile } from '../../services/apiService';
+import { saveTaskSubmission, getTaskSubmissions, downloadFile } from '../../services/apiService';
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../Global/Global.css';
 import './TaskSubmissions.css';
-import { format, parseISO } from 'date-fns';
+import { parseISO } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
 import JSZip from 'jszip';
 
 function TaskSubmissions() {
     const navigate = useNavigate();
     const [username, setUsername] = React.useState(localStorage.getItem('username') || null);
-    const [isLoading, setIsLoading] = useState(true);
     const location = useLocation();
     const selectedCourse = (location.state && location.state.course) ? location.state.course : null;
     const selectedTask = (location.state && location.state.task) ? location.state.task : null;
     const selectedUser = (location.state && location.state.selectedUser) ? location.state.selectedUser : null;
-    const [isOwnerOrAdmin, setIsOwnerOrAdmin] = useState(false);
     const [files, setFiles] = useState([]);
     const [submissionNote, setSubmissionNote] = useState('');
 
@@ -29,16 +27,6 @@ function TaskSubmissions() {
 
         const fetchData = async () => {
             try {
-                setIsLoading(true);
-
-                const ownerData = await checkIfOwnerOrAdmin(username, selectedCourse.id);
-                if (ownerData.isSuccess) {
-                    setIsOwnerOrAdmin(ownerData.data.isOwnerOrAdmin);
-                }
-                else {
-                    alert(ownerData.message)
-                }
-
                 const submissionsData = await getTaskSubmissions(selectedTask.taskId, selectedUser ? selectedUser.login : username);
                 if (submissionsData.isSuccess && submissionsData.data.length > 0) {
 
@@ -51,8 +39,6 @@ function TaskSubmissions() {
                 }
             } catch (error) {
                 alert('Error fetching data:', error);
-            } finally {
-                setIsLoading(false);
             }
         };
 
@@ -167,7 +153,7 @@ function TaskSubmissions() {
                         </div>
                         <div className='col-md-8 text-center'>
                             <h5 className='card-title mb-2'>{selectedTask ? selectedTask.taskName : ''}</h5>
-                            <p className='card-subtitle mb-2 text-muted'>{selectedTask ? selectedTask.taskDescription : ''}</p>
+                            <p className='card-subtitle mb-2 text-muted' style={{ whiteSpace: 'pre-wrap' }}>{selectedTask ? selectedTask.taskDescription : ''}</p>
                         </div>
                         <div className='col-md-2 text-end'>
                             {!selectedUser &&

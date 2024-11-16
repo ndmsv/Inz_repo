@@ -69,6 +69,7 @@ function Navbar() {
                         </a>
                         <ul className='dropdown-menu' aria-labelledby='navbarCourses'>
                             <Link className='dropdown-item' to='/mainForum'>General page</Link>
+                            <Link className='dropdown-item' to='/userPosts'>Your posts</Link>
                         </ul>
                     </li>
                 </ul>

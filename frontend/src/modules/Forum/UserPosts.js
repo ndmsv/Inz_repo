@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../Global/Navbar';
-import NewPostPopup from './PostPopup';
-import { getForumPosts, downloadPostFile, voteOnPost } from '../../services/apiService';
+import PostPopup from './PostPopup';
+import { getUserPosts, downloadPostFile } from '../../services/apiService';
 import '../Global/Global.css';
 import { parseISO } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
@@ -10,27 +10,21 @@ import upArrowGreen from '../../assets/up-arrow-green.png';
 import downArrowRegular from '../../assets/down-arrow.png';
 import downArrowRed from '../../assets/down-arrow-red.png';
 
-function MainForum() {
+function UserPosts() {
     const [username,] = React.useState(localStorage.getItem('username') || null);
     const [posts, setPosts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const postsPerPage = 10;
     const [showPopup, setShowPopup] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [currentPostCategory, setCurrentPostCategory] = useState('Hot');
-    const [timeframeValue, setTimeframeValue] = useState('AllTime');
     const [selectedPostID, setSelectedPostID] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 setIsLoading(true);
-                const btnHot = document.getElementById('btnHot');
-                if (btnHot && currentPostCategory == 'Hot') {
-                    btnHot.checked = true;
-                }
 
-                const data = await getForumPosts(username, currentPostCategory, timeframeValue);
+                const data = await getUserPosts(username);
 
                 if (data.isSuccess) {
                     const updatedPosts = await Promise.all(data.data.map(async post => {
@@ -52,7 +46,7 @@ function MainForum() {
 
         fetchData();
 
-    }, [currentPostCategory, timeframeValue]);
+    }, []);
 
     const togglePopup = () => {
         setShowPopup(!showPopup);
@@ -64,7 +58,7 @@ function MainForum() {
     };
 
     const reloadPosts = async () => {
-        const data = await getForumPosts(username, currentPostCategory, timeframeValue);
+        const data = await getUserPosts(username);
 
         if (data.isSuccess) {
             const updatedPosts = await Promise.all(data.data.map(async post => {
@@ -119,32 +113,8 @@ function MainForum() {
         post.convertedAttachments = files;
     };
 
-    const upvotePost = (post) => {
-        const voted = !(post.voted && post.liked);
-        const liked = !(post.voted && post.liked);
+    const deletePost = async (post) => {
 
-        callVoteOnPost(post, voted, liked);
-    };
-
-    const downvotePost = (post) => {
-        const voted = !post.voted || post.liked;
-        const liked = false;
-
-        callVoteOnPost(post, voted, liked);
-    };
-
-    const callVoteOnPost = async (post, voted, liked) => {
-        const data = await voteOnPost(post.id, username, voted, liked);
-
-        if (!data.isSuccess) {
-            alert('Error while voting: ' + data.message);
-        } else {
-            reloadPosts();
-        }
-    };
-
-    const handleTimeframeChange = (event) => {
-        setTimeframeValue(event.target.value);
     };
 
     const indexOfLastPost = currentPage * postsPerPage;
@@ -163,34 +133,9 @@ function MainForum() {
                             <button type='button' className='btn btn-primary' onClick={() => showPostPopup(null)}>New post</button>
                         </div>
                         <div className='col-md-4 text-center'>
-                            <div className='btn-group' role='group'>
-                                <input type='radio' className='btn-check' name='btnRadio' id='btnHot' onClick={() => setCurrentPostCategory('Hot')} />
-                                <label className='btn btn-outline-primary' htmlFor='btnHot'>Hot</label>
-
-                                <input type='radio' className='btn-check' name='btnRadio' id='btnNew' onClick={() => setCurrentPostCategory('New')} />
-                                <label className='btn btn-outline-primary' htmlFor='btnNew'>New</label>
-
-                                <input type='radio' className='btn-check' name='btnRadio' id='btnTop' onClick={() => setCurrentPostCategory('Top')} />
-                                <label className='btn btn-outline-primary' htmlFor='btnTop'>Top</label>
-                            </div>
+                            <h3>Your posts</h3>
                         </div>
                     </div>
-                    {currentPostCategory === 'Top' &&
-                        <div className='row justify-content-md-center mt-3 me-0'>
-                            <div className='ms-3 col-md-1'>
-                                <select className='form-select' id='timeframeSelect' onChange={handleTimeframeChange} value={timeframeValue}>
-                                    <option defaultValue value='AllTime'>All Time</option>
-                                    <option value='Year'>Year</option>
-                                    <option value='Month'>Month</option>
-                                    <option value='Week'>Week</option>
-                                    <option value='Day'>Day</option>
-                                    <option value='TwelveHours'>12 Hours</option>
-                                    <option value='SixHours'>6 Hours</option>
-                                    <option value='TwoHours'>2 Hours</option>
-                                </select>
-                            </div>
-                        </div>
-                    }
                     <div className='col-md-12 mt-3'>
                         <div className='d-flex flex-wrap'>
                             {isLoading ? (
@@ -227,47 +172,18 @@ function MainForum() {
                                             </div>
                                             <div className='card-actions'>
                                                 <div className='row'>
-                                                    <div className='col-4 text-start'>
-                                                        <button className='btn' style={{ background: 'none', border: 'none' }} onClick={() => upvotePost(post)}>
-                                                            <img
-                                                                src={
-                                                                    post.voted
-                                                                        ? (post.liked ? upArrowGreen : upArrowRegular)
-                                                                        : upArrowRegular
-                                                                }
-                                                                alt='Upvote'
-                                                                width='24'
-                                                                height='24'
-                                                            />
-                                                        </button>
-                                                        <span>{post.votesCount}</span>
-                                                        <button className='btn' style={{ background: 'none', border: 'none' }} onClick={() => downvotePost(post)}>
-                                                            <img
-                                                                src={
-                                                                    post.voted
-                                                                        ? (!post.liked ? downArrowRed : downArrowRegular)
-                                                                        : downArrowRegular
-                                                                }
-                                                                alt='Downvote'
-                                                                width='24'
-                                                                height='24'
-                                                            />
-                                                        </button>
+                                                    <div className='col-4 text-start align-self-end'>
+                                                        <span>{post.votesCount} Like{![-1, 1].includes(post.votesCount) ? 's' : ''}</span>
                                                     </div>
                                                     <div className='col-4 test-center'>
-                                                        {post.isEditible &&
-                                                            <button className='btn btn-primary me-1' onClick={() => showPostPopup(post.id)}>
-                                                                Edit post
-                                                            </button>
-                                                        }
+                                                        <button className='btn btn-primary me-1' onClick={() => showPostPopup(post.id)}>
+                                                            Edit post
+                                                        </button>
                                                     </div>
                                                     <div className='col-4 text-end'>
-                                                        {post.isEditible &&
-                                                            <button className='btn btn-danger'>
-                                                                Delete post
-                                                            </button>
-
-                                                        }
+                                                        <button className='btn btn-danger' onClick={() => deletePost(post)}>
+                                                            Delete post
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -276,7 +192,7 @@ function MainForum() {
                                 ))
                             ) : (
                                 <div className='d-flex flex-column justify-content-center align-items-center' style={{ height: '30vh' }}>
-                                    <h3>There are no posts now!</h3>
+                                    <h3>You did not created any posts yet!</h3>
                                 </div>
                             )}
                         </div>
@@ -292,11 +208,11 @@ function MainForum() {
                             ))}
                         </ul>
                     </nav>
-                    {showPopup && <NewPostPopup togglePopup={togglePopup} username={username} reloadPosts={reloadPosts} postID={selectedPostID} />}
+                    {showPopup && <PostPopup togglePopup={togglePopup} username={username} reloadPosts={reloadPosts} postID={selectedPostID} />}
                 </div>
             </div>
         </div>
     );
 }
 
-export default MainForum;
+export default UserPosts;

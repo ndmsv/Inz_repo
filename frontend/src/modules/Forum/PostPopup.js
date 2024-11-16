@@ -1,13 +1,34 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { savePostSubmission } from '../../services/apiService';
+import React, { useState, useEffect } from 'react';
+import { savePostSubmission, getSelectedPost, downloadPostFile } from '../../services/apiService';
 import '../Global/Global.css';
 
-function PostPopup({ togglePopup, username, reloadPosts }) {
+function PostPopup({ togglePopup, username, reloadPosts, postID }) {
     const [files, setFiles] = useState([]);
     const [title, setTitle] = useState('');
     const [postContent, setPostContent] = useState('');
     const limitedAttachments = 10;
+
+    useEffect(() => {
+        const fetchData = async () => {
+            if (postID !== null) {
+                const data = await getSelectedPost(postID, username);
+
+                if (data.isSuccess) {
+                    const post = data.data;
+                    setTitle(post.postTitle);
+                    setPostContent(post.postDescription);
+
+                    await fetchAndSetFiles(post)
+                }
+                else {
+                    alert(data.message);
+                }
+            }
+        };
+
+        fetchData();
+
+    }, []);
 
     const handleFileChange = (event) => {
         const selectedFiles = Array.from(event.target.files);
@@ -35,12 +56,12 @@ function PostPopup({ togglePopup, username, reloadPosts }) {
     };
 
     const handleSubmit = async () => {
-        if(title === '') {
+        if (title === '') {
             alert('Title is required.');
             return;
         }
 
-        const result = await savePostSubmission(-1, username, title, postContent, files);
+        const result = await savePostSubmission(postID, username, title, postContent, files);
         if (result.isSuccess) {
             alert(result.message);
             togglePopup();
@@ -48,6 +69,29 @@ function PostPopup({ togglePopup, username, reloadPosts }) {
         } else {
             alert(`Failed to save submission: ${result.message}`);
         }
+    };
+
+    const fetchAndSetFiles = async (post) => {
+        const attachments = post.attachments;
+        let files = [];
+
+        if (attachments !== null) {
+            for (const attachment of attachments) {
+                const result = await downloadPostFile(attachment.attachmentID);
+                if (result.isSuccess && result.data) {
+                    try {
+                        const file = new File([result.data], attachment.fileName, { type: 'application/octet-stream' });
+                        files.push(file);
+                    } catch (error) {
+                        console.error('Error creating file from blob: ', error);
+                    }
+                } else {
+                    console.error('Failed to download file: ', attachment.fileName);
+                }
+            }
+        }
+
+        setFiles(files);
     };
 
     return (
@@ -67,11 +111,11 @@ function PostPopup({ togglePopup, username, reloadPosts }) {
                         <div className='modal-body'>
                             <div className='mb-3'>
                                 <label htmlFor='txtTitle' className='form-label'>Title</label>
-                                <input type='text' className='form-control' id='txtTitle' placeholder='Enter your title' onChange={(e) => setTitle(e.target.value)}/>
+                                <input type='text' className='form-control' id='txtTitle' placeholder='Enter your title' onChange={(e) => setTitle(e.target.value)} value={title} />
                             </div>
                             <div className='mb-3'>
                                 <label htmlFor='txtContent' className='form-label'>Post content</label>
-                                <textarea className='form-control' id='txtContent' placeholder='Enter your post content' rows={12} onChange={(e) => setPostContent(e.target.value)}></textarea>
+                                <textarea className='form-control' id='txtContent' placeholder='Enter your post content' rows={12} onChange={(e) => setPostContent(e.target.value)} value={postContent}></textarea>
                             </div>
                             <div className='row ms-2 me-2 mt-3'>
                                 <div className='col-md-4 offset-md-4'>

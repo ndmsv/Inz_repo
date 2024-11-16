@@ -181,10 +181,10 @@ function MyCourses() {
                                 ) : currentCourses.length > 0 ? (
                                     currentCourses.map((course, index) => (
                                         <div key={course.id} className='card mb-4 me-2' style={{ width: '40%' }}>
-                                            <div className='card-body text-center d-flex flex-column'> {/* Flex column container */}
+                                            <div className='card-body text-center d-flex flex-column'>
                                                 <div className='card-content'>
                                                     <h5 className='card-title'>{course.name}</h5>
-                                                    <p className='card-subtitle mb-2 text-muted'>{course.description}</p>
+                                                    <p className='card-subtitle mb-2 text-muted' style={{ whiteSpace: 'pre-wrap' }}>{course.description}</p>
                                                 </div>
                                                 <div className='card-actions'>
                                                     <div className='row'>
