@@ -352,7 +352,9 @@ export const getForumPosts = async (login, type, timeframe) => {
 
 export const savePostSubmission = async (postId, login, postTitle, postDescription, files) => {
     const formData = new FormData();
-    formData.append('PostID', postId);
+    if (postId !== null && postId !== undefined) {
+        formData.append('PostID', postId);
+    }
     formData.append('Login', login);
     formData.append('PostTitle', postTitle);
     formData.append('PostDescription', postDescription);
@@ -429,6 +431,32 @@ export const deletePost = async (postID, login) => {
             login
         });
         return { message: response.data.message, data: response.data, isSuccess: true};
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};
+
+export const savePostComment = async (commentID, postID, login, postContent) => {
+    try {
+        const response = await axios.post(`${API_URL}Forum/savePostComment`, {
+            commentID,
+            postID,
+            login,
+            postContent
+        });
+        return { message: response.data.message, data: response.data, isSuccess: true};
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};
+
+export const getSelectedPostComments = async (postID, login) => {
+    try {
+        const response = await axios.post(`${API_URL}Forum/getSelectedPostComments`, {
+            postID,
+            login
+        });
+        return { data: response.data, isSuccess: true};
     } catch (error) {
         return handleAxiosError(error);
     }

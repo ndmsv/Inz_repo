@@ -22,6 +22,7 @@ namespace backend.Models
         public DbSet<ForumPosts> forum_posts { get; set; }
         public DbSet<ForumVotes> forum_votes { get; set; }
         public DbSet<PostsAttachments> posts_attachments { get; set; }
+        public DbSet<PostsComments> posts_comments { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -55,6 +56,7 @@ namespace backend.Models
         public ICollection<UsersInCourse>? UsersInCourse { get; set; }
         public ICollection<TaskSubmissions>? TaskSubmissions { get; set; }
         public ICollection<ForumVotes>? ForumVotes { get; set; }
+        public ICollection<PostsComments>? PostsComments { get; set; }
     }
 
     public class Type
@@ -246,6 +248,7 @@ namespace backend.Models
 
         public ICollection<ForumVotes>? ForumVotes { get; set; }
         public ICollection<PostsAttachments>? PostAttachments { get; set; }
+        public ICollection<PostsComments>? PostsComments { get; set; }
     }
 
     public class ForumVotes
@@ -291,5 +294,34 @@ namespace backend.Models
         public required string FilePath { get; set; }
 
         public virtual ForumPosts? ForumPost { get; set; }
+    }
+
+    public class PostsComments
+    {
+        [Key]
+        public int ID { get; set; }
+
+        [ForeignKey("ForumPost")]
+        [Column("POST_ID")]
+        public int PostID { get; set; }
+
+        [ForeignKey("User")]
+        [Column("USER_ID")]
+        public int UserID { get; set; }
+
+        [Column("CREATED_ON")]
+        public DateTime CreatedOn { get; set; }
+
+        [Column("UPDATED_ON")]
+        public DateTime? UpdatedOn { get; set; }
+
+        [Column("POST_CONTENT")]
+        public required string PostContent { get; set; }
+
+        [Column("IS_DELETED")]
+        public required bool IsDeleted { get; set; }
+
+        public virtual ForumPosts? ForumPost { get; set; }
+        public virtual User? User { get; set; }
     }
 }

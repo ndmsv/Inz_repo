@@ -63,6 +63,7 @@ namespace backend.Controllers
                             PostTitle = post.PostTitle,
                             PostDescription = post.PostDescription,
                             CreatedOn = DateTime.SpecifyKind(post.CreatedOn, DateTimeKind.Utc),
+                            EditedOn = post.EditedOn != null ? DateTime.SpecifyKind(Convert.ToDateTime(post.EditedOn), DateTimeKind.Utc) : null,
                             IsDeleted = post.IsDeleted,
                             VotesCount = post.VotesCount,
                             IsEditible = post.UserID == user.ID || user.UserType.TypeName == "Administrator",
@@ -376,7 +377,7 @@ namespace backend.Controllers
 
                 var post = await _context.forum_posts
                     .Include(p => p.PostAttachments)
-                    .Where(p => !p.IsDeleted && p.UserID == user.ID && p.ID == model.PostID)
+                    .Where(p => !p.IsDeleted && p.ID == model.PostID)
                     .Select(p => new ForumPostModelExtended
                     {
                         Id = p.ID,
@@ -452,6 +453,87 @@ namespace backend.Controllers
                     post.IsDeleted = true;
                     await _context.SaveChangesAsync();
                     return Ok(new { message = "You have successfully deleted the post!" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("savePostComment")]
+        public async Task<IActionResult> SavePostComment([FromBody] PostCommentModel model)
+        {
+            try
+            {
+                var user = await _context.Users.Include(s => s.UserType).FirstOrDefaultAsync(u => u.Login == model.Login);
+                if (user == null) return NotFound(new { message = "User not found" });
+
+                var comment = await _context.posts_comments.FirstOrDefaultAsync(c => c.ID == model.CommentID);
+                if (comment == null)
+                {
+                    comment = new PostsComments
+                    {
+                        PostID = model.PostID,
+                        UserID = user.ID,
+                        CreatedOn = DateTime.UtcNow,
+                        PostContent = model.PostContent,
+                        IsDeleted = false
+                    };
+
+                    _context.posts_comments.Add(comment);
+                }
+                else
+                {
+                    comment.PostContent = model.PostContent;
+                    comment.UpdatedOn = DateTime.UtcNow;
+                }
+
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Comment added" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("getSelectedPostComments")]
+        public async Task<IActionResult> GetSelectedPostComments([FromBody] SelectedPostModel model)
+        {
+            try
+            {
+                var user = await _context.Users.Include(s => s.UserType).FirstOrDefaultAsync(u => u.Login == model.Login);
+                if (user == null) return NotFound(new { message = "User not found" });
+
+                var post = await _context.forum_posts.FirstOrDefaultAsync(post => !post.IsDeleted && post.ID == model.PostID);
+
+                if (post == null)
+                {
+                    return NotFound(new { message = "Post not found" });
+                }
+                else
+                {
+                    var comments = await _context.posts_comments
+                        .Where(p => !p.IsDeleted && p.ForumPost == post)
+                        .Select(s => new PostCommentModelExtended
+                        {
+                            ID = s.ID,
+                            PostID = s.PostID,
+                            UserDisplayName = _context.Users
+                                .Where(u => u.ID == s.UserID)
+                                .Select(u => (u.Name != null && u.Surname != null) ? (u.Name + " " + u.Surname) : u.Login)
+                                .FirstOrDefault(),
+                            CreatedOn = s.CreatedOn,
+                            UpdatedOn = s.UpdatedOn,
+                            PostContent = s.PostContent,
+                            IsDeleted = s.IsDeleted,
+                            IsEditible = s.UserID == user.ID || user.UserType.TypeName == "Administrator",
+                        })
+                        .ToListAsync();
+
+                    return Ok(comments);
                 }
             }
             catch (Exception ex)
@@ -558,5 +640,25 @@ namespace backend.Controllers
     {
         public int PostID { get; set; }
         public required string Login { get; set; }
+    }
+
+    public class PostCommentModel
+    {
+        public int? CommentID { get; set; }
+        public int PostID { get; set; }
+        public required string Login { get; set; }
+        public required string PostContent { get; set; }
+    }
+
+    public class PostCommentModelExtended
+    {
+        public int ID { get; set; }
+        public int PostID { get; set; }
+        public string UserDisplayName { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime? UpdatedOn { get; set; }
+        public required string PostContent { get; set; }
+        public bool IsDeleted { get; set; }
+        public bool IsEditible { get; set; }
     }
 }

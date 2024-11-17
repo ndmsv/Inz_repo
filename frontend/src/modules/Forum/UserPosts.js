@@ -111,7 +111,7 @@ function UserPosts() {
                         </div>
                     </div>
                     <div className='col-md-12 mt-3'>
-                        <PostsCards isLoading={isLoading} currentPosts={currentPosts} showPostPopup={showPostPopup} userCards={true} username={username} reloadPosts={reloadPosts} />
+                        <PostsCards isLoading={isLoading} currentPosts={currentPosts} allPosts={posts} setAllPosts={setPosts} showPostPopup={showPostPopup} userCards={true} username={username} reloadPosts={reloadPosts} />
                     </div>
                     <nav>
                         <ul className='pagination justify-content-center'>

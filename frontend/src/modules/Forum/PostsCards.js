@@ -1,5 +1,5 @@
-import React from 'react';
-import { voteOnPost, deletePost } from '../../services/apiService';
+import React, { useState } from 'react';
+import { voteOnPost, deletePost, savePostComment, getSelectedPostComments } from '../../services/apiService';
 import '../Global/Global.css';
 import { parseISO } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
@@ -8,7 +8,8 @@ import upArrowGreen from '../../assets/up-arrow-green.png';
 import downArrowRegular from '../../assets/down-arrow.png';
 import downArrowRed from '../../assets/down-arrow-red.png';
 
-function PostsCards({ isLoading, currentPosts, showPostPopup, userCards, username, reloadPosts }) {
+function PostsCards({ isLoading, currentPosts, allPosts, setAllPosts, showPostPopup, userCards, username, reloadPosts }) {
+    const [commentFields, setCommentFields] = useState({});
 
     const formatDate = (dateString) => {
         const date = parseISO(dateString);
@@ -65,6 +66,49 @@ function PostsCards({ isLoading, currentPosts, showPostPopup, userCards, usernam
         }
     };
 
+    const handleCommentChange = (postId, value) => {
+        setCommentFields(prevComments => ({
+            ...prevComments,
+            [postId]: value
+        }));
+    };
+
+    const saveComment = async (post) => {
+        const postContent = commentFields[post.id]?.trim();
+        if (postContent !== null && postContent !== '') {
+            const response = await savePostComment(null, post.id, username, postContent);
+
+            if (response.isSuccess) {
+                commentFields[post.id] = '';
+                const postIndex = allPosts.findIndex(p => p.id === post.id);
+                handleShowPostComments(allPosts[postIndex], true);
+            }
+        } else {
+            alert('You cannot add empty comment.');
+        }
+    };
+
+    const handleShowPostComments = async (post, stay) => {
+        const postIndex = allPosts.findIndex(p => p.id === post.id);
+
+        if (postIndex !== -1) {
+            const updatedPosts = [...allPosts];
+
+            if (updatedPosts[postIndex].comments && !stay) {
+                updatedPosts[postIndex].comments = null;
+            } else {
+                const data = await getSelectedPostComments(post.id, username);
+                if (data.isSuccess) {
+                    updatedPosts[postIndex].comments = data.data;
+                }
+            }
+
+            setAllPosts(updatedPosts);
+        } else {
+            console.error('Post not found.');
+        }
+    };
+
     return (
         <div className='d-flex flex-wrap'>
             {isLoading ? (
@@ -98,7 +142,7 @@ function PostsCards({ isLoading, currentPosts, showPostPopup, userCards, usernam
                                         </div>
                                     </div>
                                 </div>
-                                <div className='row ms-0 me-0 ps-0 pe-0'>
+                                <div className='row ms-0 me-0 mb-2 ps-0 pe-0'>
                                     <div className='col-4 text-start'>
                                         <button className='btn' style={{ background: 'none', border: 'none' }} onClick={() => upvotePost(post)} disabled={userCards}>
                                             <img
@@ -126,7 +170,10 @@ function PostsCards({ isLoading, currentPosts, showPostPopup, userCards, usernam
                                             />
                                         </button>
                                     </div>
-                                    <div className='col-4 test-center'>
+                                    <div className='col-4 test-center align-items-center' style={{ display: 'grid' }}>
+                                        <p className='register-label mb-0' style={{ cursor: 'pointer', padding: 0 }} onClick={() => handleShowPostComments(post, false)}>
+                                            {post.comments != null ? '↑ Hide all comments ↑' : '↓ Show all comments ↓'}
+                                        </p>
                                     </div>
                                     <div className='col-4 text-end'>
                                         {post.isEditible &&
@@ -141,13 +188,47 @@ function PostsCards({ isLoading, currentPosts, showPostPopup, userCards, usernam
                                         }
                                     </div>
                                 </div>
+                                <div style={{ backgroundColor: 'lightgray' }}>
+                                <div className='row mt-3 ms-0 me-0'>
+                                    <div className='col-md-12'>
+                                        <div className='d-flex flex-wrap'>
+                                            {post.comments != null && post.comments.length > 0 && post.comments.map((comment, index) => (
+                                                <div key={index} className='card mb-4 me-2' style={{ width: '84%' }}>
+                                                    <div className='card-body text-center'>
+                                                        <p className='card-text' style={{ whiteSpace: 'pre-wrap' }}>{comment.postContent}</p>
+                                                        <p className='card-title'>Creation date: {formatDate(comment.createdOn)}</p>
+                                                        {comment.updatedOn &&
+                                                            <p className='card-text'>Last edited on: {formatDate(comment.updatedOn)}</p>
+                                                        }
+                                                        <p className='card-text'>By {comment.userDisplayName}</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                                    <div className='row ms-0 me-0 ps-0 pe-0 justify-content-center'>
+                                        <div className='col-10 mt-2 mb-2'>
+                                            <textarea className='form-control' id='txtComment' placeholder='Comment the post' rows={4} value={commentFields[post.id] || ''}
+                                                onChange={(e) => handleCommentChange(post.id, e.target.value)}>
+                                            </textarea>
+                                        </div>
+                                    </div>
+                                    <div className='row ms-0 me-0 ps-0 pe-0 mb-2'>
+                                        <div className='col-11 text-end'>
+                                            <button className='btn btn-success' onClick={() => saveComment(post)}>
+                                                Save comment
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 ))
             ) : (
                 <div className='d-flex flex-column justify-content-center align-items-center' style={{ height: '30vh' }}>
-                    <h3>{userCards ? 'You did not created any posts yet!' : 'There are no posts now!'}</h3>
+                    <h3>{userCards ? 'You have not created any posts yet!' : 'There are no posts now!'}</h3>
                 </div>
             )}
         </div>
