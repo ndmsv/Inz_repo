@@ -102,7 +102,7 @@ function PostPopup({ togglePopup, username, reloadPosts, postID }) {
                     <div className='modal-content'>
                         <div className='modal-header'>
                             <div className='col-md-6'>
-                                <h5 className='modal-title'>Create new post</h5>
+                                <h5 className='modal-title'>Post</h5>
                             </div>
                             <div className='col-md-6 text-end'>
                                 <button type='button' className='btn-close' data-dismiss='modal' aria-label='Close' onClick={togglePopup}></button>

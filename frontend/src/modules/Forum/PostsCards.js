@@ -7,6 +7,8 @@ import upArrowRegular from '../../assets/up-arrow.png';
 import upArrowGreen from '../../assets/up-arrow-green.png';
 import downArrowRegular from '../../assets/down-arrow.png';
 import downArrowRed from '../../assets/down-arrow-red.png';
+import iconEdit from '../../assets/icon-edit.png';
+import iconDelete from '../../assets/icon-delete.png';
 
 function PostsCards({ isLoading, currentPosts, allPosts, setAllPosts, showPostPopup, userCards, username, reloadPosts }) {
     const [commentFields, setCommentFields] = useState({});
@@ -123,9 +125,10 @@ function PostsCards({ isLoading, currentPosts, allPosts, setAllPosts, showPostPo
                         <div className='card-body text-center d-flex flex-column'>
                             <div className='row'>
                                 <h5 className='card-title'>{post.postTitle}</h5>
-                                <p className='card-text'>Creation date: {formatDate(post.createdOn)}</p>
+                                <h6 className='card-text'>By: {post.createdBy}</h6>
+                                <h6 className='card-text'>Creation date: {formatDate(post.createdOn)}</h6>
                                 {post.editedOn &&
-                                    <p className='card-text'>Last edited on: {formatDate(post.editedOn)}</p>
+                                    <h6 className='card-text'>Last edited on: {formatDate(post.editedOn)}</h6>
                                 }
                                 <p className='card-subtitle mt-2 text-muted' style={{ whiteSpace: 'pre-wrap' }}>{post.postDescription}</p>
                                 <div className='row mt-3 ms-0 me-0'>
@@ -171,9 +174,9 @@ function PostsCards({ isLoading, currentPosts, allPosts, setAllPosts, showPostPo
                                         </button>
                                     </div>
                                     <div className='col-4 test-center align-items-center' style={{ display: 'grid' }}>
-                                        <p className='register-label mb-0' style={{ cursor: 'pointer', padding: 0 }} onClick={() => handleShowPostComments(post, false)}>
-                                            {post.comments != null ? '↑ Hide all comments ↑' : '↓ Show all comments ↓'}
-                                        </p>
+                                        <h6 className='register-label mb-0' style={{ cursor: 'pointer', padding: 0 }} onClick={() => handleShowPostComments(post, false)}>
+                                            {post.comments != null ? '↑ Hide all comments ('+ post.commentsCount +') ↑' : '↓ Show all comments ('+ post.commentsCount +') ↓'}
+                                        </h6>
                                     </div>
                                     <div className='col-4 text-end'>
                                         {post.isEditible &&
@@ -189,24 +192,48 @@ function PostsCards({ isLoading, currentPosts, allPosts, setAllPosts, showPostPo
                                     </div>
                                 </div>
                                 <div style={{ backgroundColor: 'lightgray' }}>
-                                <div className='row mt-3 ms-0 me-0'>
-                                    <div className='col-md-12'>
-                                        <div className='d-flex flex-wrap'>
-                                            {post.comments != null && post.comments.length > 0 && post.comments.map((comment, index) => (
-                                                <div key={index} className='card mb-4 me-2' style={{ width: '84%' }}>
-                                                    <div className='card-body text-center'>
-                                                        <p className='card-text' style={{ whiteSpace: 'pre-wrap' }}>{comment.postContent}</p>
-                                                        <p className='card-title'>Creation date: {formatDate(comment.createdOn)}</p>
-                                                        {comment.updatedOn &&
-                                                            <p className='card-text'>Last edited on: {formatDate(comment.updatedOn)}</p>
-                                                        }
-                                                        <p className='card-text'>By {comment.userDisplayName}</p>
+                                    <div className='row mt-3 ms-0 me-0'>
+                                        <div className='col-md-12'>
+                                            <div className='d-flex flex-wrap'>
+                                                {post.comments != null && post.comments.length > 0 && post.comments.map((comment, index) => (
+                                                    <div key={index} className='card mb-4 me-2' style={{ width: '84%' }}>
+                                                        <div className='card-body text-center'>
+                                                            <p className='card-text' style={{ whiteSpace: 'pre-wrap' }}>{comment.postContent}</p>
+                                                            <h6 className='card-title'>Creation date: {formatDate(comment.createdOn)}</h6>
+                                                            {comment.updatedOn &&
+                                                                <h6 className='card-text'>Last edited on: {formatDate(comment.updatedOn)}</h6>
+                                                            }
+                                                            <div className='row'>
+                                                                <div className='col-8 offset-2 align-self-center'>
+                                                                    <h6 className='card-text'>By: {comment.userDisplayName}</h6>
+                                                                </div>
+                                                                {comment.isEditible &&
+                                                                    <div className='col-2 text-end'>
+                                                                        <button className='btn' style={{ background: 'none', border: 'none' }} onClick={() => downvotePost(post)}>
+                                                                            <img
+                                                                                src={iconEdit}
+                                                                                alt='Edit'
+                                                                                width='24'
+                                                                                height='24'
+                                                                            />
+                                                                        </button>
+                                                                        <button className='btn' style={{ background: 'none', border: 'none' }} onClick={() => downvotePost(post)}>
+                                                                            <img
+                                                                                src={iconDelete}
+                                                                                alt='Delete'
+                                                                                width='24'
+                                                                                height='24'
+                                                                            />
+                                                                        </button>
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                ))}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
                                     <div className='row ms-0 me-0 ps-0 pe-0 justify-content-center'>
                                         <div className='col-10 mt-2 mb-2'>
                                             <textarea className='form-control' id='txtComment' placeholder='Comment the post' rows={4} value={commentFields[post.id] || ''}

@@ -69,13 +69,18 @@ namespace backend.Controllers
                             IsEditible = post.UserID == user.ID || user.UserType.TypeName == "Administrator",
                             Voted = _context.forum_votes.Any(vote => vote.PostID == post.ID && vote.UserID == user.ID && !vote.IsDeleted),
                             Liked = _context.forum_votes.Any(vote => vote.PostID == post.ID && vote.UserID == user.ID && !vote.IsDeleted && vote.IsLiked),
+                            CreatedBy = _context.Users
+                                .Where(u => u.ID == post.UserID)
+                                .Select(u => (u.Name != null && u.Surname != null) ? (u.Name + " " + u.Surname) : u.Login)
+                                .FirstOrDefault(),
                             Attachments = post.PostAttachments != null ? post.PostAttachments.Select(a => new AttachmentDto
                             {
                                 AttachmentID = a.ID,
                                 FileName = a.FileName,
                                 FilePath = Url.Action("DownloadFile", new { attachmentId = a.ID }),
                                 AddedOn = a.AddedOn
-                            }).ToList() : null
+                            }).ToList() : null,
+                            CommentsCount = _context.posts_comments.Count(comment => comment.PostID == post.ID && !comment.IsDeleted)
                         })
                         .ToList();
                     return Ok(postsHot);
@@ -115,13 +120,18 @@ namespace backend.Controllers
                         IsEditible = post.UserID == user.ID || user.UserType.TypeName == "Administrator",
                         Voted = _context.forum_votes.Any(vote => vote.PostID == post.ID && vote.UserID == user.ID && !vote.IsDeleted),
                         Liked = _context.forum_votes.Any(vote => vote.PostID == post.ID && vote.UserID == user.ID && !vote.IsDeleted && vote.IsLiked),
+                        CreatedBy = _context.Users
+                                .Where(u => u.ID == post.UserID)
+                                .Select(u => (u.Name != null && u.Surname != null) ? (u.Name + " " + u.Surname) : u.Login)
+                                .FirstOrDefault(),
                         Attachments = post.PostAttachments != null ? post.PostAttachments.Select(a => new AttachmentDto
                         {
                             AttachmentID = a.ID,
                             FileName = a.FileName,
                             FilePath = Url.Action("DownloadFile", new { attachmentId = a.ID }),
                             AddedOn = a.AddedOn
-                        }).ToList() : null
+                        }).ToList() : null,
+                        CommentsCount = _context.posts_comments.Count(comment => comment.PostID == post.ID && !comment.IsDeleted)
                     })
                     .ToListAsync();
 
@@ -349,13 +359,18 @@ namespace backend.Controllers
                         IsDeleted = post.IsDeleted,
                         VotesCount = post.VotesCount,
                         IsEditible = post.UserID == user.ID || user.UserType.TypeName == "Administrator",
+                        CreatedBy = _context.Users
+                                .Where(u => u.ID == post.UserID)
+                                .Select(u => (u.Name != null && u.Surname != null) ? (u.Name + " " + u.Surname) : u.Login)
+                                .FirstOrDefault(),
                         Attachments = post.PostAttachments != null ? post.PostAttachments.Select(a => new AttachmentDto
                         {
                             AttachmentID = a.ID,
                             FileName = a.FileName,
                             FilePath = Url.Action("DownloadFile", new { attachmentId = a.ID }),
                             AddedOn = a.AddedOn
-                        }).ToList() : null
+                        }).ToList() : null,
+                        CommentsCount = _context.posts_comments.Count(comment => comment.PostID == post.ID && !comment.IsDeleted)
                     })
                     .ToListAsync();
 
@@ -388,13 +403,18 @@ namespace backend.Controllers
                         IsDeleted = p.IsDeleted,
                         VotesCount = p.VotesCount,
                         IsEditible = p.UserID == user.ID || user.UserType.TypeName == "Administrator",
+                        CreatedBy = _context.Users
+                                .Where(u => u.ID == p.UserID)
+                                .Select(u => (u.Name != null && u.Surname != null) ? (u.Name + " " + u.Surname) : u.Login)
+                                .FirstOrDefault(),
                         Attachments = p.PostAttachments != null ? p.PostAttachments.Select(a => new AttachmentDto
                         {
                             AttachmentID = a.ID,
                             FileName = a.FileName,
                             FilePath = Url.Action("DownloadFile", new { attachmentId = a.ID }),
                             AddedOn = a.AddedOn
-                        }).ToList() : null
+                        }).ToList() : null,
+                        CommentsCount = _context.posts_comments.Count(comment => comment.PostID == p.ID && !comment.IsDeleted)
                     })
                     .FirstOrDefaultAsync();
 
@@ -616,6 +636,8 @@ namespace backend.Controllers
         public bool IsEditible { get; set; }
         public bool Voted { get; set; }
         public bool Liked { get; set; }
+        public required string CreatedBy { get; set; }
+        public int CommentsCount { get; set; }
         public List<AttachmentDto>? Attachments { get; set; }
     }
 
