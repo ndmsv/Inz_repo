@@ -103,7 +103,7 @@ CREATE TABLE `forum_posts` (
 
 LOCK TABLES `forum_posts` WRITE;
 /*!40000 ALTER TABLE `forum_posts` DISABLE KEYS */;
-INSERT INTO `forum_posts` VALUES (1,'Testowy post','Taki post dla testów','2024-11-03 00:00:00',NULL,4,_binary '',0),(2,'test 2','drugi testowy post','2024-11-03 20:50:56',NULL,4,_binary '\0',1),(3,'test 3','Litwo! Ojczyzno moja! ty jesteś jak zdrowie.\r\nIle cię trzeba cenić, ten tylko się dowie,\r\nKto cię stracił. Dziś piękność twą w całej ozdobie\r\nWidzę i opisuję, bo tęsknię po tobie.\r\nPanno Święta, co Jasnej bronisz Częstochowy\r\nI w Ostrej świecisz Bramie! Ty, co gród zamkowy\r\nNowogródzki ochraniasz z jego wiernym ludem!\r\nJak mnie dziecko do zdrowia powróciłaś cudem\r\n(Gdy od płaczącej matki pod Twoję opiekę\r\n\r\nOfiarowany, martwą podniosłem powiekę\r\n\r\nI zaraz mogłem pieszo do Twych świątyń progu\r\n\r\nIść za wrócone życie podziękować Bogu),\r\n\r\nTak nas powrócisz cudem na Ojczyzny łono.\r\n\r\nTymczasem przenoś moję duszę utęsknioną\r\n\r\nDo tych pagórków leśnych, do tych łąk zielonych,\r\n\r\nSzeroko nad błękitnym Niemnem rozciągnionych;\r\n\r\nDo tych pól malowanych zbożem rozmaitem,\r\n\r\nWyzłacanych pszenicą, posrebrzanych żytem;\r\n\r\nGdzie bursztynowy świerzop, gryka jak śnieg biała,\r\n\r\nGdzie panieńskim rumieńcem dzięcielina pała,\r\n\r\nA wszystko przepasane, jakby wstęgą, miedzą\r\n\r\nZieloną, na niej z rzadka ciche grusze siedzą.','2024-11-11 19:13:27','2024-11-17 16:42:25',4,_binary '\0',0),(4,'post','Gdybym tu faktycznie coś pisał:\r\n\r\nTo jak sie to zapisze?\r\n\r\nBo w sumie','2024-11-11 19:24:57',NULL,4,_binary '',1),(5,'my first post','My name is Cezary Baryka, I have been the owner of this glass house for twenty minutes.\r\n\r\nI am slowly starting to regret the purchase.\r\n\r\nAt night it’s freezing, during the day it’s sweltering.\r\n\r\nNo ventilation and no sewage system take their toll.\r\n\r\nThat’s right, it stinks.\r\n\r\nAhh, I lied, I didn’t buy this hovel.\r\n\r\nI won it in a card game from my father.','2024-11-17 16:54:54',NULL,2,_binary '\0',2);
+INSERT INTO `forum_posts` VALUES (1,'Testowy post','Taki post dla testów','2024-11-03 00:00:00',NULL,4,_binary '',0),(2,'test 2','drugi testowy post','2024-11-03 20:50:56',NULL,4,_binary '\0',0),(3,'test 3','Litwo! Ojczyzno moja! ty jesteś jak zdrowie.\r\nIle cię trzeba cenić, ten tylko się dowie,\r\nKto cię stracił. Dziś piękność twą w całej ozdobie\r\nWidzę i opisuję, bo tęsknię po tobie.\r\nPanno Święta, co Jasnej bronisz Częstochowy\r\nI w Ostrej świecisz Bramie! Ty, co gród zamkowy\r\nNowogródzki ochraniasz z jego wiernym ludem!\r\nJak mnie dziecko do zdrowia powróciłaś cudem\r\n(Gdy od płaczącej matki pod Twoję opiekę\r\nOfiarowany, martwą podniosłem powiekę\r\nI zaraz mogłem pieszo do Twych świątyń progu\r\n\r\nIść za wrócone życie podziękować Bogu),\r\n\r\nTak nas powrócisz cudem na Ojczyzny łono.\r\n\r\nTymczasem przenoś moję duszę utęsknioną\r\n\r\nDo tych pagórków leśnych, do tych łąk zielonych,\r\n\r\nSzeroko nad błękitnym Niemnem rozciągnionych;\r\n\r\nDo tych pól malowanych zbożem rozmaitem,\r\n\r\nWyzłacanych pszenicą, posrebrzanych żytem;\r\n\r\nGdzie bursztynowy świerzop, gryka jak śnieg biała,\r\n\r\nGdzie panieńskim rumieńcem dzięcielina pała,\r\n\r\nA wszystko przepasane, jakby wstęgą, miedzą\r\nZieloną, na niej z rzadka ciche grusze siedzą.','2024-11-11 19:13:27','2024-11-30 17:54:06',4,_binary '\0',1),(4,'post','Gdybym tu faktycznie coś pisał:\r\n\r\nTo jak sie to zapisze?\r\n\r\nBo w sumie','2024-11-11 19:24:57',NULL,4,_binary '',1),(5,'my first post','My name is Cezary Baryka, I have been the owner of this glass house for twenty minutes.\r\n\r\nI am slowly starting to regret the purchase.\r\n\r\nAt night it’s freezing, during the day it’s sweltering.\r\n\r\nNo ventilation and no sewage system take their toll.\r\n\r\nThat’s right, it stinks.\r\n\r\nAhh, I lied, I didn’t buy this hovel.\r\n\r\nI won it in a card game from my father.','2024-11-17 16:54:54','2024-11-30 18:26:59',2,_binary '\0',1);
 /*!40000 ALTER TABLE `forum_posts` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -121,7 +121,7 @@ CREATE TABLE `forum_votes` (
   `IS_LIKED` bit(1) NOT NULL,
   `IS_DELETED` bit(1) NOT NULL DEFAULT b'0',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -130,7 +130,7 @@ CREATE TABLE `forum_votes` (
 
 LOCK TABLES `forum_votes` WRITE;
 /*!40000 ALTER TABLE `forum_votes` DISABLE KEYS */;
-INSERT INTO `forum_votes` VALUES (1,1,4,_binary '',_binary ''),(2,2,4,_binary '\0',_binary ''),(3,1,1,_binary '\0',_binary ''),(4,2,1,_binary '\0',_binary ''),(5,2,2,_binary '',_binary '\0'),(6,1,2,_binary '\0',_binary ''),(7,3,4,_binary '\0',_binary ''),(8,4,4,_binary '',_binary ''),(9,5,2,_binary '',_binary '\0'),(10,5,4,_binary '',_binary '\0');
+INSERT INTO `forum_votes` VALUES (1,1,4,_binary '',_binary ''),(2,2,4,_binary '\0',_binary ''),(3,1,1,_binary '\0',_binary ''),(4,2,1,_binary '\0',_binary ''),(5,2,2,_binary '\0',_binary ''),(6,1,2,_binary '\0',_binary ''),(7,3,4,_binary '\0',_binary ''),(8,4,4,_binary '',_binary ''),(9,5,2,_binary '',_binary '\0'),(10,5,4,_binary '\0',_binary ''),(11,3,2,_binary '',_binary '\0');
 /*!40000 ALTER TABLE `forum_votes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -148,7 +148,7 @@ CREATE TABLE `posts_attachments` (
   `FILE_NAME` varchar(1000) NOT NULL,
   `FILE_PATH` varchar(1000) NOT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -157,7 +157,7 @@ CREATE TABLE `posts_attachments` (
 
 LOCK TABLES `posts_attachments` WRITE;
 /*!40000 ALTER TABLE `posts_attachments` DISABLE KEYS */;
-INSERT INTO `posts_attachments` VALUES (1,2,'2024-11-03 20:50:56','WhatsApp Image 2024-10-31 at 09.00.15.jpeg','D:\\Projekt_inz\\encrypted_files\\9c24a023-cf05-4183-901c-70d9805b18fd.jpeg'),(7,3,'2024-11-17 16:42:25','up-arrow-green.png','D:\\Projekt_inz\\encrypted_files\\3badb96a-bac2-4224-9e32-685086be48fb.png'),(8,5,'2024-11-17 16:54:54','D8D94A80-DC7E-11EE-8C7B-120DE4119E35 (1).jpg','D:\\Projekt_inz\\encrypted_files\\98949913-81e7-42bc-91aa-6cf8e26ebed9.jpg');
+INSERT INTO `posts_attachments` VALUES (1,2,'2024-11-03 20:50:56','WhatsApp Image 2024-10-31 at 09.00.15.jpeg','9c24a023-cf05-4183-901c-70d9805b18fd.jpeg'),(10,3,'2024-11-30 17:54:06','up-arrow-green.png','76d242fd-5079-4fb6-9157-91bf7c8f0dff.png'),(11,3,'2024-11-30 17:54:06','D8D94A80-DC7E-11EE-8C7B-120DE4119E35 (1) (1).jpg','9bebdb75-dd80-462f-aef3-b3dad2a04df6.jpg'),(12,5,'2024-11-30 18:26:59','D8D94A80-DC7E-11EE-8C7B-120DE4119E35 (1).jpg','a7f7bcb9-db25-44a1-b709-cb804000725d.jpg'),(13,5,'2024-11-30 18:26:59','DALL·E 2023-08-10 10.03.42 - add a super little motorboat under the bunny and waves.png','c229a41f-155b-4627-83dd-ec3b621be749.png');
 /*!40000 ALTER TABLE `posts_attachments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -177,7 +177,7 @@ CREATE TABLE `posts_comments` (
   `POST_CONTENT` varchar(6000) NOT NULL,
   `IS_DELETED` bit(1) NOT NULL DEFAULT b'0',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -186,7 +186,7 @@ CREATE TABLE `posts_comments` (
 
 LOCK TABLES `posts_comments` WRITE;
 /*!40000 ALTER TABLE `posts_comments` DISABLE KEYS */;
-INSERT INTO `posts_comments` VALUES (1,5,4,'2024-11-17 21:04:23',NULL,'test',_binary '\0'),(2,5,4,'2024-11-17 21:07:48',NULL,'test2',_binary '\0'),(3,5,4,'2024-11-17 21:27:53',NULL,'jeszcze jeden test\n\n\ntest',_binary '\0'),(4,3,4,'2024-11-17 21:28:46',NULL,'Czy to na pewno zostało dobrze sformatowane?',_binary '\0');
+INSERT INTO `posts_comments` VALUES (1,5,4,'2024-11-17 21:04:23',NULL,'test',_binary '\0'),(2,5,4,'2024-11-17 21:07:48',NULL,'test2',_binary '\0'),(3,5,4,'2024-11-17 21:27:53',NULL,'jeszcze jeden test\n\n\ntest',_binary '\0'),(4,3,4,'2024-11-17 21:28:46',NULL,'Czy to na pewno zostało dobrze sformatowane?',_binary '\0'),(5,3,4,'2024-11-30 17:54:23',NULL,'I love it!!!',_binary '\0');
 /*!40000 ALTER TABLE `posts_comments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -204,7 +204,7 @@ CREATE TABLE `submission_attachments` (
   `FILE_NAME` varchar(200) NOT NULL,
   `FILE_PATH` varchar(200) NOT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -213,7 +213,7 @@ CREATE TABLE `submission_attachments` (
 
 LOCK TABLES `submission_attachments` WRITE;
 /*!40000 ALTER TABLE `submission_attachments` DISABLE KEYS */;
-INSERT INTO `submission_attachments` VALUES (13,5,'2024-06-24 08:43:19','logoMS.png','D:\\Projekt_inz\\encrypted_files\\962e68ac-6612-474c-9a79-9379b6f35367.png'),(14,5,'2024-06-24 08:43:19','Materiały BV - skanowanie surowców, materiałów.docx','D:\\Projekt_inz\\encrypted_files\\0454f85c-35b7-44ed-882c-4d3759449404.docx'),(15,5,'2024-06-24 08:43:19','unknown.png','D:\\Projekt_inz\\encrypted_files\\0f064bc5-a9e0-4ac6-8de1-8da6c84400dd.png'),(16,5,'2024-06-24 08:43:19','vlc-3.0.21-win64.exe','D:\\Projekt_inz\\encrypted_files\\05236f2d-039b-4555-aa24-416489d85087.exe'),(20,6,'2024-06-24 08:56:19','urocze sarenki (1).docx','D:\\Projekt_inz\\encrypted_files\\4adcd3f8-c4a3-487c-ade8-39106d0f1273.docx'),(21,7,'2024-06-24 09:00:28','Kod źródłowy.zip','D:\\Projekt_inz\\encrypted_files\\45c313bb-5eb1-4376-b216-8484a6e95af9.zip'),(23,9,'2024-06-24 11:10:56','Informatyka_2023_praktyki_zwolnienie_nowy (1).docx','D:\\Projekt_inz\\encrypted_files\\2cc2a13d-0be1-444d-b50b-84b83e6a83eb.docx'),(24,9,'2024-06-24 11:10:56','Jakub Głuszek Lab 5.ipynb','D:\\Projekt_inz\\encrypted_files\\c8ae8ff6-2f90-43a4-8ea1-f587f9721536.ipynb'),(25,9,'2024-06-24 11:10:56','MachineStd-Medium.otf','D:\\Projekt_inz\\encrypted_files\\e080bba5-e895-4efb-b3c4-0d38825176d8.otf'),(26,10,'2024-06-24 12:32:44','unknown.png','D:\\Projekt_inz\\encrypted_files\\abb86c72-790f-48f1-8c0d-a975bfad26f3.png'),(27,10,'2024-06-24 12:32:44','logoMS.png','D:\\Projekt_inz\\encrypted_files\\7862b949-7c00-4dac-8750-cb14ef032c73.png'),(29,11,'2024-06-24 19:30:20','Kwa kwa kwa kwa miauuu miauuu miauuu.docx','D:\\Projekt_inz\\encrypted_files\\268f1a88-6870-4c42-a200-b4fcec7272dd.docx'),(31,12,'2024-06-24 20:12:45','reologia.docx','D:\\Projekt_inz\\encrypted_files\\a3347bd3-6f1c-4a0e-8968-ddc79dbeac2a.docx'),(32,12,'2024-06-24 20:12:45','Time.py','D:\\Projekt_inz\\encrypted_files\\0f48c6eb-f13d-47d4-9ffb-1c734d1dcfc6.py'),(33,8,'2024-06-25 06:54:44','logoMS.png','D:\\Projekt_inz\\encrypted_files\\ffc3843e-bbf5-4aef-b7d3-5acfe08e6a15.png'),(34,8,'2024-06-25 06:54:44','Projekt-Android-Jakub-Głuszek-Filip-Gołyszny-Filip-Gawlas.pdf','D:\\Projekt_inz\\encrypted_files\\08b9c2dd-2edd-4b12-b633-75eb98774dac.pdf'),(35,13,'2024-06-25 06:58:12','Projekt-Android-Jakub-Głuszek-Filip-Gołyszny-Filip-Gawlas.pdf','D:\\Projekt_inz\\encrypted_files\\ab3d114e-6b4c-4ff7-9caa-f0f53d05d056.pdf'),(43,16,'2024-11-03 20:11:08','copy-file_icon-icons.com_56095.ico','D:\\Projekt_inz\\encrypted_files\\28fd4520-b0d4-4072-8a57-78a4832d1f32.ico'),(44,16,'2024-11-03 20:11:08','WhatsApp Image 2024-10-31 at 09.00.15.jpeg','D:\\Projekt_inz\\encrypted_files\\bd4d1082-8cc7-44a1-80b2-e18538f10031.jpeg');
+INSERT INTO `submission_attachments` VALUES (13,5,'2024-06-24 08:43:19','logoMS.png','962e68ac-6612-474c-9a79-9379b6f35367.png'),(14,5,'2024-06-24 08:43:19','Materiały BV - skanowanie surowców, materiałów.docx','0454f85c-35b7-44ed-882c-4d3759449404.docx'),(15,5,'2024-06-24 08:43:19','unknown.png','0f064bc5-a9e0-4ac6-8de1-8da6c84400dd.png'),(16,5,'2024-06-24 08:43:19','vlc-3.0.21-win64.exe','05236f2d-039b-4555-aa24-416489d85087.exe'),(21,7,'2024-06-24 09:00:28','Kod źródłowy.zip','45c313bb-5eb1-4376-b216-8484a6e95af9.zip'),(23,9,'2024-06-24 11:10:56','Informatyka_2023_praktyki_zwolnienie_nowy (1).docx','2cc2a13d-0be1-444d-b50b-84b83e6a83eb.docx'),(24,9,'2024-06-24 11:10:56','Jakub Głuszek Lab 5.ipynb','c8ae8ff6-2f90-43a4-8ea1-f587f9721536.ipynb'),(25,9,'2024-06-24 11:10:56','MachineStd-Medium.otf','e080bba5-e895-4efb-b3c4-0d38825176d8.otf'),(26,10,'2024-06-24 12:32:44','unknown.png','abb86c72-790f-48f1-8c0d-a975bfad26f3.png'),(27,10,'2024-06-24 12:32:44','logoMS.png','7862b949-7c00-4dac-8750-cb14ef032c73.png'),(29,11,'2024-06-24 19:30:20','Kwa kwa kwa kwa miauuu miauuu miauuu.docx','268f1a88-6870-4c42-a200-b4fcec7272dd.docx'),(31,12,'2024-06-24 20:12:45','reologia.docx','a3347bd3-6f1c-4a0e-8968-ddc79dbeac2a.docx'),(32,12,'2024-06-24 20:12:45','Time.py','0f48c6eb-f13d-47d4-9ffb-1c734d1dcfc6.py'),(33,8,'2024-06-25 06:54:44','logoMS.png','ffc3843e-bbf5-4aef-b7d3-5acfe08e6a15.png'),(34,8,'2024-06-25 06:54:44','Projekt-Android-Jakub-Głuszek-Filip-Gołyszny-Filip-Gawlas.pdf','08b9c2dd-2edd-4b12-b633-75eb98774dac.pdf'),(35,13,'2024-06-25 06:58:12','Projekt-Android-Jakub-Głuszek-Filip-Gołyszny-Filip-Gawlas.pdf','ab3d114e-6b4c-4ff7-9caa-f0f53d05d056.pdf'),(43,16,'2024-11-03 20:11:08','copy-file_icon-icons.com_56095.ico','28fd4520-b0d4-4072-8a57-78a4832d1f32.ico'),(44,16,'2024-11-03 20:11:08','WhatsApp Image 2024-10-31 at 09.00.15.jpeg','bd4d1082-8cc7-44a1-80b2-e18538f10031.jpeg'),(45,6,'2024-11-30 18:09:48','urocze sarenki (1).docx','03d9a10e-7bd0-42e7-aecb-92a46c1548ba.docx'),(46,6,'2024-11-30 18:09:48','D8D94A80-DC7E-11EE-8C7B-120DE4119E35 (1) (1).jpg','edfb5c83-d4cc-4afd-b93d-e35362399cb4.jpg');
 /*!40000 ALTER TABLE `submission_attachments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -241,7 +241,7 @@ CREATE TABLE `task_submissions` (
 
 LOCK TABLES `task_submissions` WRITE;
 /*!40000 ALTER TABLE `task_submissions` DISABLE KEYS */;
-INSERT INTO `task_submissions` VALUES (5,1,4,'2024-06-24 08:43:19','aaa',_binary '\0'),(6,7,4,'2024-06-24 08:56:19',NULL,_binary '\0'),(7,1,1,'2024-06-24 09:00:28',NULL,_binary '\0'),(8,2,4,'2024-06-25 06:54:44','notatka',_binary '\0'),(9,1,3,'2024-06-24 11:10:56','wrzucamy dane ',_binary '\0'),(10,10,2,'2024-06-24 12:32:44',NULL,_binary '\0'),(11,11,5,'2024-06-24 19:30:20',NULL,_binary '\0'),(12,18,5,'2024-06-24 20:12:45',NULL,_binary '\0'),(13,7,3,'2024-06-25 06:58:12','avc',_binary '\0'),(14,2,3,'2024-10-09 17:05:49','tads',_binary '\0'),(16,5,4,'2024-11-03 20:11:08',NULL,_binary '\0');
+INSERT INTO `task_submissions` VALUES (5,1,4,'2024-06-24 08:43:19','aaa',_binary '\0'),(6,7,4,'2024-11-30 18:09:48',NULL,_binary '\0'),(7,1,1,'2024-06-24 09:00:28',NULL,_binary '\0'),(8,2,4,'2024-06-25 06:54:44','notatka',_binary '\0'),(9,1,3,'2024-06-24 11:10:56','wrzucamy dane ',_binary '\0'),(10,10,2,'2024-06-24 12:32:44',NULL,_binary '\0'),(11,11,5,'2024-06-24 19:30:20',NULL,_binary '\0'),(12,18,5,'2024-06-24 20:12:45',NULL,_binary '\0'),(13,7,3,'2024-06-25 06:58:12','avc',_binary '\0'),(14,2,3,'2024-10-09 17:05:49','tads',_binary '\0'),(16,5,4,'2024-11-03 20:11:08',NULL,_binary '\0');
 /*!40000 ALTER TABLE `task_submissions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -335,4 +335,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-17 22:32:21
+-- Dump completed on 2024-11-30 19:30:47

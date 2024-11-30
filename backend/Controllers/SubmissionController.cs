@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -51,9 +52,13 @@ namespace backend.Controllers
 
                     if (submission.SubmissionAttachments != null)
                     {
+                        var baseDirectory = AppContext.BaseDirectory;
+                        var projectRoot = FindProjectRoot(baseDirectory);
+                        var encryptedFilesDirectory = Path.Combine(projectRoot, "encrypted_files");
+
                         foreach (var attachment in submission.SubmissionAttachments)
                         {
-                            var filePath = attachment.FilePath;
+                            var filePath = Path.Combine(encryptedFilesDirectory, attachment.FilePath);
                             if (System.IO.File.Exists(filePath))
                             {
                                 System.IO.File.Delete(filePath);
@@ -87,7 +92,8 @@ namespace backend.Controllers
                     {
                         if (file.Length > 0)
                         {
-                            var encryptedFilePath = Path.Combine(encryptedFilesDirectory, Guid.NewGuid().ToString() + Path.GetExtension(file.FileName));
+                            var filePathName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                            var encryptedFilePath = Path.Combine(encryptedFilesDirectory, filePathName);
 
                             using (var fileStream = new FileStream(encryptedFilePath, FileMode.Create))
                             {
@@ -103,7 +109,7 @@ namespace backend.Controllers
                                 SubmissionID = submission.ID,
                                 AddedOn = DateTime.UtcNow,
                                 FileName = file.FileName,
-                                FilePath = encryptedFilePath
+                                FilePath = filePathName
                             };
 
                             _context.submission_attachments.Add(attachment);
@@ -175,7 +181,10 @@ namespace backend.Controllers
                 return NotFound();
             }
 
-            var encryptedFilePath = attachment.FilePath; 
+            var baseDirectory = AppContext.BaseDirectory;
+            var projectRoot = FindProjectRoot(baseDirectory);
+            var encryptedFilesDirectory = Path.Combine(projectRoot, "encrypted_files");
+            var encryptedFilePath = Path.Combine(encryptedFilesDirectory, attachment.FilePath); 
             byte[] encryptionKey = Encoding.UTF8.GetBytes("12345678901234567890123456789012");
             byte[] encryptionIV = Encoding.UTF8.GetBytes("1234567890123456");
 
