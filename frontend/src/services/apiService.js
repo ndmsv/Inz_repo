@@ -461,3 +461,15 @@ export const getSelectedPostComments = async (postID, login) => {
         return handleAxiosError(error);
     }
 };
+
+export const deletePostComment = async (commentID, login) => {
+    try {
+        const response = await axios.post(`${API_URL}Forum/deletePostComment`, {
+            commentID,
+            login
+        });
+        return { message: response.data.message, data: response.data, isSuccess: true};
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};

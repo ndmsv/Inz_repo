@@ -20,7 +20,7 @@ function PostPopup({ togglePopup, username, reloadPosts, selectedComment, postID
             return;
         }
 
-        const result = await savePostComment(selectedComment.id, postID, title, username, comment);
+        const result = await savePostComment(selectedComment.id, postID, username, comment);
         if (result.isSuccess) {
             alert(result.message);
             togglePopup();
@@ -38,7 +38,7 @@ function PostPopup({ togglePopup, username, reloadPosts, selectedComment, postID
                     <div className='modal-content'>
                         <div className='modal-header'>
                             <div className='col-md-6'>
-                                <h5 className='modal-title'>Create new post</h5>
+                                <h5 className='modal-title'>Edit comment</h5>
                             </div>
                             <div className='col-md-6 text-end'>
                                 <button type='button' className='btn-close' data-dismiss='modal' aria-label='Close' onClick={togglePopup}></button>

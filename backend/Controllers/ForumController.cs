@@ -524,7 +524,7 @@ namespace backend.Controllers
 
                 await _context.SaveChangesAsync();
 
-                return Ok(new { message = "Comment added" });
+                return Ok(new { message = "Comment saved" });
             }
             catch (Exception ex)
             {
@@ -558,8 +558,8 @@ namespace backend.Controllers
                                 .Where(u => u.ID == s.UserID)
                                 .Select(u => (u.Name != null && u.Surname != null) ? (u.Name + " " + u.Surname) : u.Login)
                                 .FirstOrDefault(),
-                            CreatedOn = s.CreatedOn,
-                            UpdatedOn = s.UpdatedOn,
+                            CreatedOn = DateTime.SpecifyKind(s.CreatedOn, DateTimeKind.Utc),
+                            UpdatedOn = s.UpdatedOn != null ? DateTime.SpecifyKind(Convert.ToDateTime(s.UpdatedOn), DateTimeKind.Utc) : null,
                             PostContent = s.PostContent,
                             IsDeleted = s.IsDeleted,
                             IsEditible = s.UserID == user.ID || user.UserType.TypeName == "Administrator",
@@ -568,6 +568,34 @@ namespace backend.Controllers
 
                     return Ok(comments);
                 }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("deletePostComment")]
+        public async Task<IActionResult> DeletePostComment([FromBody] SimpleCommentModel model)
+        {
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == model.Login);
+                if (user == null) return NotFound(new { message = "User not found" });
+
+                var comment = await _context.posts_comments.FirstOrDefaultAsync(c => c.ID == model.CommentID);
+                if (comment == null)
+                {
+                    return NotFound(new { message = "Comment not found" });
+                }
+                else
+                {
+                    comment.IsDeleted = true;
+                }
+
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Comment deleted successfully" });
             }
             catch (Exception ex)
             {
@@ -695,5 +723,11 @@ namespace backend.Controllers
         public required string PostContent { get; set; }
         public bool IsDeleted { get; set; }
         public bool IsEditible { get; set; }
+    }
+
+    public class SimpleCommentModel
+    {
+        public int CommentID { get; set; }
+        public required string Login { get; set; }
     }
 }

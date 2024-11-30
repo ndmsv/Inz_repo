@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../Global/Navbar';
 import PostPopup from './PostPopup';
 import PostsCards from './PostsCards';
+import CommentPopup from './CommentPopup';
 import { getUserPosts, downloadPostFile } from '../../services/apiService';
 import '../Global/Global.css';
 
@@ -13,6 +14,8 @@ function UserPosts() {
     const [showPopup, setShowPopup] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedPostID, setSelectedPostID] = useState(null);
+    const [selectedComment, setSelectedComment] = useState(null);
+    const [showCommentPopup, setShowCommentPopup] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -91,6 +94,16 @@ function UserPosts() {
         post.convertedAttachments = files;
     };
 
+    const showCommentPopupHandler = (comment, post) => {
+        setSelectedComment(comment);
+        setShowCommentPopup(true);
+        setSelectedPostID(post.id);
+    };
+
+    const toggleCommentPopup = () => {
+        setShowCommentPopup(!showCommentPopup);
+    };
+
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
     const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
@@ -111,7 +124,7 @@ function UserPosts() {
                         </div>
                     </div>
                     <div className='col-md-12 mt-3'>
-                        <PostsCards isLoading={isLoading} currentPosts={currentPosts} allPosts={posts} setAllPosts={setPosts} showPostPopup={showPostPopup} userCards={true} username={username} reloadPosts={reloadPosts} />
+                        <PostsCards isLoading={isLoading} currentPosts={currentPosts} allPosts={posts} setAllPosts={setPosts} showPostPopup={showPostPopup} userCards={true} username={username} reloadPosts={reloadPosts} showCommentPopupHandler={showCommentPopupHandler} />
                     </div>
                     <nav>
                         <ul className='pagination justify-content-center'>
@@ -124,6 +137,7 @@ function UserPosts() {
                             ))}
                         </ul>
                     </nav>
+                    {showCommentPopup && <CommentPopup togglePopup={toggleCommentPopup} username={username} reloadPosts={reloadPosts} postID={selectedPostID} selectedComment={selectedComment} />}
                     {showPopup && <PostPopup togglePopup={togglePopup} username={username} reloadPosts={reloadPosts} postID={selectedPostID} />}
                 </div>
             </div>

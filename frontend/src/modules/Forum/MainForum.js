@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../Global/Navbar';
 import NewPostPopup from './PostPopup';
 import PostsCards from './PostsCards';
+import CommentPopup from './CommentPopup';
 import { getForumPosts, downloadPostFile } from '../../services/apiService';
 import '../Global/Global.css';
 
@@ -15,6 +16,8 @@ function MainForum() {
     const [currentPostCategory, setCurrentPostCategory] = useState('Hot');
     const [timeframeValue, setTimeframeValue] = useState('AllTime');
     const [selectedPostID, setSelectedPostID] = useState(null);
+    const [selectedComment, setSelectedComment] = useState(null);
+    const [showCommentPopup, setShowCommentPopup] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -101,6 +104,16 @@ function MainForum() {
         setTimeframeValue(event.target.value);
     };
 
+    const showCommentPopupHandler = (comment, post) => {
+        setSelectedComment(comment);
+        setShowCommentPopup(true);
+        setSelectedPostID(post.id);
+    };
+
+    const toggleCommentPopup = () => {
+        setShowCommentPopup(!showCommentPopup);
+    };
+
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
     const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
@@ -146,7 +159,7 @@ function MainForum() {
                         </div>
                     }
                     <div className='col-md-12 mt-3'>
-                        <PostsCards isLoading={isLoading} currentPosts={currentPosts} allPosts={posts} setAllPosts={setPosts} showPostPopup={showPostPopup} userCards={false} username={username} reloadPosts={reloadPosts} />
+                        <PostsCards isLoading={isLoading} currentPosts={currentPosts} allPosts={posts} setAllPosts={setPosts} showPostPopup={showPostPopup} userCards={false} username={username} reloadPosts={reloadPosts} showCommentPopupHandler={showCommentPopupHandler} />
                     </div>
                     <nav>
                         <ul className='pagination justify-content-center'>
@@ -159,6 +172,7 @@ function MainForum() {
                             ))}
                         </ul>
                     </nav>
+                    {showCommentPopup && <CommentPopup togglePopup={toggleCommentPopup} username={username} reloadPosts={reloadPosts} postID={selectedPostID} selectedComment={selectedComment} />}
                     {showPopup && <NewPostPopup togglePopup={togglePopup} username={username} reloadPosts={reloadPosts} postID={selectedPostID} />}
                 </div>
             </div>

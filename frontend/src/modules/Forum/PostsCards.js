@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { voteOnPost, deletePost, savePostComment, getSelectedPostComments } from '../../services/apiService';
+import { voteOnPost, deletePost, savePostComment, getSelectedPostComments, deletePostComment } from '../../services/apiService';
 import '../Global/Global.css';
 import { parseISO } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
@@ -10,7 +10,7 @@ import downArrowRed from '../../assets/down-arrow-red.png';
 import iconEdit from '../../assets/icon-edit.png';
 import iconDelete from '../../assets/icon-delete.png';
 
-function PostsCards({ isLoading, currentPosts, allPosts, setAllPosts, showPostPopup, userCards, username, reloadPosts }) {
+function PostsCards({ isLoading, currentPosts, allPosts, setAllPosts, showPostPopup, userCards, username, reloadPosts, showCommentPopupHandler }) {
     const [commentFields, setCommentFields] = useState({});
 
     const formatDate = (dateString) => {
@@ -108,6 +108,20 @@ function PostsCards({ isLoading, currentPosts, allPosts, setAllPosts, showPostPo
             setAllPosts(updatedPosts);
         } else {
             console.error('Post not found.');
+        }
+    };
+
+    const handleDeleteComment = async (commentID) => {
+        const confirmStop = window.confirm('Are you sure you want to delete comment?');
+        if (!confirmStop) {
+            return;
+        }
+
+        const response = await deletePostComment(commentID, username);
+        alert(response.message);
+
+        if (response.isSuccess) {
+            reloadPosts();
         }
     };
 
@@ -209,7 +223,7 @@ function PostsCards({ isLoading, currentPosts, allPosts, setAllPosts, showPostPo
                                                                 </div>
                                                                 {comment.isEditible &&
                                                                     <div className='col-2 text-end'>
-                                                                        <button className='btn' style={{ background: 'none', border: 'none' }} onClick={() => downvotePost(post)}>
+                                                                        <button className='btn' style={{ background: 'none', border: 'none' }} onClick={() => showCommentPopupHandler(comment, post)}>
                                                                             <img
                                                                                 src={iconEdit}
                                                                                 alt='Edit'
@@ -217,7 +231,7 @@ function PostsCards({ isLoading, currentPosts, allPosts, setAllPosts, showPostPo
                                                                                 height='24'
                                                                             />
                                                                         </button>
-                                                                        <button className='btn' style={{ background: 'none', border: 'none' }} onClick={() => downvotePost(post)}>
+                                                                        <button className='btn' style={{ background: 'none', border: 'none' }} onClick={() => handleDeleteComment(comment.id)}>
                                                                             <img
                                                                                 src={iconDelete}
                                                                                 alt='Delete'

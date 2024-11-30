@@ -186,7 +186,7 @@ CREATE TABLE `posts_comments` (
 
 LOCK TABLES `posts_comments` WRITE;
 /*!40000 ALTER TABLE `posts_comments` DISABLE KEYS */;
-INSERT INTO `posts_comments` VALUES (1,5,4,'2024-11-17 21:04:23',NULL,'test',_binary '\0'),(2,5,4,'2024-11-17 21:07:48',NULL,'test2',_binary '\0'),(3,5,4,'2024-11-17 21:27:53',NULL,'jeszcze jeden test\n\n\ntest',_binary '\0'),(4,3,4,'2024-11-17 21:28:46',NULL,'Czy to na pewno zostało dobrze sformatowane?',_binary '\0'),(5,3,4,'2024-11-30 17:54:23',NULL,'I love it!!!',_binary '\0');
+INSERT INTO `posts_comments` VALUES (1,5,4,'2024-11-17 21:04:23',NULL,'test',_binary '\0'),(2,5,4,'2024-11-17 21:07:48','2024-11-30 20:22:01','test2 - ale mogłoby być tu coś więcej potestowane\n\nNa przykład to',_binary '\0'),(3,5,4,'2024-11-17 21:27:53',NULL,'jeszcze jeden test\n\n\ntest',_binary ''),(4,3,4,'2024-11-17 21:28:46','2024-11-30 20:38:47','Czy to na pewno zostało dobrze sformatowane?\n\nEdit - nvm jednak już troche lepiej',_binary '\0'),(5,3,4,'2024-11-30 17:54:23',NULL,'I love it!!!',_binary '');
 /*!40000 ALTER TABLE `posts_comments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -335,4 +335,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-30 19:30:47
+-- Dump completed on 2024-11-30 21:58:34
