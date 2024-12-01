@@ -284,30 +284,4 @@ namespace backend.Controllers
             }
         }
     }
-
-    public class LeaveTaskModel
-    {
-        public required string Login { get; set; }
-        public int TaskID { get; set; }
-    }
-
-    public class FullTaskModel
-    {
-        public required int CourseID { get; set; }
-        public required string TaskName { get; set; }
-        public string? TaskDescription { get; set; }
-        public required DateTime OpeningDate { get; set; }
-        public required DateTime ClosingDate { get; set; }
-        public required bool LimitedAttachments { get; set; }
-        public int? AttachmentsNumber { get; set; }
-        public required bool LimitedAttachmentTypes { get; set; }
-        public string? AttachmentTypes { get; set; }
-        public int? TaskID { get; set; }
-    }
-
-    public class CourseWithTaskModel
-    {
-        public int CourseID { get; set; }
-        public int TaskID { get; set; }
-    }
 }

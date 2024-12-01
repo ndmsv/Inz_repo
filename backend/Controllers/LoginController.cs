@@ -152,29 +152,3 @@ namespace backend.Controllers
         }
     }
 }
-
-public class PlainLoginModel
-{
-    public string Login { get; set; }
-}
-
-public class TypeModel
-{
-    public int TypeID { get; set; }
-    public string Password { get; set; }
-}
-
-public class LoginModel
-{
-    public string Login { get; set; }
-    public string Password { get; set; }
-}
-
-public class LoginModelExtended
-{
-    public string Login { get; set; }
-    public string Password { get; set; }
-    public int Type { get; set; }
-    public string Name { get; set; }
-    public string Surname { get; set; }
-}

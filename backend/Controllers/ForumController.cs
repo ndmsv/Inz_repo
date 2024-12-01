@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json.Serialization;
 
 namespace backend.Controllers
 {
@@ -633,101 +632,5 @@ namespace backend.Controllers
 
             return directoryInfo.FullName;
         }
-    }
-
-    public enum PostType
-    {
-        Hot,
-        Top,
-        New
-    }
-
-    public enum Timeframe
-    {
-        TwoHours,
-        SixHours,
-        TwelveHours,
-        Day,
-        Week,
-        Month,
-        Year,
-        AllTime
-    }
-
-    public class GetForumPostsModel
-    {
-        public required string Login { get; set; }
-
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public required PostType Type { get; set; }
-
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public Timeframe? Timeframe { get; set; }
-    }
-
-    public class ForumPostModelExtended
-    {
-        public int Id { get; set; }
-        public required string PostTitle { get; set; }
-        public string? PostDescription { get; set; }
-        public DateTime CreatedOn { get; set; }
-        public DateTime? EditedOn { get; set; }
-        public bool IsDeleted { get; set; }
-        public int VotesCount { get; set; }
-        public bool IsEditible { get; set; }
-        public bool Voted { get; set; }
-        public bool Liked { get; set; }
-        public required string CreatedBy { get; set; }
-        public int CommentsCount { get; set; }
-        public List<AttachmentDto>? Attachments { get; set; }
-    }
-
-    public class PostSubmissionModel
-    {
-        public int? PostID { get; set; }
-        public required string Login { get; set; }
-        public required string PostTitle { get; set; }
-        public string? PostDescription { get; set; }
-        public List<IFormFile>? Files { get; set; }
-    }
-
-    public class VoteModel
-    {
-        public int PostID { get; set; }
-        public required string Login { get; set; }
-        public bool Voted { get; set; }
-        public bool Liked { get; set; }
-    }
-
-    public class SelectedPostModel
-    {
-        public int PostID { get; set; }
-        public required string Login { get; set; }
-    }
-
-    public class PostCommentModel
-    {
-        public int? CommentID { get; set; }
-        public int PostID { get; set; }
-        public required string Login { get; set; }
-        public required string PostContent { get; set; }
-    }
-
-    public class PostCommentModelExtended
-    {
-        public int ID { get; set; }
-        public int PostID { get; set; }
-        public string UserDisplayName { get; set; }
-        public DateTime CreatedOn { get; set; }
-        public DateTime? UpdatedOn { get; set; }
-        public required string PostContent { get; set; }
-        public bool IsDeleted { get; set; }
-        public bool IsEditible { get; set; }
-    }
-
-    public class SimpleCommentModel
-    {
-        public int CommentID { get; set; }
-        public required string Login { get; set; }
     }
 }

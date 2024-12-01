@@ -225,32 +225,4 @@ namespace backend.Controllers
             return directoryInfo.FullName;
         }
     }
-    public class SubmissionModel
-    {
-        public int TaskID { get; set; }
-        public required string Login { get; set; }
-        public string? SubmissionNote { get; set; }
-        public List<IFormFile>? Files { get; set; }
-    }
-
-    public class SubmissionDto
-    {
-        public int SubmissionID { get; set; }
-        public string SubmissionNote { get; set; }
-        public DateTime AddedOn { get; set; }
-        public List<AttachmentDto> Attachments { get; set; }
-    }
-
-    public class AttachmentDto
-    {
-        public int AttachmentID { get; set; }
-        public string FileName { get; set; }
-        public DateTime AddedOn { get; set; }
-        public string FilePath { get; set; }
-    }
-
-    public class AttachmentIDModel
-    {
-        public int AttachmentID { get; set; }
-    }
 }
