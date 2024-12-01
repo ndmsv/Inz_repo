@@ -9,6 +9,7 @@ import downArrowRegular from '../../assets/down-arrow.png';
 import downArrowRed from '../../assets/down-arrow-red.png';
 import iconEdit from '../../assets/icon-edit.png';
 import iconDelete from '../../assets/icon-delete.png';
+import iconAlert from '../../assets/icon-alert.png';
 
 function PostsCards({ isLoading, currentPosts, allPosts, setAllPosts, showPostPopup, userCards, username, reloadPosts, showCommentPopupHandler }) {
     const [commentFields, setCommentFields] = useState({});
@@ -189,18 +190,36 @@ function PostsCards({ isLoading, currentPosts, allPosts, setAllPosts, showPostPo
                                     </div>
                                     <div className='col-4 test-center align-items-center' style={{ display: 'grid' }}>
                                         <h6 className='register-label mb-0' style={{ cursor: 'pointer', padding: 0 }} onClick={() => handleShowPostComments(post, false)}>
-                                            {post.comments != null ? '↑ Hide all comments ('+ post.commentsCount +') ↑' : '↓ Show all comments ('+ post.commentsCount +') ↓'}
+                                            {post.comments != null ? '↑ Hide all comments (' + post.commentsCount + ') ↑' : '↓ Show all comments (' + post.commentsCount + ') ↓'}
                                         </h6>
                                     </div>
                                     <div className='col-4 text-end'>
+                                        <button className='btn' style={{ background: 'none', border: 'none' }} title='Report post'>
+                                            <img
+                                                src={iconAlert}
+                                                alt='Alert'
+                                                width='24'
+                                                height='24'
+                                            />
+                                        </button>
                                         {post.isEditible &&
-                                            <button className='btn btn-primary me-1' onClick={() => showPostPopup(post.id)}>
-                                                Edit post
+                                            <button className='btn' style={{ background: 'none', border: 'none' }} onClick={() => showPostPopup(post.id)} title='Edit post'>
+                                                <img
+                                                    src={iconEdit}
+                                                    alt='Edit'
+                                                    width='24'
+                                                    height='24'
+                                                />
                                             </button>
                                         }
                                         {post.isEditible &&
-                                            <button className='btn btn-danger' onClick={() => handleDeletePost(post.id)}>
-                                                Delete post
+                                            <button className='btn' style={{ background: 'none', border: 'none' }} onClick={() => handleDeletePost(post.id)} title='Delete post'>
+                                                <img
+                                                    src={iconDelete}
+                                                    alt='Delete'
+                                                    width='24'
+                                                    height='24'
+                                                />
                                             </button>
                                         }
                                     </div>
@@ -223,7 +242,7 @@ function PostsCards({ isLoading, currentPosts, allPosts, setAllPosts, showPostPo
                                                                 </div>
                                                                 {comment.isEditible &&
                                                                     <div className='col-2 text-end'>
-                                                                        <button className='btn' style={{ background: 'none', border: 'none' }} onClick={() => showCommentPopupHandler(comment, post)}>
+                                                                        <button className='btn' style={{ background: 'none', border: 'none' }} onClick={() => showCommentPopupHandler(comment, post)} title='Edit comment'>
                                                                             <img
                                                                                 src={iconEdit}
                                                                                 alt='Edit'
@@ -231,7 +250,7 @@ function PostsCards({ isLoading, currentPosts, allPosts, setAllPosts, showPostPo
                                                                                 height='24'
                                                                             />
                                                                         </button>
-                                                                        <button className='btn' style={{ background: 'none', border: 'none' }} onClick={() => handleDeleteComment(comment.id)}>
+                                                                        <button className='btn' style={{ background: 'none', border: 'none' }} onClick={() => handleDeleteComment(comment.id)} title='Delete comment'>
                                                                             <img
                                                                                 src={iconDelete}
                                                                                 alt='Delete'
