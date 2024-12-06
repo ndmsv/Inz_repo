@@ -3,11 +3,11 @@ import axios from 'axios';
 const API_URL = 'https://localhost:5000/';
 
 const handleAxiosError = (error) => {
-    if (error.message) {
-        return { message: error.message, isSuccess: false };
-    }
-    else if (error.response) {
+     if (error.response && error.response.data && error.response.data.message) {
         return { message: error.response.data.message, isSuccess: false };
+    } 
+    else if (error.message) {
+        return { message: error.message, isSuccess: false };
     } else {
         return { message: 'An error occurred. Please try again.', isSuccess: false };
     }
@@ -78,7 +78,7 @@ export const checkUserDetails = async (login, password) => {
             login,
             password
         });
-        return { isAdminOrTeacher: response.data.isAdminOrTeacher, role: response.data.role, isSuccess: response.data.isSuccess, fullname: response.data.fullname };
+        return { isAdminOrTeacher: response.data.isAdminOrTeacher, isAdmin: response.data.isAdmin, role: response.data.role, isSuccess: response.data.isSuccess, fullname: response.data.fullname };
     } catch (error) {
         return handleAxiosError(error);
     }
@@ -467,6 +467,20 @@ export const deletePostComment = async (commentID, login) => {
         const response = await axios.post(`${API_URL}Forum/deletePostComment`, {
             commentID,
             login
+        });
+        return { message: response.data.message, data: response.data, isSuccess: true};
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};
+
+export const reportViolation = async (postID, commentID, reportingUserLogin, reportReason) => {
+    try {
+        const response = await axios.post(`${API_URL}Report/reportViolation`, {
+            postID,
+            commentID,
+            reportingUserLogin,
+            reportReason
         });
         return { message: response.data.message, data: response.data, isSuccess: true};
     } catch (error) {

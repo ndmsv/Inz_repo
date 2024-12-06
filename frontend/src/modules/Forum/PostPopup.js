@@ -115,7 +115,7 @@ function PostPopup({ togglePopup, username, reloadPosts, postID }) {
                             </div>
                             <div className='mb-3'>
                                 <label htmlFor='txtContent' className='form-label'>Post content</label>
-                                <textarea className='form-control' id='txtContent' placeholder='Enter your post content' rows={12} onChange={(e) => setPostContent(e.target.value)} value={postContent}></textarea>
+                                <textarea className='form-control' id='txtContent' placeholder='Enter your post content' rows={8} onChange={(e) => setPostContent(e.target.value)} value={postContent}></textarea>
                             </div>
                             <div className='row ms-2 me-2 mt-3'>
                                 <div className='col-md-4 offset-md-4'>

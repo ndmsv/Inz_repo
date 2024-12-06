@@ -23,7 +23,7 @@ namespace backend.Controllers
             try
             {
                 var user = await _context.Users.FirstOrDefaultAsync(users => users.Login == loginModel.Login);
-                
+
                 if (user == null)
                 {
                     return Ok(new { message = "Incorrect login!", isSuccess });
@@ -102,8 +102,15 @@ namespace backend.Controllers
             {
                 var hashedPassword = HashPassword(loginModel.Password);
                 var userType = await _context.user_types.FirstOrDefaultAsync(u => u.TypeID == loginModel.Type);
-                var user = new User { Login = loginModel.Login, Password = hashedPassword, Type = loginModel.Type, 
-                    Name = loginModel.Name, Surname = loginModel.Surname, UserType = userType };
+                var user = new User
+                {
+                    Login = loginModel.Login,
+                    Password = hashedPassword,
+                    Type = loginModel.Type,
+                    Name = loginModel.Name,
+                    Surname = loginModel.Surname,
+                    UserType = userType
+                };
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
 
@@ -125,15 +132,18 @@ namespace backend.Controllers
 
                 if (userWithRole != null)
                 {
-                    string role = userWithRole.UserType.TypeName;
-                    bool isAdminOrTeacher = role.Equals("Administrator", StringComparison.OrdinalIgnoreCase) ||
+                    var role = userWithRole.UserType.TypeName;
+                    var isAdminOrTeacher = role.Equals("Administrator", StringComparison.OrdinalIgnoreCase) ||
                                             role.Equals("Teacher", StringComparison.OrdinalIgnoreCase);
-                    
+
+                    var isAdmin = role.Equals("Administrator", StringComparison.OrdinalIgnoreCase);
+
+
                     string fullname = null;
                     if (!string.IsNullOrEmpty(userWithRole.Name) && !string.IsNullOrEmpty(userWithRole.Surname))
                         fullname = userWithRole.Name + " " + userWithRole.Surname;
 
-                    return Ok(new { isAdminOrTeacher, role, fullname, isSuccess = true });
+                    return Ok(new { isAdminOrTeacher, role, fullname, isAdmin, isSuccess = true });
                 }
                 else
                 {

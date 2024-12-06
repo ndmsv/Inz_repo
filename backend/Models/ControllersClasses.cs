@@ -240,4 +240,16 @@ namespace backend.Models
         public required string Login { get; set; }
     }
     #endregion ForumController
+
+    #region ReportController
+
+    public class ReportModel
+    {
+        public int PostID { get; set; }
+        public int? CommentID { get; set; }
+        public required string ReportingUserLogin { get; set; }
+        public required string ReportReason { get; set; }
+    }
+
+    #endregion
 }

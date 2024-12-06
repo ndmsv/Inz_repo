@@ -8,6 +8,7 @@ function Navbar() {
     const [username, setUsername] = React.useState(localStorage.getItem('username') || null);
     const [hashedPassword, setHashedPassword] = React.useState(localStorage.getItem('hashedPassword') || null);
     const [isTeacherOrAdmin, setIsTeacherOrAdmin] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
     const [fullname, setFullname] = useState('');
 
     const handleLogout = () => {
@@ -32,6 +33,7 @@ function Navbar() {
 
         if (registerResponse.isSuccess) {
             setIsTeacherOrAdmin(registerResponse.isAdminOrTeacher);
+            setIsAdmin(registerResponse.isAdmin);
 
             if (registerResponse.fullname)
                 setFullname(registerResponse.fullname)
@@ -73,6 +75,19 @@ function Navbar() {
                         </ul>
                     </li>
                 </ul>
+                {isAdmin &&
+                    <ul className='navbar-nav'>
+                        <li className='nav-item dropdown'>
+                            <a className='nav-link dropdown-toggle' id='navbarCourses' role='button' data-bs-toggle='dropdown' aria-expanded='false'>
+                                Administration
+                            </a>
+                            <ul className='dropdown-menu' aria-labelledby='navbarCourses'>
+                                <Link className='dropdown-item' to='/reportPosts'>Reported posts</Link>
+                                <Link className='dropdown-item' to='/reportComments'>Repoted comments</Link>
+                            </ul>
+                        </li>
+                    </ul>
+                }
                 <ul className='navbar-nav ms-auto'>
                     <li className='nav-item dropdown'>
                         <a className='nav-link dropdown-toggle' id='navbarUser' role='button' data-bs-toggle='dropdown' aria-expanded='false'>

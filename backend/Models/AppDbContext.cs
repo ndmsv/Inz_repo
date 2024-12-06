@@ -19,6 +19,7 @@
         public DbSet<ForumVotes> forum_votes { get; set; }
         public DbSet<PostsAttachments> posts_attachments { get; set; }
         public DbSet<PostsComments> posts_comments { get; set; }
+        public DbSet<ForumReports> forum_reports { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -377,7 +378,7 @@
         [Column("RESOLVED_ON")]
         public DateTime? ResolvedOn { get; set; }
 
-        [Column("RESOLVE_REASON")]
+        [Column("RESOLVE_COMMENT")]
         public string? ResolveComment { get; set; }
 
         [Column("IS_DELETED")]

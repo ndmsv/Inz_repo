@@ -11,7 +11,7 @@ import iconEdit from '../../assets/icon-edit.png';
 import iconDelete from '../../assets/icon-delete.png';
 import iconAlert from '../../assets/icon-alert.png';
 
-function PostsCards({ isLoading, currentPosts, allPosts, setAllPosts, showPostPopup, userCards, username, reloadPosts, showCommentPopupHandler }) {
+function PostsCards({ isLoading, currentPosts, allPosts, setAllPosts, showPostPopup, userCards, username, reloadPosts, showCommentPopupHandler, showReportPopupHandler }) {
     const [commentFields, setCommentFields] = useState({});
 
     const formatDate = (dateString) => {
@@ -194,7 +194,7 @@ function PostsCards({ isLoading, currentPosts, allPosts, setAllPosts, showPostPo
                                         </h6>
                                     </div>
                                     <div className='col-4 text-end'>
-                                        <button className='btn' style={{ background: 'none', border: 'none' }} title='Report post'>
+                                        <button className='btn' style={{ background: 'none', border: 'none' }} title='Report post' onClick={() => showReportPopupHandler(post, null)}>
                                             <img
                                                 src={iconAlert}
                                                 alt='Alert'
@@ -242,6 +242,14 @@ function PostsCards({ isLoading, currentPosts, allPosts, setAllPosts, showPostPo
                                                                 </div>
                                                                 {comment.isEditible &&
                                                                     <div className='col-2 text-end'>
+                                                                        <button className='btn' style={{ background: 'none', border: 'none' }} title='Report comment' onClick={() => showReportPopupHandler(post, comment)}>
+                                                                            <img
+                                                                                src={iconAlert}
+                                                                                alt='Alert'
+                                                                                width='24'
+                                                                                height='24'
+                                                                            />
+                                                                        </button>
                                                                         <button className='btn' style={{ background: 'none', border: 'none' }} onClick={() => showCommentPopupHandler(comment, post)} title='Edit comment'>
                                                                             <img
                                                                                 src={iconEdit}

@@ -9,6 +9,8 @@ import CourseDetails from '../Courses/CourseDetails';
 import TaskSubmissions from '../Tasks/TaskSubmissions';
 import MainForum from '../Forum/MainForum';
 import UserPosts from '../Forum/UserPosts';
+import ReportPosts from '../Reports/ReportPosts';
+import ReportComments from '../Reports/ReportComments';
 
 function App() {
   const navigate = useNavigate();
@@ -207,6 +209,8 @@ function App() {
       <Route path='/taskSubmissions' element={<TaskSubmissions />} />
       <Route path='/mainForum' element={<MainForum />} />
       <Route path='/userPosts' element={<UserPosts />} />
+      <Route path='/reportPosts' element={<ReportPosts />} />
+      <Route path='/reportComments' element={<ReportComments />} />
     </Routes>
   );
 }
