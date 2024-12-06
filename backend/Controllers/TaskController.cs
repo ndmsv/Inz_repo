@@ -1,8 +1,6 @@
 ﻿using backend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Threading.Tasks;
 
 namespace backend.Controllers
 {
@@ -17,25 +15,25 @@ namespace backend.Controllers
             _context = context;
         }
 
-        [HttpPost("getCourseTasks")]
-        public async Task<IActionResult> GetCourseTasks([FromBody] CourseJoinModel model)
+        [HttpGet("getCourseTasks")]
+        public async Task<IActionResult> GetCourseTasks([FromQuery] int courseID, [FromQuery] string login)
         {
             try
             {
-                var courseExists = await _context.courses.AnyAsync(c => c.ID == model.CourseID);
+                var courseExists = await _context.courses.AnyAsync(c => c.ID == courseID);
                 if (!courseExists)
                 {
-                    return NotFound(new { message = $"No course found with ID {model.CourseID}" });
+                    return NotFound(new { message = $"No course found with ID {courseID}" });
                 }
 
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == model.Login);
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == login);
                 if (user == null)
                 {
                     return NotFound(new { message = "User was not found!" });
                 }
 
                 var tasks = await _context.course_tasks
-                    .Where(t => t.CourseID == model.CourseID)
+                    .Where(t => t.CourseID == courseID)
                     .Select(t => new
                     {
                         TaskId = t.ID,
@@ -51,7 +49,8 @@ namespace backend.Controllers
                         t.IsDeleted,
                         Submissions = _context.task_submissions
                             .Where(s => s.TaskID == t.ID && s.UserID == user.ID && !s.IsDeleted)
-                            .Select(s => new {
+                            .Select(s => new
+                            {
                                 s.AddedOn
                             }).ToList()
                     })
@@ -59,7 +58,8 @@ namespace backend.Controllers
                     .OrderBy(t => t.OpeningDate)
                     .ToListAsync();
 
-                var result = tasks.Select(t => new {
+                var result = tasks.Select(t => new
+                {
                     t.TaskId,
                     t.TaskName,
                     t.TaskDescription,
@@ -92,15 +92,15 @@ namespace backend.Controllers
             return $"{Math.Abs(timeSpan.Days)} days, {Math.Abs(timeSpan.Hours)} hours, {Math.Abs(timeSpan.Minutes)} minutes, {Math.Abs(timeSpan.Seconds)} seconds";
         }
 
-        [HttpPost("checkIfOwnerOrAdmin")]
-        public async Task<IActionResult> CheckIfOwnerOrAdmin([FromBody] CourseJoinModel loginWithCourseID)
+        [HttpGet("checkIfOwnerOrAdmin")]
+        public async Task<IActionResult> CheckIfOwnerOrAdmin([FromQuery] int courseID, [FromQuery] string login)
         {
             try
             {
                 var user = await _context.Users
                     .Include(u => u.UserType)
                     .Include(u => u.UsersInCourse)
-                    .Where(u => u.Login == loginWithCourseID.Login)
+                    .Where(u => u.Login == login)
                     .FirstOrDefaultAsync();
 
                 if (user == null)
@@ -110,7 +110,7 @@ namespace backend.Controllers
 
                 bool isAdmin = user.UserType != null && user.UserType.TypeName == "Administrator";
 
-                bool isOwner = user.UsersInCourse != null && user.UsersInCourse.Any(uic => uic.CourseID == loginWithCourseID.CourseID && uic.IsOwner);
+                bool isOwner = user.UsersInCourse != null && user.UsersInCourse.Any(uic => uic.CourseID == courseID && uic.IsOwner);
 
                 return Ok(new { IsOwnerOrAdmin = isAdmin || isOwner });
             }
@@ -245,14 +245,15 @@ namespace backend.Controllers
             }
         }
 
-        [HttpPost("checkSubmissionsInCourse")]
-        public async Task<IActionResult> CheckSubmissionsInCourse([FromBody] CourseWithTaskModel courseWithTaskModel)
+        [HttpGet("checkSubmissionsInCourse")]
+        public async Task<IActionResult> CheckSubmissionsInCourse([FromQuery] int courseID, [FromQuery] int taskID)
         {
             try
             {
                 var courseUsers = await _context.users_in_course
-                    .Where(uic => uic.CourseID == courseWithTaskModel.CourseID && !uic.IsDeleted)
-                    .Select(uic => new {
+                    .Where(uic => uic.CourseID == courseID && !uic.IsDeleted)
+                    .Select(uic => new
+                    {
                         uic.UserID,
                         uic.User.Login,
                         FullName = uic.User.Name + " " + uic.User.Surname,
@@ -262,12 +263,13 @@ namespace backend.Controllers
 
                 var taskSubmissions = await _context.task_submissions
                     .Include(ts => ts.CourseTask)
-                    .Where(ts => ts.CourseTask.CourseID == courseWithTaskModel.CourseID 
-                        && ts.CourseTask.ID == courseWithTaskModel.TaskID 
+                    .Where(ts => ts.CourseTask.CourseID == courseID
+                        && ts.CourseTask.ID == taskID
                         && !ts.IsDeleted)
                     .ToListAsync();
 
-                var usersWithSubmissions = courseUsers.Select(u => new {
+                var usersWithSubmissions = courseUsers.Select(u => new
+                {
                     u.UserID,
                     u.Login,
                     u.FullName,

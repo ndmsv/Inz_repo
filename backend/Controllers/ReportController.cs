@@ -46,13 +46,12 @@ namespace backend.Controllers
             }
         }
 
-        [HttpPost("getReportPosts")]
-        public async Task<IActionResult> GetUserPosts([FromBody] PlainLoginModel model)
+        [HttpGet("getReportPosts")]
+        public async Task<IActionResult> GetReportPosts([FromQuery] string login)
         {
             try
             {
-                // TODO: Ogarnąć całą warstwe związaną z wyświetlaniem jako jakiś popup listy wszystkich zgłoszeń do danego posta
-                var user = await _context.Users.Include(s => s.UserType).FirstOrDefaultAsync(u => u.Login == model.Login);
+                var user = await _context.Users.Include(s => s.UserType).FirstOrDefaultAsync(u => u.Login == login);
                 if (user == null) return NotFound(new { message = "User not found" });
                 if (user.UserType.TypeName != "Administrator") return BadRequest(new { message = "User not with administrative permission" });
 
@@ -86,6 +85,45 @@ namespace backend.Controllers
                     .ToListAsync();
 
                 return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("getReportsByPost")]
+        public async Task<IActionResult> GetReportsByPost([FromQuery] string login, [FromQuery] int postId)
+        {
+            try
+            {
+                var user = await _context.Users.Include(s => s.UserType).FirstOrDefaultAsync(u => u.Login == login);
+                if (user == null) return NotFound(new { message = "User not found" });
+                if (user.UserType.TypeName != "Administrator")
+                    return BadRequest(new { message = "User does not have administrative permissions" });
+
+                var reports = await _context.forum_reports
+                    .Where(report => report.PostID == postId && !report.IsDeleted)
+                    .Select(report => new ForumReportResponse
+                    {
+                        Id = report.ID,
+                        ReportingUser = _context.Users
+                            .Where(u => u.ID == report.ReportingUserID)
+                            .Select(u => (u.Name != null && u.Surname != null) ? (u.Name + " " + u.Surname) : u.Login)
+                            .FirstOrDefault(),
+                        ReportReason = report.ReportReason,
+                        CreatedOn = DateTime.SpecifyKind(report.CreatedOn, DateTimeKind.Utc),
+                        IsResolved = report.IsResolved,
+                        ResolvingUser = report.IsResolved ? _context.Users
+                            .Where(u => u.ID == report.ResolvingUserID)
+                            .Select(u => (u.Name != null && u.Surname != null) ? (u.Name + " " + u.Surname) : u.Login)
+                            .FirstOrDefault() : null,
+                        ResolvedOn = report.ResolvedOn != null ? DateTime.SpecifyKind(Convert.ToDateTime(report.ResolvedOn), DateTimeKind.Utc) : null,
+                        ResolveComment = report.ResolveComment
+                    })
+                    .ToListAsync();
+
+                return Ok(reports);
             }
             catch (Exception ex)
             {

@@ -17,18 +17,18 @@ namespace backend.Controllers
             _context = context;
         }
 
-        [HttpPost("getForumPosts")]
-        public async Task<IActionResult> GetForumPosts([FromBody] GetForumPostsModel request)
+        [HttpGet("getForumPosts")]
+        public async Task<IActionResult> GetForumPosts([FromQuery] string login, [FromQuery] PostType type, [FromQuery] Timeframe? timeframe)
         {
             try
             {
-                var user = await _context.Users.Include(s => s.UserType).FirstOrDefaultAsync(u => u.Login == request.Login);
+                var user = await _context.Users.Include(s => s.UserType).FirstOrDefaultAsync(u => u.Login == login);
                 if (user == null) return NotFound(new { message = "User not found" });
 
                 DateTime timeframeLimit = DateTime.Now;
-                if (request.Type == PostType.Top && request.Timeframe.HasValue)
+                if (type == PostType.Top && timeframe.HasValue)
                 {
-                    timeframeLimit = request.Timeframe switch
+                    timeframeLimit = timeframe switch
                     {
                         Timeframe.TwoHours => DateTime.Now.AddHours(-2),
                         Timeframe.SixHours => DateTime.Now.AddHours(-6),
@@ -41,7 +41,7 @@ namespace backend.Controllers
                     };
                 }
 
-                if (request.Type == PostType.Hot)
+                if (type == PostType.Hot)
                 {
                     var postsHot = _context.forum_posts
                         .Include(s => s.PostAttachments)
@@ -87,14 +87,14 @@ namespace backend.Controllers
 
                 IQueryable<ForumPosts> query = _context.forum_posts;
 
-                if (request.Type == PostType.Top)
+                if (type == PostType.Top)
                 {
                     query = query
                         .Include(s => s.PostAttachments)
                         .Where(post => !post.IsDeleted && post.CreatedOn >= timeframeLimit)
                         .OrderByDescending(post => post.VotesCount);
                 }
-                else if (request.Type == PostType.New)
+                else if (type == PostType.New)
                 {
                     query = query
                         .Include(s => s.PostAttachments)
@@ -344,12 +344,12 @@ namespace backend.Controllers
             }
         }
 
-        [HttpPost("getUserPosts")]
-        public async Task<IActionResult> GetUserPosts([FromBody] PlainLoginModel model)
+        [HttpGet("getUserPosts")]
+        public async Task<IActionResult> GetUserPosts([FromQuery] string login)
         {
             try
             {
-                var user = await _context.Users.Include(s => s.UserType).FirstOrDefaultAsync(u => u.Login == model.Login);
+                var user = await _context.Users.Include(s => s.UserType).FirstOrDefaultAsync(u => u.Login == login);
                 if (user == null) return NotFound(new { message = "User not found" });
 
                 var query = _context.forum_posts.Include(s => s.PostAttachments)
@@ -390,17 +390,17 @@ namespace backend.Controllers
             }
         }
 
-        [HttpPost("getSelectedPost")]
-        public async Task<IActionResult> GetSelectedPost([FromBody] SelectedPostModel model)
+        [HttpGet("getSelectedPost")]
+        public async Task<IActionResult> GetSelectedPost([FromQuery] int postID, [FromQuery] string login)
         {
             try
             {
-                var user = await _context.Users.Include(s => s.UserType).FirstOrDefaultAsync(u => u.Login == model.Login);
+                var user = await _context.Users.Include(s => s.UserType).FirstOrDefaultAsync(u => u.Login == login);
                 if (user == null) return NotFound(new { message = "User not found" });
 
                 var post = await _context.forum_posts
                     .Include(p => p.PostAttachments)
-                    .Where(p => !p.IsDeleted && p.ID == model.PostID)
+                    .Where(p => !p.IsDeleted && p.ID == postID)
                     .Select(p => new ForumPostModelExtended
                     {
                         Id = p.ID,
@@ -531,15 +531,15 @@ namespace backend.Controllers
             }
         }
 
-        [HttpPost("getSelectedPostComments")]
-        public async Task<IActionResult> GetSelectedPostComments([FromBody] SelectedPostModel model)
+        [HttpGet("getSelectedPostComments")]
+        public async Task<IActionResult> GetSelectedPostComments([FromQuery] int postID, [FromQuery] string login)
         {
             try
             {
-                var user = await _context.Users.Include(s => s.UserType).FirstOrDefaultAsync(u => u.Login == model.Login);
+                var user = await _context.Users.Include(s => s.UserType).FirstOrDefaultAsync(u => u.Login == login);
                 if (user == null) return NotFound(new { message = "User not found" });
 
-                var post = await _context.forum_posts.FirstOrDefaultAsync(post => !post.IsDeleted && post.ID == model.PostID);
+                var post = await _context.forum_posts.FirstOrDefaultAsync(post => !post.IsDeleted && post.ID == postID);
 
                 if (post == null)
                 {

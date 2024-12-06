@@ -1,7 +1,6 @@
 ﻿using backend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace backend.Controllers
 {
@@ -71,12 +70,12 @@ namespace backend.Controllers
             }
         }
 
-        [HttpPost("getJoinCourses")]
-        public async Task<IActionResult> GetJoinCourses([FromBody] PlainLoginModel username)
+        [HttpGet("getJoinCourses")]
+        public async Task<IActionResult> GetJoinCourses([FromQuery] string login)
         {
             try
             {
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == username.Login);
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == login);
 
                 if (user == null)
                 {
@@ -106,12 +105,12 @@ namespace backend.Controllers
             }
         }
 
-        [HttpPost("getMyCourses")]
-        public async Task<IActionResult> GetMyCourses([FromBody] PlainLoginModel username)
+        [HttpGet("getMyCourses")]
+        public async Task<IActionResult> GetMyCourses([FromQuery] string login)
         {
             try
             {
-                var user = await _context.Users.Include(u => u.UserType).FirstOrDefaultAsync(u => u.Login == username.Login);
+                var user = await _context.Users.Include(u => u.UserType).FirstOrDefaultAsync(u => u.Login == login);
 
                 if (user == null)
                 {
@@ -286,17 +285,17 @@ namespace backend.Controllers
             }
         }
 
-        [HttpPost("getEligibleUsers")]
-        public async Task<IActionResult> GetEligibleUsers([FromBody] CourseIDModel courseIDModel)
+        [HttpGet("getEligibleUsers")]
+        public async Task<IActionResult> GetEligibleUsers([FromQuery] int courseID)
         {
             try
             {
                 var courseUsers = _context.users_in_course
-                    .Where(uic => uic.CourseID == courseIDModel.CourseID && !uic.IsDeleted && !uic.IsOwner)
+                    .Where(uic => uic.CourseID == courseID && !uic.IsDeleted && !uic.IsOwner)
                     .Select(uic => uic.UserID);
 
                 var eligibleUsers = await _context.Users
-                    .Where(u => courseUsers.Contains(u.ID) 
+                    .Where(u => courseUsers.Contains(u.ID)
                         && u.UserType != null && (u.UserType.TypeName == "Teacher" || u.UserType.TypeName == "Administrator"))
                     .Select(u => new { u.ID, u.Login, Name = u.Name + " " + u.Surname, TypeName = u.UserType.TypeName })
                     .ToListAsync();

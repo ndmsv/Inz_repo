@@ -2,10 +2,6 @@
 
 namespace backend.Models
 {
-    public class ControllersClasses
-    {
-    }
-
     #region LoginController
     public class PlainLoginModel
     {
@@ -103,12 +99,6 @@ namespace backend.Models
         public required bool LimitedAttachmentTypes { get; set; }
         public string? AttachmentTypes { get; set; }
         public int? TaskID { get; set; }
-    }
-
-    public class CourseWithTaskModel
-    {
-        public int CourseID { get; set; }
-        public int TaskID { get; set; }
     }
     #endregion TaskController
 
@@ -249,6 +239,18 @@ namespace backend.Models
         public int? CommentID { get; set; }
         public required string ReportingUserLogin { get; set; }
         public required string ReportReason { get; set; }
+    }
+
+    public class ForumReportResponse
+    {
+        public int Id { get; set; }
+        public string ReportingUser { get; set; } = default!;
+        public string ReportReason { get; set; } = default!;
+        public DateTime CreatedOn { get; set; }
+        public bool IsResolved { get; set; }
+        public string? ResolvingUser { get; set; }
+        public DateTime? ResolvedOn { get; set; }
+        public string? ResolveComment { get; set; }
     }
 
     #endregion

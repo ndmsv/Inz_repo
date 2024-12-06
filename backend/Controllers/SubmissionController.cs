@@ -1,8 +1,6 @@
 ﻿using backend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -128,25 +126,25 @@ namespace backend.Controllers
             }
         }
 
-        [HttpPost("getTaskSubmissions")]
-        public async Task<IActionResult> GetTaskSubmissions([FromBody] LeaveTaskModel model)
+        [HttpGet("getTaskSubmissions")]
+        public async Task<IActionResult> GetTaskSubmissions([FromQuery] int taskID, [FromQuery] string login)
         {
             try
             {
-                var taskExists = await _context.course_tasks.AnyAsync(t => t.ID == model.TaskID);
+                var taskExists = await _context.course_tasks.AnyAsync(t => t.ID == taskID);
                 if (!taskExists)
                 {
-                    return NotFound(new { message = $"No task found with ID {model.TaskID}" });
+                    return NotFound(new { message = $"No task found with ID {taskID}" });
                 }
 
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == model.Login);
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == login);
                 if (user == null)
                 {
                     return NotFound(new { message = "User was not found!" });
                 }
 
                 var submissions = await _context.task_submissions
-                    .Where(s => s.TaskID == model.TaskID && s.UserID == user.ID && !s.IsDeleted)
+                    .Where(s => s.TaskID == taskID && s.UserID == user.ID && !s.IsDeleted)
                     .Include(s => s.SubmissionAttachments)
                     .Select(s => new SubmissionDto
                     {
@@ -184,7 +182,7 @@ namespace backend.Controllers
             var baseDirectory = AppContext.BaseDirectory;
             var projectRoot = FindProjectRoot(baseDirectory);
             var encryptedFilesDirectory = Path.Combine(projectRoot, "encrypted_files");
-            var encryptedFilePath = Path.Combine(encryptedFilesDirectory, attachment.FilePath); 
+            var encryptedFilePath = Path.Combine(encryptedFilesDirectory, attachment.FilePath);
             byte[] encryptionKey = Encoding.UTF8.GetBytes("12345678901234567890123456789012");
             byte[] encryptionIV = Encoding.UTF8.GetBytes("1234567890123456");
 

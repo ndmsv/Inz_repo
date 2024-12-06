@@ -100,8 +100,8 @@ export const registerCourse = async (name, description, ownerName, password) => 
 
 export const getJoinCourses = async (login) => {
     try {
-        const response = await axios.post(`${API_URL}Course/getJoinCourses`, {
-            login
+        const response = await axios.get(`${API_URL}Course/getJoinCourses`, {
+            params: { login }
         });
         return { data: response.data, isSuccess: true};
     } catch (error) {
@@ -111,8 +111,8 @@ export const getJoinCourses = async (login) => {
 
 export const getMyCourses = async (login) => {
     try {
-        const response = await axios.post(`${API_URL}Course/getMyCourses`, {
-            login
+        const response = await axios.get(`${API_URL}Course/getMyCourses`, {
+            params: { login }
         });
         return { data: response.data, isSuccess: true};
     } catch (error) {
@@ -159,8 +159,8 @@ export const leaveCourse = async (courseID, login) => {
 
 export const getEligibleUsers = async (courseID) => {
     try {
-        const response = await axios.post(`${API_URL}Course/getEligibleUsers`, {
-            courseID
+        const response = await axios.get(`${API_URL}Course/getEligibleUsers`, {
+            params: { courseID }
         });
         return { data: response.data, isSuccess: true };
     } catch (error) {
@@ -194,9 +194,8 @@ export const stopOwnership = async (courseID, login) => {
 
 export const getCourseTasks = async (courseID, login) => {
     try {
-        const response = await axios.post(`${API_URL}Task/getCourseTasks`, {
-            courseID,
-            login
+        const response = await axios.get(`${API_URL}Task/getCourseTasks`, {
+            params: { courseID, login }
         });
         return { data: response.data, isSuccess: true};
     } catch (error) {
@@ -206,9 +205,8 @@ export const getCourseTasks = async (courseID, login) => {
 
 export const checkIfOwnerOrAdmin = async (login, courseID) => {
     try {
-        const response = await axios.post(`${API_URL}Task/checkIfOwnerOrAdmin`, {
-            login,
-            courseID
+        const response = await axios.get(`${API_URL}Task/checkIfOwnerOrAdmin`, {
+            params: { courseID, login }
         });
         return { data: response.data, isSuccess: true};
     } catch (error) {
@@ -291,9 +289,8 @@ export const saveTaskSubmission = async (taskId, login, submissionNote, files) =
 
 export const getTaskSubmissions = async (taskID, login) => {
     try {
-        const response = await axios.post(`${API_URL}Submission/getTaskSubmissions`, {
-            taskID,
-            login
+        const response = await axios.get(`${API_URL}Submission/getTaskSubmissions`, {
+            params: { taskID, login }
         });
         return { data: response.data, isSuccess: true};
     } catch (error) {
@@ -316,9 +313,8 @@ export const downloadFile = async (attachmentID) => {
 
 export const checkSubmissionsInCourse = async (courseID, taskID) => {
     try {
-        const response = await axios.post(`${API_URL}Task/checkSubmissionsInCourse`, {
-            courseID,
-            taskID
+        const response = await axios.get(`${API_URL}Task/checkSubmissionsInCourse`, {
+            params: { courseID, taskID }
         });
         return { data: response.data, isSuccess: true};
     } catch (error) {
@@ -339,10 +335,8 @@ export const deleteCourse = async (courseID) => {
 
 export const getForumPosts = async (login, type, timeframe) => {
     try {
-        const response = await axios.post(`${API_URL}Forum/getForumPosts`, {
-            login,
-            type,
-            timeframe
+        const response = await axios.get(`${API_URL}Forum/getForumPosts`, {
+            params: { login, type, timeframe }
         });
         return { data: response.data, isSuccess: true};
     } catch (error) {
@@ -403,8 +397,8 @@ export const voteOnPost = async (postID, login, voted, liked) => {
 
 export const getUserPosts = async (login) => {
     try {
-        const response = await axios.post(`${API_URL}Forum/getUserPosts`, {
-            login
+        const response = await axios.get(`${API_URL}Forum/getUserPosts`, {
+            params: { login }
         });
         return { data: response.data, isSuccess: true};
     } catch (error) {
@@ -414,9 +408,8 @@ export const getUserPosts = async (login) => {
 
 export const getSelectedPost = async (postID, login) => {
     try {
-        const response = await axios.post(`${API_URL}Forum/getSelectedPost`, {
-            postID,
-            login
+        const response = await axios.get(`${API_URL}Forum/getSelectedPost`, {
+            params: { postID, login }
         });
         return { data: response.data, isSuccess: true};
     } catch (error) {
@@ -452,9 +445,8 @@ export const savePostComment = async (commentID, postID, login, postContent) => 
 
 export const getSelectedPostComments = async (postID, login) => {
     try {
-        const response = await axios.post(`${API_URL}Forum/getSelectedPostComments`, {
-            postID,
-            login
+        const response = await axios.get(`${API_URL}Forum/getSelectedPostComments`, {
+            params: { postID, login }
         });
         return { data: response.data, isSuccess: true};
     } catch (error) {
@@ -483,6 +475,28 @@ export const reportViolation = async (postID, commentID, reportingUserLogin, rep
             reportReason
         });
         return { message: response.data.message, data: response.data, isSuccess: true};
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};
+
+export const getReportPosts = async (login) => {
+    try {
+        const response = await axios.get(`${API_URL}Report/getReportPosts`, {
+            params: { login }
+        });
+        return { data: response.data, isSuccess: true };
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};
+
+export const getReportsByPost = async (postID, login) => {
+    try {
+        const response = await axios.get(`${API_URL}Report/getReportsByPost`, {
+            params: { postId: postID, login }
+        });
+        return { data: response.data, isSuccess: true };
     } catch (error) {
         return handleAxiosError(error);
     }

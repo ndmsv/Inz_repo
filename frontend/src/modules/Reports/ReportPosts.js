@@ -3,7 +3,7 @@ import Navbar from '../Global/Navbar';
 import PostsCards from '../Forum/PostsCards';
 import CommentPopup from '../Forum/CommentPopup';
 import ReportPopup from '../Forum/ReportPopup';
-import { getUserPosts, downloadPostFile } from '../../services/apiService';
+import { getReportPosts, downloadPostFile } from '../../services/apiService';
 import '../Global/Global.css';
 
 function ReportPosts() {
@@ -23,7 +23,7 @@ function ReportPosts() {
             try {
                 setIsLoading(true);
 
-                const data = await getUserPosts(username);
+                const data = await getReportPosts(username);
 
                 if (data.isSuccess) {
                     const updatedPosts = await Promise.all(data.data.map(async post => {
@@ -48,7 +48,7 @@ function ReportPosts() {
     }, []);
 
     const reloadPosts = async () => {
-        const data = await getUserPosts(username);
+        const data = await getReportPosts(username);
 
         if (data.isSuccess) {
             const updatedPosts = await Promise.all(data.data.map(async post => {
