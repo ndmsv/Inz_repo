@@ -444,6 +444,8 @@ namespace backend.Controllers
                 var post = await _context.forum_posts
                                        .Include(s => s.PostAttachments)
                                        .Include(t => t.ForumVotes)
+                                       .Include(u => u.PostsComments)
+                                       .Include(v => v.ForumReports)
                                        .FirstOrDefaultAsync(s => s.ID == model.PostID);
 
                 if (post == null)
@@ -480,6 +482,28 @@ namespace backend.Controllers
                         }
 
                         _context.posts_attachments.RemoveRange(post.PostAttachments);
+                    }
+
+                    if (post.PostsComments != null)
+                    {
+                        foreach (var comment in post.PostsComments)
+                        {
+                            comment.IsDeleted = true;
+                        }
+                    }
+
+                    if (post.ForumReports != null)
+                    {
+                        foreach (var report in post.ForumReports)
+                        {
+                            if (!report.IsDeleted && !report.IsResolved)
+                            {
+                                report.IsResolved = true;
+                                report.ResolvedOn = DateTime.UtcNow;
+                                report.ResolveComment = "Resolved automatically due to post delete";
+                            }
+                            report.IsDeleted = true;
+                        }
                     }
 
                     post.IsDeleted = true;

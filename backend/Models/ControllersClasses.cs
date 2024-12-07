@@ -253,5 +253,19 @@ namespace backend.Models
         public string? ResolveComment { get; set; }
     }
 
+    public class ResolveReportModel
+    {
+        public int ReportID { get; set; }
+        public required string ResolvingUser { get; set; }
+        public required string ResolveComment { get; set; }
+    }
+
+    public class ResolveAllReportsModel
+    {
+        public int PostID { get; set; }
+        public required string ResolvingUser { get; set; }
+        public required string ResolveComment { get; set; }
+    }
+
     #endregion
 }

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../Global/Navbar';
 import PostsCards from '../Forum/PostsCards';
 import CommentPopup from '../Forum/CommentPopup';
-import ReportPopup from '../Forum/ReportPopup';
+import PostPopup from '../Forum/PostPopup';
+import AllReportsPopup from '../Forum/AllReportsPopup';
 import { getReportPosts, downloadPostFile } from '../../services/apiService';
 import '../Global/Global.css';
 
@@ -15,27 +16,16 @@ function ReportPosts() {
     const [selectedPostID, setSelectedPostID] = useState(null);
     const [selectedPost, setSelectedPost] = useState(null);
     const [selectedComment, setSelectedComment] = useState(null);
+    const [showPostPopup, setShowPostPopup] = useState(false);
     const [showCommentPopup, setShowCommentPopup] = useState(false);
-    const [showReportPopup, setShowReportPopup] = useState(false);
+    const [showAllReportsPopup, setShowAllReportsPopup] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 setIsLoading(true);
 
-                const data = await getReportPosts(username);
-
-                if (data.isSuccess) {
-                    const updatedPosts = await Promise.all(data.data.map(async post => {
-                        await fetchAndSetFiles(post);
-                        return post;
-                    }));
-
-                    setPosts(updatedPosts);
-                }
-                else {
-                    alert(data.message);
-                }
+                reloadPosts();
             } catch (error) {
                 alert('Error fetching posts:', error);
             } finally {
@@ -86,6 +76,15 @@ function ReportPosts() {
         post.convertedAttachments = files;
     };
 
+    const togglePostPopup = () => {
+        setShowPostPopup(!showPostPopup);
+    };
+
+    const showPostPopupHandler = (postID) => {
+        setSelectedPostID(postID);
+        setShowPostPopup(true)
+    };
+
     const showCommentPopupHandler = (comment, post) => {
         setSelectedComment(comment);
         setShowCommentPopup(true);
@@ -96,15 +95,15 @@ function ReportPosts() {
         setShowCommentPopup(!showCommentPopup);
     };
 
-    const showReportPopupHandler = (post, comment) => {
+    const showAllReportsPopupHandler = (post, comment) => {
         setSelectedComment(comment);
         setSelectedPost(post);
 
-        setShowReportPopup(true);
+        setShowAllReportsPopup(true);
     };
 
-    const toggleReportPopup = () => {
-        setShowReportPopup(!showReportPopup);
+    const toggleAllReportsPopup = () => {
+        setShowAllReportsPopup(!showAllReportsPopup);
     };
 
     const indexOfLastPost = currentPage * postsPerPage;
@@ -124,17 +123,19 @@ function ReportPosts() {
                         </div>
                     </div>
                     <div className='col-md-12 mt-3'>
-                        <PostsCards 
-                            isLoading={isLoading} 
-                            currentPosts={currentPosts} 
-                            allPosts={posts} 
-                            setAllPosts={setPosts} 
-                            showPostPopup={false} 
-                            userCards={true} 
-                            username={username} 
-                            reloadPosts={reloadPosts} 
-                            showCommentPopupHandler={showCommentPopupHandler} 
-                            showReportPopupHandler={showReportPopupHandler} />
+                        <PostsCards
+                            isLoading={isLoading}
+                            currentPosts={currentPosts}
+                            allPosts={posts}
+                            setAllPosts={setPosts}
+                            showPostPopupHandler={false}
+                            userCards={true}
+                            username={username}
+                            reloadPosts={reloadPosts}
+                            showCommentPopupHandler={false}
+                            showReportPopupHandler={false}
+                            isReportPosts={true}
+                            showAllReportsPopupHandler={showAllReportsPopupHandler} />
                     </div>
                     <nav>
                         <ul className='pagination justify-content-center'>
@@ -148,7 +149,17 @@ function ReportPosts() {
                         </ul>
                     </nav>
                     {showCommentPopup && <CommentPopup togglePopup={toggleCommentPopup} username={username} reloadPosts={reloadPosts} postID={selectedPostID} selectedComment={selectedComment} />}
-                    {showReportPopup && <ReportPopup togglePopup={toggleReportPopup} username={username} reloadPosts={reloadPosts} post={selectedPost} comment={selectedComment} />}
+                    {showPostPopup && <PostPopup togglePopup={togglePostPopup} username={username} reloadPosts={reloadPosts} postID={selectedPostID} />}
+                    {showAllReportsPopup &&
+                        <AllReportsPopup
+                            togglePopup={toggleAllReportsPopup}
+                            username={username}
+                            post={selectedPost}
+                            comment={selectedComment}
+                            reloadPosts={reloadPosts}
+                            showPostPopupHandler={showPostPopupHandler}
+                        />
+                    }
                 </div>
             </div>
         </div>

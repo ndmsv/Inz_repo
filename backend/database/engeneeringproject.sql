@@ -103,7 +103,7 @@ CREATE TABLE `forum_posts` (
 
 LOCK TABLES `forum_posts` WRITE;
 /*!40000 ALTER TABLE `forum_posts` DISABLE KEYS */;
-INSERT INTO `forum_posts` VALUES (1,'Testowy post','Taki post dla testów','2024-11-03 00:00:00',NULL,4,_binary '',0),(2,'test 2','drugi testowy post','2024-11-03 20:50:56',NULL,4,_binary '\0',0),(3,'test 3','Litwo! Ojczyzno moja! ty jesteś jak zdrowie.\r\nIle cię trzeba cenić, ten tylko się dowie,\r\nKto cię stracił. Dziś piękność twą w całej ozdobie\r\nWidzę i opisuję, bo tęsknię po tobie.\r\nPanno Święta, co Jasnej bronisz Częstochowy\r\nI w Ostrej świecisz Bramie! Ty, co gród zamkowy\r\nNowogródzki ochraniasz z jego wiernym ludem!\r\nJak mnie dziecko do zdrowia powróciłaś cudem\r\n(Gdy od płaczącej matki pod Twoję opiekę\r\nOfiarowany, martwą podniosłem powiekę\r\nI zaraz mogłem pieszo do Twych świątyń progu\r\n\r\nIść za wrócone życie podziękować Bogu),\r\n\r\nTak nas powrócisz cudem na Ojczyzny łono.\r\n\r\nTymczasem przenoś moję duszę utęsknioną\r\n\r\nDo tych pagórków leśnych, do tych łąk zielonych,\r\n\r\nSzeroko nad błękitnym Niemnem rozciągnionych;\r\n\r\nDo tych pól malowanych zbożem rozmaitem,\r\n\r\nWyzłacanych pszenicą, posrebrzanych żytem;\r\n\r\nGdzie bursztynowy świerzop, gryka jak śnieg biała,\r\n\r\nGdzie panieńskim rumieńcem dzięcielina pała,\r\n\r\nA wszystko przepasane, jakby wstęgą, miedzą\r\nZieloną, na niej z rzadka ciche grusze siedzą.','2024-11-11 19:13:27','2024-11-30 17:54:06',4,_binary '\0',1),(4,'post','Gdybym tu faktycznie coś pisał:\r\n\r\nTo jak sie to zapisze?\r\n\r\nBo w sumie','2024-11-11 19:24:57',NULL,4,_binary '',1),(5,'my first post','My name is Cezary Baryka, I have been the owner of this glass house for twenty minutes.\r\n\r\nI am slowly starting to regret the purchase.\r\n\r\nAt night it’s freezing, during the day it’s sweltering.\r\n\r\nNo ventilation and no sewage system take their toll.\r\n\r\nThat’s right, it stinks.\r\n\r\nAhh, I lied, I didn’t buy this hovel.\r\n\r\nI won it in a card game from my father.','2024-11-17 16:54:54','2024-11-30 18:26:59',2,_binary '\0',1),(6,'dlaczego','dlaczego kursy nie działają?','2024-12-02 17:52:16',NULL,3,_binary '\0',1);
+INSERT INTO `forum_posts` VALUES (1,'Testowy post','Taki post dla testów','2024-11-03 00:00:00',NULL,4,_binary '',0),(2,'test 2','drugi testowy post','2024-11-03 20:50:56',NULL,4,_binary '',0),(3,'test 3','Litwo! Ojczyzno moja! ty jesteś jak zdrowie.\r\nIle cię trzeba cenić, ten tylko się dowie,\r\nKto cię stracił. Dziś piękność twą w całej ozdobie\r\nWidzę i opisuję, bo tęsknię po tobie.\r\nPanno Święta, co Jasnej bronisz Częstochowy\r\nI w Ostrej świecisz Bramie! Ty, co gród zamkowy\r\nNowogródzki ochraniasz z jego wiernym ludem!\r\nJak mnie dziecko do zdrowia powróciłaś cudem\r\n(Gdy od płaczącej matki pod Twoję opiekę\r\nOfiarowany, martwą podniosłem powiekę\r\nI zaraz mogłem pieszo do Twych świątyń progu\r\nIść za wrócone życie podziękować Bogu),\r\nTak nas powrócisz cudem na Ojczyzny łono.\r\nTymczasem przenoś moję duszę utęsknioną\r\n\r\nDo tych pagórków leśnych, do tych łąk zielonych,\r\n\r\nSzeroko nad błękitnym Niemnem rozciągnionych;\r\n\r\nDo tych pól malowanych zbożem rozmaitem,\r\n\r\nWyzłacanych pszenicą, posrebrzanych żytem;\r\n\r\nGdzie bursztynowy świerzop, gryka jak śnieg biała,\r\n\r\nGdzie panieńskim rumieńcem dzięcielina pała,\r\n\r\nA wszystko przepasane, jakby wstęgą, miedzą\r\nZieloną, na niej z rzadka ciche grusze siedzą.','2024-11-11 19:13:27','2024-12-07 21:00:43',4,_binary '\0',1),(4,'post','Gdybym tu faktycznie coś pisał:\r\n\r\nTo jak sie to zapisze?\r\n\r\nBo w sumie','2024-11-11 19:24:57',NULL,4,_binary '',1),(5,'my first post','My name is Cezary Baryka, I have been the owner of this glass house for twenty minutes.\r\n\r\nI am slowly starting to regret the purchase.\r\n\r\nAt night it’s freezing, during the day it’s sweltering.\r\n\r\nNo ventilation and no sewage system take their toll.\r\n\r\nThat’s right, it stinks.\r\n\r\nAhh, I lied, I didn’t buy this hovel.\r\n\r\nI won it in a card game from my father.','2024-11-17 16:54:54','2024-11-30 18:26:59',2,_binary '\0',1),(6,'dlaczego?','dlaczego kursy nie działają?','2024-12-02 17:52:16','2024-12-06 21:09:21',3,_binary '',1);
 /*!40000 ALTER TABLE `forum_posts` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -127,7 +127,7 @@ CREATE TABLE `forum_reports` (
   `RESOLVE_COMMENT` varchar(6000) DEFAULT NULL,
   `IS_DELETED` bit(1) NOT NULL DEFAULT b'0',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -136,7 +136,7 @@ CREATE TABLE `forum_reports` (
 
 LOCK TABLES `forum_reports` WRITE;
 /*!40000 ALTER TABLE `forum_reports` DISABLE KEYS */;
-INSERT INTO `forum_reports` VALUES (1,4,5,NULL,'2024-12-01 17:23:00','I do not like this post because of that fat ass Walaszek',_binary '\0',0,NULL,NULL,_binary '\0'),(2,4,3,4,'2024-12-01 17:24:14','I feel this is racist and xenophobic',_binary '\0',0,NULL,NULL,_binary '\0');
+INSERT INTO `forum_reports` VALUES (1,4,5,NULL,'2024-12-01 17:23:00','I do not like this post because of that fat ass Walaszek',_binary '\0',0,NULL,NULL,_binary '\0'),(2,4,3,4,'2024-12-01 17:24:14','I feel this is racist and xenophobic',_binary '',4,'2024-12-07 19:45:53','Ok',_binary '\0'),(3,4,6,NULL,'2024-12-07 18:08:43','No i mi sie takie posty nie podobają - sam hejt',_binary '',4,'2024-12-07 18:20:19','nie przesadzaj już',_binary ''),(4,4,6,NULL,'2024-12-07 18:08:59','Nie powinno to tak działać',_binary '',4,'2024-12-07 19:19:51','No dobra przekonałeś',_binary ''),(5,4,3,NULL,'2024-12-07 18:56:29','Bardzo brzydkie formatowanie tak doniosłego dzieła - powinno być karane usunięciem bądź chłostą',_binary '',4,'2024-12-07 19:58:19','Ok to coś tam poprawie sam',_binary '\0'),(6,4,6,NULL,'2024-12-07 19:19:12','JD hehehe',_binary '',4,'2024-12-07 19:20:41','Za to to już to usuwam',_binary ''),(7,4,6,NULL,'2024-12-07 19:20:24','Nie podoba mi sie bo jest nie moje',_binary '',0,'2024-12-07 19:20:44','Resolved automatically due to post delete',_binary ''),(8,4,3,NULL,'2024-12-07 19:58:50','Mi to sie dalej nie podoba',_binary '',4,'2024-12-07 20:56:12','Prosze nie spamować raportami, ja lubie ten post',_binary '\0'),(9,4,3,NULL,'2024-12-07 20:55:51','halo',_binary '',4,'2024-12-07 20:56:12','Prosze nie spamować raportami, ja lubie ten post',_binary '\0'),(10,4,3,NULL,'2024-12-07 20:59:05','Przeformatować proszeee',_binary '',4,'2024-12-07 20:59:38','Dobrze sformatuje',_binary '\0'),(11,4,3,NULL,'2024-12-07 20:59:15','Testujmy to dalej',_binary '',4,'2024-12-07 20:59:38','Dobrze sformatuje',_binary '\0'),(12,4,3,NULL,'2024-12-07 21:00:03','Dalej jest nie tak',_binary '',4,'2024-12-07 21:00:40','sprawdzam',_binary '\0'),(13,4,3,NULL,'2024-12-07 21:00:09','Ehh',_binary '',4,'2024-12-07 21:00:40','sprawdzam',_binary '\0'),(14,4,2,NULL,'2024-12-07 21:01:17','Po co w ogóle tworzyć takie posty? SPAM',_binary '',4,'2024-12-07 21:03:12','Post rzeczywiście łamie regulamin, więc zostaje usunięty',_binary ''),(15,4,3,NULL,'2024-12-07 21:02:06','Widziałem administratora ostatnio na święceniu koszyków.\n\n\nZauważyłem że nie miał jajek',_binary '\0',0,NULL,NULL,_binary '\0'),(16,4,2,NULL,'2024-12-07 21:02:37','Spam post, nie naukowy',_binary '',4,'2024-12-07 21:03:12','Post rzeczywiście łamie regulamin, więc zostaje usunięty',_binary '');
 /*!40000 ALTER TABLE `forum_reports` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -154,7 +154,7 @@ CREATE TABLE `forum_votes` (
   `IS_LIKED` bit(1) NOT NULL,
   `IS_DELETED` bit(1) NOT NULL DEFAULT b'0',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -163,7 +163,7 @@ CREATE TABLE `forum_votes` (
 
 LOCK TABLES `forum_votes` WRITE;
 /*!40000 ALTER TABLE `forum_votes` DISABLE KEYS */;
-INSERT INTO `forum_votes` VALUES (1,1,4,_binary '',_binary ''),(2,2,4,_binary '\0',_binary ''),(3,1,1,_binary '\0',_binary ''),(4,2,1,_binary '\0',_binary ''),(5,2,2,_binary '\0',_binary ''),(6,1,2,_binary '\0',_binary ''),(7,3,4,_binary '\0',_binary ''),(8,4,4,_binary '',_binary ''),(9,5,2,_binary '',_binary '\0'),(10,5,4,_binary '\0',_binary ''),(11,3,2,_binary '',_binary '\0'),(12,6,3,_binary '',_binary '\0'),(13,5,3,_binary '\0',_binary ''),(14,3,3,_binary '\0',_binary '');
+INSERT INTO `forum_votes` VALUES (1,1,4,_binary '',_binary ''),(2,2,4,_binary '\0',_binary ''),(3,1,1,_binary '\0',_binary ''),(4,2,1,_binary '\0',_binary ''),(5,2,2,_binary '\0',_binary ''),(6,1,2,_binary '\0',_binary ''),(7,3,4,_binary '\0',_binary ''),(8,4,4,_binary '',_binary ''),(9,5,2,_binary '',_binary '\0'),(10,5,4,_binary '\0',_binary ''),(11,3,2,_binary '',_binary '\0'),(12,6,3,_binary '',_binary ''),(13,5,3,_binary '\0',_binary ''),(14,3,3,_binary '\0',_binary ''),(15,6,4,_binary '\0',_binary '');
 /*!40000 ALTER TABLE `forum_votes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -181,7 +181,7 @@ CREATE TABLE `posts_attachments` (
   `FILE_NAME` varchar(1000) NOT NULL,
   `FILE_PATH` varchar(1000) NOT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -190,7 +190,7 @@ CREATE TABLE `posts_attachments` (
 
 LOCK TABLES `posts_attachments` WRITE;
 /*!40000 ALTER TABLE `posts_attachments` DISABLE KEYS */;
-INSERT INTO `posts_attachments` VALUES (1,2,'2024-11-03 20:50:56','WhatsApp Image 2024-10-31 at 09.00.15.jpeg','9c24a023-cf05-4183-901c-70d9805b18fd.jpeg'),(10,3,'2024-11-30 17:54:06','up-arrow-green.png','76d242fd-5079-4fb6-9157-91bf7c8f0dff.png'),(11,3,'2024-11-30 17:54:06','D8D94A80-DC7E-11EE-8C7B-120DE4119E35 (1) (1).jpg','9bebdb75-dd80-462f-aef3-b3dad2a04df6.jpg'),(12,5,'2024-11-30 18:26:59','D8D94A80-DC7E-11EE-8C7B-120DE4119E35 (1).jpg','a7f7bcb9-db25-44a1-b709-cb804000725d.jpg'),(13,5,'2024-11-30 18:26:59','DALL·E 2023-08-10 10.03.42 - add a super little motorboat under the bunny and waves.png','c229a41f-155b-4627-83dd-ec3b621be749.png'),(14,6,'2024-12-02 17:52:16','D8D94A80-DC7E-11EE-8C7B-120DE4119E35 (1) (1).jpg','d288d3f4-40eb-4a5d-9495-33d7975a48e9.jpg');
+INSERT INTO `posts_attachments` VALUES (12,5,'2024-11-30 18:26:59','D8D94A80-DC7E-11EE-8C7B-120DE4119E35 (1).jpg','a7f7bcb9-db25-44a1-b709-cb804000725d.jpg'),(13,5,'2024-11-30 18:26:59','DALL·E 2023-08-10 10.03.42 - add a super little motorboat under the bunny and waves.png','c229a41f-155b-4627-83dd-ec3b621be749.png'),(20,3,'2024-12-07 21:00:43','D8D94A80-DC7E-11EE-8C7B-120DE4119E35 (1) (1).jpg','c523f6ce-5b59-4372-8b26-7f67d9664402.jpg'),(21,3,'2024-12-07 21:00:43','up-arrow-green.png','91b2a11b-19cc-46e9-b7ef-09eaa2c4e57e.png');
 /*!40000 ALTER TABLE `posts_attachments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -219,7 +219,7 @@ CREATE TABLE `posts_comments` (
 
 LOCK TABLES `posts_comments` WRITE;
 /*!40000 ALTER TABLE `posts_comments` DISABLE KEYS */;
-INSERT INTO `posts_comments` VALUES (1,5,4,'2024-11-17 21:04:23',NULL,'test',_binary '\0'),(2,5,4,'2024-11-17 21:07:48','2024-11-30 20:22:01','test2 - ale mogłoby być tu coś więcej potestowane\n\nNa przykład to',_binary '\0'),(3,5,4,'2024-11-17 21:27:53',NULL,'jeszcze jeden test\n\n\ntest',_binary ''),(4,3,4,'2024-11-17 21:28:46','2024-11-30 20:38:47','Czy to na pewno zostało dobrze sformatowane?\n\nEdit - nvm jednak już troche lepiej',_binary '\0'),(5,3,4,'2024-11-30 17:54:23',NULL,'I love it!!!',_binary ''),(6,6,3,'2024-12-02 17:52:58',NULL,'Jednak działa',_binary '\0');
+INSERT INTO `posts_comments` VALUES (1,5,4,'2024-11-17 21:04:23',NULL,'test',_binary '\0'),(2,5,4,'2024-11-17 21:07:48','2024-11-30 20:22:01','test2 - ale mogłoby być tu coś więcej potestowane\n\nNa przykład to',_binary '\0'),(3,5,4,'2024-11-17 21:27:53',NULL,'jeszcze jeden test\n\n\ntest',_binary ''),(4,3,4,'2024-11-17 21:28:46','2024-12-07 18:53:40','Czy to na pewno zostało dobrze sformatowane?\n\nEdit - nvm jednak już troche lepiej.',_binary '\0'),(5,3,4,'2024-11-30 17:54:23',NULL,'I love it!!!',_binary ''),(6,6,3,'2024-12-02 17:52:58',NULL,'Jednak działa',_binary '');
 /*!40000 ALTER TABLE `posts_comments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -368,4 +368,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-12-06 20:57:20
+-- Dump completed on 2024-12-07 22:05:16

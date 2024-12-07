@@ -10,8 +10,22 @@ import downArrowRed from '../../assets/down-arrow-red.png';
 import iconEdit from '../../assets/icon-edit.png';
 import iconDelete from '../../assets/icon-delete.png';
 import iconAlert from '../../assets/icon-alert.png';
+import iconResolve from '../../assets/icon-resolve.png';
 
-function PostsCards({ isLoading, currentPosts, allPosts, setAllPosts, showPostPopup, userCards, username, reloadPosts, showCommentPopupHandler, showReportPopupHandler }) {
+function PostsCards({
+    isLoading,
+    currentPosts,
+    allPosts,
+    setAllPosts,
+    showPostPopup,
+    userCards,
+    username,
+    reloadPosts,
+    showCommentPopupHandler,
+    showReportPopupHandler,
+    isReportPosts = false,
+    showAllReportsPopupHandler = false
+}) {
     const [commentFields, setCommentFields] = useState({});
 
     const formatDate = (dateString) => {
@@ -194,29 +208,43 @@ function PostsCards({ isLoading, currentPosts, allPosts, setAllPosts, showPostPo
                                         </h6>
                                     </div>
                                     <div className='col-4 text-end'>
-                                        <button className='btn' style={{ background: 'none', border: 'none' }} title='Report post' onClick={() => showReportPopupHandler(post, null)}>
-                                            <img
-                                                src={iconAlert}
-                                                alt='Alert'
-                                                width='24'
-                                                height='24'
-                                            />
-                                        </button>
-                                        {post.isEditible &&
-                                            <button className='btn' style={{ background: 'none', border: 'none' }} onClick={() => showPostPopup(post.id)} title='Edit post'>
-                                                <img
-                                                    src={iconEdit}
-                                                    alt='Edit'
-                                                    width='24'
-                                                    height='24'
-                                                />
-                                            </button>
+                                        {!isReportPosts &&
+                                            <>
+                                                <button className='btn' style={{ background: 'none', border: 'none' }} title='Report post' onClick={() => showReportPopupHandler(post, null)}>
+                                                    <img
+                                                        src={iconAlert}
+                                                        alt='Alert'
+                                                        width='24'
+                                                        height='24'
+                                                    />
+                                                </button>
+                                                {post.isEditible &&
+                                                    <button className='btn' style={{ background: 'none', border: 'none' }} onClick={() => showPostPopup(post.id)} title='Edit post'>
+                                                        <img
+                                                            src={iconEdit}
+                                                            alt='Edit'
+                                                            width='24'
+                                                            height='24'
+                                                        />
+                                                    </button>
+                                                }
+                                                {post.isEditible &&
+                                                    <button className='btn' style={{ background: 'none', border: 'none' }} onClick={() => handleDeletePost(post.id)} title='Delete post'>
+                                                        <img
+                                                            src={iconDelete}
+                                                            alt='Delete'
+                                                            width='24'
+                                                            height='24'
+                                                        />
+                                                    </button>
+                                                }
+                                            </>
                                         }
-                                        {post.isEditible &&
-                                            <button className='btn' style={{ background: 'none', border: 'none' }} onClick={() => handleDeletePost(post.id)} title='Delete post'>
+                                        {isReportPosts &&
+                                            <button className='btn' style={{ background: 'none', border: 'none' }} title='Show reports to resolve' onClick={() => showAllReportsPopupHandler(post, null)}>
                                                 <img
-                                                    src={iconDelete}
-                                                    alt='Delete'
+                                                    src={iconResolve}
+                                                    alt='Resolve'
                                                     width='24'
                                                     height='24'
                                                 />
@@ -225,70 +253,78 @@ function PostsCards({ isLoading, currentPosts, allPosts, setAllPosts, showPostPo
                                     </div>
                                 </div>
                                 <div style={{ backgroundColor: 'lightgray' }}>
-                                    <div className='row mt-3 ms-0 me-0'>
+                                    <div className='row ms-0 me-0'>
                                         <div className='col-md-12'>
                                             <div className='d-flex flex-wrap'>
-                                                {post.comments != null && post.comments.length > 0 && post.comments.map((comment, index) => (
-                                                    <div key={index} className='card mb-4 me-2' style={{ width: '84%' }}>
-                                                        <div className='card-body text-center'>
-                                                            <p className='card-text' style={{ whiteSpace: 'pre-wrap' }}>{comment.postContent}</p>
-                                                            <h6 className='card-title'>Creation date: {formatDate(comment.createdOn)}</h6>
-                                                            {comment.updatedOn &&
-                                                                <h6 className='card-text'>Last edited on: {formatDate(comment.updatedOn)}</h6>
-                                                            }
-                                                            <div className='row'>
-                                                                <div className='col-8 offset-2 align-self-center'>
-                                                                    <h6 className='card-text'>By: {comment.userDisplayName}</h6>
-                                                                </div>
-                                                                {comment.isEditible &&
-                                                                    <div className='col-2 text-end'>
-                                                                        <button className='btn' style={{ background: 'none', border: 'none' }} title='Report comment' onClick={() => showReportPopupHandler(post, comment)}>
-                                                                            <img
-                                                                                src={iconAlert}
-                                                                                alt='Alert'
-                                                                                width='24'
-                                                                                height='24'
-                                                                            />
-                                                                        </button>
-                                                                        <button className='btn' style={{ background: 'none', border: 'none' }} onClick={() => showCommentPopupHandler(comment, post)} title='Edit comment'>
-                                                                            <img
-                                                                                src={iconEdit}
-                                                                                alt='Edit'
-                                                                                width='24'
-                                                                                height='24'
-                                                                            />
-                                                                        </button>
-                                                                        <button className='btn' style={{ background: 'none', border: 'none' }} onClick={() => handleDeleteComment(comment.id)} title='Delete comment'>
-                                                                            <img
-                                                                                src={iconDelete}
-                                                                                alt='Delete'
-                                                                                width='24'
-                                                                                height='24'
-                                                                            />
-                                                                        </button>
+                                                {post.comments != null && post.comments.length > 0 &&
+                                                    <div className='mb-3' style={{ width: '85%' }}>
+                                                        {post.comments.map((comment, index) => (
+                                                            <div key={index} className='card mt-3 me-2'>
+                                                                <div className='card-body text-center'>
+                                                                    <p className='card-text' style={{ whiteSpace: 'pre-wrap' }}>{comment.postContent}</p>
+                                                                    <h6 className='card-title'>Creation date: {formatDate(comment.createdOn)}</h6>
+                                                                    {comment.updatedOn &&
+                                                                        <h6 className='card-text'>Last edited on: {formatDate(comment.updatedOn)}</h6>
+                                                                    }
+                                                                    <div className='row'>
+                                                                        <div className='col-8 offset-2 align-self-center'>
+                                                                            <h6 className='card-text'>By: {comment.userDisplayName}</h6>
+                                                                        </div>
+                                                                        {comment.isEditible && !isReportPosts &&
+                                                                            <div className='col-2 text-end'>
+                                                                                <button className='btn' style={{ background: 'none', border: 'none' }} title='Report comment' onClick={() => showReportPopupHandler(post, comment)}>
+                                                                                    <img
+                                                                                        src={iconAlert}
+                                                                                        alt='Alert'
+                                                                                        width='24'
+                                                                                        height='24'
+                                                                                    />
+                                                                                </button>
+                                                                                <button className='btn' style={{ background: 'none', border: 'none' }} onClick={() => showCommentPopupHandler(comment, post)} title='Edit comment'>
+                                                                                    <img
+                                                                                        src={iconEdit}
+                                                                                        alt='Edit'
+                                                                                        width='24'
+                                                                                        height='24'
+                                                                                    />
+                                                                                </button>
+                                                                                <button className='btn' style={{ background: 'none', border: 'none' }} onClick={() => handleDeleteComment(comment.id)} title='Delete comment'>
+                                                                                    <img
+                                                                                        src={iconDelete}
+                                                                                        alt='Delete'
+                                                                                        width='24'
+                                                                                        height='24'
+                                                                                    />
+                                                                                </button>
+                                                                            </div>
+                                                                        }
                                                                     </div>
-                                                                }
+                                                                </div>
                                                             </div>
-                                                        </div>
+                                                        ))}
                                                     </div>
-                                                ))}
+                                                }
                                             </div>
                                         </div>
                                     </div>
-                                    <div className='row ms-0 me-0 ps-0 pe-0 justify-content-center'>
-                                        <div className='col-10 mt-2 mb-2'>
-                                            <textarea className='form-control' id='txtComment' placeholder='Comment the post' rows={4} value={commentFields[post.id] || ''}
-                                                onChange={(e) => handleCommentChange(post.id, e.target.value)}>
-                                            </textarea>
-                                        </div>
-                                    </div>
-                                    <div className='row ms-0 me-0 ps-0 pe-0 mb-2'>
-                                        <div className='col-11 text-end'>
-                                            <button className='btn btn-success' onClick={() => saveComment(post)}>
-                                                Save comment
-                                            </button>
-                                        </div>
-                                    </div>
+                                    {!isReportPosts &&
+                                        <>
+                                            <div className='row ms-0 me-0 ps-0 pe-0 justify-content-center'>
+                                                <div className='col-10 mt-3 mb-2'>
+                                                    <textarea className='form-control' id='txtComment' placeholder='Comment the post' rows={4} value={commentFields[post.id] || ''}
+                                                        onChange={(e) => handleCommentChange(post.id, e.target.value)}>
+                                                    </textarea>
+                                                </div>
+                                            </div>
+                                            <div className='row ms-0 me-0 ps-0 pe-0 mb-2'>
+                                                <div className='col-11 text-end'>
+                                                    <button className='btn btn-success' onClick={() => saveComment(post)}>
+                                                        Save comment
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </>
+                                    }
                                 </div>
                             </div>
                         </div>

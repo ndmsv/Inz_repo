@@ -57,7 +57,7 @@ namespace backend.Controllers
 
                 var query = _context.forum_posts.Include(s => s.PostAttachments)
                         .Where(post => !post.IsDeleted && _context.forum_reports.Any(report => report.PostID == post.ID && !report.IsDeleted && !report.IsResolved))
-                        .OrderByDescending(post => post.CreatedOn);
+                        .OrderBy(post => post.CreatedOn);
 
                 var posts = await query
                     .Select(post => new ForumPostModelExtended
@@ -124,6 +124,84 @@ namespace backend.Controllers
                     .ToListAsync();
 
                 return Ok(reports);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("resolveReport")]
+        public async Task<IActionResult> ResolveReport([FromBody] ResolveReportModel model)
+        {
+            try
+            {
+                var user = await _context.Users.Include(s => s.UserType).FirstOrDefaultAsync(u => u.Login == model.ResolvingUser);
+                if (user == null) return NotFound(new { message = "User not found" });
+                if (user.UserType.TypeName != "Administrator")
+                    return BadRequest(new { message = "User does not have administrative permissions" });
+
+                var report = await _context.forum_reports.FirstOrDefaultAsync(r => r.ID == model.ReportID && !r.IsDeleted);
+                if (report == null)
+                {
+                    return NotFound(new { message = "Report with said ID does not exist" });
+                }
+                else
+                {
+                    report.IsResolved = true;
+                    report.ResolvingUserID = user.ID;
+                    report.ResolveComment = model.ResolveComment;
+                    report.ResolvedOn = DateTime.UtcNow;
+                }
+
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Report resolved." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("resolveAllReports")]
+        public async Task<IActionResult> ResolveAllReports([FromBody] ResolveAllReportsModel model)
+        {
+            try
+            {
+                var user = await _context.Users.Include(s => s.UserType).FirstOrDefaultAsync(u => u.Login == model.ResolvingUser);
+                if (user == null) return NotFound(new { message = "User not found" });
+                if (user.UserType.TypeName != "Administrator")
+                    return BadRequest(new { message = "User does not have administrative permissions" });
+
+
+                var post = await _context.forum_posts
+                                       .Include(v => v.ForumReports)
+                                       .FirstOrDefaultAsync(s => s.ID == model.PostID && !s.IsDeleted);
+                if (post == null)
+                {
+                    return NotFound(new { message = "Post with said ID does not exist" });
+                }
+                else
+                {
+                    if (post.ForumReports != null)
+                    {
+                        foreach (var report in post.ForumReports)
+                        {
+                            if (!report.IsDeleted && !report.IsResolved)
+                            {
+                                report.IsResolved = true;
+                                report.ResolvingUserID = user.ID;
+                                report.ResolveComment = model.ResolveComment;
+                                report.ResolvedOn = DateTime.UtcNow;
+                            }
+                        }
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Reports resolved." });
             }
             catch (Exception ex)
             {

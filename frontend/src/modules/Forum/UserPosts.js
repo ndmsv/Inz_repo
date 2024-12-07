@@ -12,7 +12,7 @@ function UserPosts() {
     const [posts, setPosts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const postsPerPage = 10;
-    const [showPopup, setShowPopup] = useState(false);
+    const [showPostPopup, setShowPostPopup] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedPostID, setSelectedPostID] = useState(null);
     const [selectedPost, setSelectedPost] = useState(null);
@@ -25,19 +25,7 @@ function UserPosts() {
             try {
                 setIsLoading(true);
 
-                const data = await getUserPosts(username);
-
-                if (data.isSuccess) {
-                    const updatedPosts = await Promise.all(data.data.map(async post => {
-                        await fetchAndSetFiles(post);
-                        return post;
-                    }));
-
-                    setPosts(updatedPosts);
-                }
-                else {
-                    alert(data.message);
-                }
+                reloadPosts();
             } catch (error) {
                 alert('Error fetching posts:', error);
             } finally {
@@ -48,15 +36,6 @@ function UserPosts() {
         fetchData();
 
     }, []);
-
-    const togglePopup = () => {
-        setShowPopup(!showPopup);
-    };
-
-    const showPostPopup = (postID) => {
-        setSelectedPostID(postID);
-        setShowPopup(true)
-    };
 
     const reloadPosts = async () => {
         const data = await getUserPosts(username);
@@ -72,6 +51,15 @@ function UserPosts() {
         else {
             alert(data.message);
         }
+    };
+
+    const togglePostPopup = () => {
+        setShowPostPopup(!showPostPopup);
+    };
+
+    const showPostPopupHandler = (postID) => {
+        setSelectedPostID(postID);
+        setShowPostPopup(true)
     };
 
     const fetchAndSetFiles = async (post) => {
@@ -131,7 +119,7 @@ function UserPosts() {
                 <div className='panel-body'>
                     <div className='row mt-3 me-0'>
                         <div className='col-md-4 ms-2'>
-                            <button type='button' className='btn btn-primary' onClick={() => showPostPopup(null)}>New post</button>
+                            <button type='button' className='btn btn-primary' onClick={() => showPostPopupHandler(null)}>New post</button>
                         </div>
                         <div className='col-md-4 text-center'>
                             <h3>Your posts</h3>
@@ -143,7 +131,7 @@ function UserPosts() {
                             currentPosts={currentPosts} 
                             allPosts={posts} 
                             setAllPosts={setPosts} 
-                            showPostPopup={showPostPopup} 
+                            showPostPopup={showPostPopupHandler} 
                             userCards={true} 
                             username={username} 
                             reloadPosts={reloadPosts} 
@@ -162,7 +150,7 @@ function UserPosts() {
                         </ul>
                     </nav>
                     {showCommentPopup && <CommentPopup togglePopup={toggleCommentPopup} username={username} reloadPosts={reloadPosts} postID={selectedPostID} selectedComment={selectedComment} />}
-                    {showPopup && <PostPopup togglePopup={togglePopup} username={username} reloadPosts={reloadPosts} postID={selectedPostID} />}
+                    {showPostPopup && <PostPopup togglePopup={togglePostPopup} username={username} reloadPosts={reloadPosts} postID={selectedPostID} />}
                     {showReportPopup && <ReportPopup togglePopup={toggleReportPopup} username={username} reloadPosts={reloadPosts} post={selectedPost} comment={selectedComment} />}
                 </div>
             </div>

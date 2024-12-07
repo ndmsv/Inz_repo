@@ -12,7 +12,7 @@ function MainForum() {
     const [posts, setPosts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const postsPerPage = 10;
-    const [showPopup, setShowPopup] = useState(false);
+    const [showPostPopup, setShowPostPopup] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [currentPostCategory, setCurrentPostCategory] = useState('Hot');
     const [timeframeValue, setTimeframeValue] = useState('AllTime');
@@ -31,19 +31,7 @@ function MainForum() {
                     btnHot.checked = true;
                 }
 
-                const data = await getForumPosts(username, currentPostCategory, timeframeValue);
-
-                if (data.isSuccess) {
-                    const updatedPosts = await Promise.all(data.data.map(async post => {
-                        await fetchAndSetFiles(post);
-                        return post;
-                    }));
-
-                    setPosts(updatedPosts);
-                }
-                else {
-                    alert(data.message);
-                }
+                reloadPosts();
             } catch (error) {
                 alert('Error fetching posts:', error);
             } finally {
@@ -54,15 +42,6 @@ function MainForum() {
         fetchData();
 
     }, [currentPostCategory, timeframeValue]);
-
-    const togglePopup = () => {
-        setShowPopup(!showPopup);
-    };
-
-    const showPostPopup = (postID) => {
-        setSelectedPostID(postID);
-        setShowPopup(true)
-    };
 
     const reloadPosts = async () => {
         const data = await getForumPosts(username, currentPostCategory, timeframeValue);
@@ -78,6 +57,15 @@ function MainForum() {
         else {
             alert(data.message);
         }
+    };
+
+    const togglePopup = () => {
+        setShowPostPopup(!showPostPopup);
+    };
+
+    const showPostPopupHandler = (postID) => {
+        setSelectedPostID(postID);
+        setShowPostPopup(true)
     };
 
     const fetchAndSetFiles = async (post) => {
@@ -141,7 +129,7 @@ function MainForum() {
                 <div className='panel-body'>
                     <div className='row mt-3 me-0'>
                         <div className='col-md-4 ms-2'>
-                            <button type='button' className='btn btn-primary' onClick={() => showPostPopup(null)}>New post</button>
+                            <button type='button' className='btn btn-primary' onClick={() => showPostPopupHandler(null)}>New post</button>
                         </div>
                         <div className='col-md-4 text-center'>
                             <div className='btn-group' role='group'>
@@ -178,7 +166,7 @@ function MainForum() {
                             currentPosts={currentPosts}
                             allPosts={posts}
                             setAllPosts={setPosts}
-                            showPostPopup={showPostPopup}
+                            showPostPopup={showPostPopupHandler}
                             userCards={false}
                             username={username}
                             reloadPosts={reloadPosts}
@@ -197,7 +185,7 @@ function MainForum() {
                         </ul>
                     </nav>
                     {showCommentPopup && <CommentPopup togglePopup={toggleCommentPopup} username={username} reloadPosts={reloadPosts} postID={selectedPostID} selectedComment={selectedComment} />}
-                    {showPopup && <NewPostPopup togglePopup={togglePopup} username={username} reloadPosts={reloadPosts} postID={selectedPostID} />}
+                    {showPostPopup && <NewPostPopup togglePopup={togglePopup} username={username} reloadPosts={reloadPosts} postID={selectedPostID} />}
                     {showReportPopup && <ReportPopup togglePopup={toggleReportPopup} username={username} reloadPosts={reloadPosts} post={selectedPost} comment={selectedComment} />}
                 </div>
             </div>

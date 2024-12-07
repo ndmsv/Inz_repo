@@ -501,3 +501,29 @@ export const getReportsByPost = async (postID, login) => {
         return handleAxiosError(error);
     }
 };
+
+export const resolveReport = async (reportID, resolvingUser, resolveComment) => {
+    try {
+        const response = await axios.post(`${API_URL}Report/resolveReport`, {
+            reportID,
+            resolvingUser,
+            resolveComment
+        });
+        return { message: response.data.message, data: response.data, isSuccess: true};
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};
+
+export const resolveAllReports = async (postID, resolvingUser, resolveComment) => {
+    try {
+        const response = await axios.post(`${API_URL}Report/resolveAllReports`, {
+            postID,
+            resolvingUser,
+            resolveComment
+        });
+        return { message: response.data.message, data: response.data, isSuccess: true};
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};
