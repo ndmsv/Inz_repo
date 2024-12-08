@@ -100,6 +100,7 @@ function PostsCards({
             if (response.isSuccess) {
                 commentFields[post.id] = '';
                 const postIndex = allPosts.findIndex(p => p.id === post.id);
+                allPosts[postIndex].commentsCount += 1;
                 handleShowPostComments(allPosts[postIndex], true);
             }
         } else {
