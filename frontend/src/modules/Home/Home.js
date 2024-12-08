@@ -16,10 +16,11 @@ function Home() {
     { id: 2, title: 'My Courses', description: 'View your enrolled courses.', link: '/myCourses' },
     { id: 3, title: 'Create Course', description: 'Start a new course.', link: '/createCourse', isTeacherOrAdmin: true },
     { id: 4, title: 'Forum', description: 'Access the main forum page.', link: '/mainForum' },
-    { id: 5, title: 'Your posts', description: 'Check all your forum posts.', link: '/userPosts' },
-    { id: 6, title: 'Reported posts', description: 'Check all reported posts and resovle reports.', link: '/reportPosts', isAdmin: true },
-    { id: 7, title: 'Reported comments', description: 'Check all reported comments and resovle reports.', link: '/reportComments', isAdmin: true }
-  ];
+    { id: 5, title: 'Your Posts', description: 'Check all your forum posts.', link: '/userPosts' },
+    { id: 6, title: 'Reported Posts', description: 'Check all reported posts and resolve reports.', link: '/reportPosts', isAdmin: true },
+    { id: 7, title: 'Reported Comments', description: 'Check all reported comments and resolve reports.', link: '/reportComments', isAdmin: true },
+    { id: 8, title: 'About', description: 'Read about the idea behind the project.', link: '/about' }
+];
 
   useEffect(() => {
     handleCheckUserDetailsSubmit();

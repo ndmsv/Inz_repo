@@ -11,6 +11,8 @@ import MainForum from '../Forum/MainForum';
 import UserPosts from '../Forum/UserPosts';
 import ReportPosts from '../Reports/ReportPosts';
 import ReportComments from '../Reports/ReportComments';
+import About from '../About/About';
+
 
 function App() {
   const navigate = useNavigate();
@@ -211,6 +213,7 @@ function App() {
       <Route path='/userPosts' element={<UserPosts />} />
       <Route path='/reportPosts' element={<ReportPosts />} />
       <Route path='/reportComments' element={<ReportComments />} />
+      <Route path='/about' element={<About />} />
     </Routes>
   );
 }

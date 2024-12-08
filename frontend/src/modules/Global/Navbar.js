@@ -88,6 +88,9 @@ function Navbar() {
                         </li>
                     </ul>
                 }
+                <ul className='navbar-nav'>
+                    <Link className='nav-link' to='/about'>About</Link>
+                </ul>
                 <ul className='navbar-nav ms-auto'>
                     <li className='nav-item dropdown'>
                         <a className='nav-link dropdown-toggle' id='navbarUser' role='button' data-bs-toggle='dropdown' aria-expanded='false'>
