@@ -179,6 +179,7 @@ namespace backend.Models
         public required string CreatedBy { get; set; }
         public int CommentsCount { get; set; }
         public List<AttachmentDto>? Attachments { get; set; }
+        public List<PostCommentModelExtended>? Comments { get; set; }
     }
 
     public class PostSubmissionModel
@@ -222,6 +223,7 @@ namespace backend.Models
         public required string PostContent { get; set; }
         public bool IsDeleted { get; set; }
         public bool IsEditible { get; set; }
+        public bool IsReported { get; set; } = false;
     }
 
     public class SimpleCommentModel
@@ -263,6 +265,7 @@ namespace backend.Models
     public class ResolveAllReportsModel
     {
         public int PostID { get; set; }
+        public int? CommentID { get; set; }
         public required string ResolvingUser { get; set; }
         public required string ResolveComment { get; set; }
     }

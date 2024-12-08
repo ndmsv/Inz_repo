@@ -606,7 +606,7 @@ namespace backend.Controllers
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == model.Login);
                 if (user == null) return NotFound(new { message = "User not found" });
 
-                var comment = await _context.posts_comments.FirstOrDefaultAsync(c => c.ID == model.CommentID);
+                var comment = await _context.posts_comments.Include(a => a.ForumReports).FirstOrDefaultAsync(c => c.ID == model.CommentID);
                 if (comment == null)
                 {
                     return NotFound(new { message = "Comment not found" });
@@ -614,6 +614,20 @@ namespace backend.Controllers
                 else
                 {
                     comment.IsDeleted = true;
+
+                    if (comment.ForumReports != null)
+                    {
+                        foreach (var report in comment.ForumReports)
+                        {
+                            if (!report.IsDeleted && !report.IsResolved)
+                            {
+                                report.IsResolved = true;
+                                report.ResolvedOn = DateTime.UtcNow;
+                                report.ResolveComment = "Resolved automatically due to comment delete";
+                            }
+                            report.IsDeleted = true;
+                        }
+                    }
                 }
 
                 await _context.SaveChangesAsync();

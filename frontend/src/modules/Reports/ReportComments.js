@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../Global/Navbar';
 import PostsCards from '../Forum/PostsCards';
 import CommentPopup from '../Forum/CommentPopup';
-import ReportPopup from '../Forum/ReportPopup';
-import { getUserPosts, downloadPostFile } from '../../services/apiService';
+import AllReportsPopup from '../Forum/AllReportsPopup';
+import { getReportPosts, downloadPostFile } from '../../services/apiService';
 import '../Global/Global.css';
 
 function ReportComments() {
@@ -16,26 +16,14 @@ function ReportComments() {
     const [selectedPost, setSelectedPost] = useState(null);
     const [selectedComment, setSelectedComment] = useState(null);
     const [showCommentPopup, setShowCommentPopup] = useState(false);
-    const [showReportPopup, setShowReportPopup] = useState(false);
+    const [showAllReportsPopup, setShowAllReportsPopup] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 setIsLoading(true);
 
-                const data = await getUserPosts(username);
-
-                if (data.isSuccess) {
-                    const updatedPosts = await Promise.all(data.data.map(async post => {
-                        await fetchAndSetFiles(post);
-                        return post;
-                    }));
-
-                    setPosts(updatedPosts);
-                }
-                else {
-                    alert(data.message);
-                }
+                reloadPosts();
             } catch (error) {
                 alert('Error fetching posts:', error);
             } finally {
@@ -48,7 +36,8 @@ function ReportComments() {
     }, []);
 
     const reloadPosts = async () => {
-        const data = await getUserPosts(username);
+        const isForComment = true;
+        const data = await getReportPosts(username, isForComment);
 
         if (data.isSuccess) {
             const updatedPosts = await Promise.all(data.data.map(async post => {
@@ -96,15 +85,15 @@ function ReportComments() {
         setShowCommentPopup(!showCommentPopup);
     };
 
-    const showReportPopupHandler = (post, comment) => {
+    const showAllReportsPopupHandler = (post, comment) => {
         setSelectedComment(comment);
         setSelectedPost(post);
 
-        setShowReportPopup(true);
+        setShowAllReportsPopup(true);
     };
 
-    const toggleReportPopup = () => {
-        setShowReportPopup(!showReportPopup);
+    const toggleAllReportsPopup = () => {
+        setShowAllReportsPopup(!showAllReportsPopup);
     };
 
     const indexOfLastPost = currentPage * postsPerPage;
@@ -134,7 +123,10 @@ function ReportComments() {
                             username={username} 
                             reloadPosts={reloadPosts} 
                             showCommentPopupHandler={showCommentPopupHandler} 
-                            showReportPopupHandler={showReportPopupHandler} />
+                            showReportPopupHandler={false}
+                            isReportPosts={false}
+                            showAllReportsPopupHandler={showAllReportsPopupHandler}
+                            isReportComments={true} />
                     </div>
                     <nav>
                         <ul className='pagination justify-content-center'>
@@ -148,7 +140,17 @@ function ReportComments() {
                         </ul>
                     </nav>
                     {showCommentPopup && <CommentPopup togglePopup={toggleCommentPopup} username={username} reloadPosts={reloadPosts} postID={selectedPostID} selectedComment={selectedComment} />}
-                    {showReportPopup && <ReportPopup togglePopup={toggleReportPopup} username={username} reloadPosts={reloadPosts} post={selectedPost} comment={selectedComment} />}
+                    {showAllReportsPopup &&
+                        <AllReportsPopup
+                            togglePopup={toggleAllReportsPopup}
+                            username={username}
+                            post={selectedPost}
+                            comment={selectedComment}
+                            reloadPosts={reloadPosts}
+                            showPostPopupHandler={false}
+                            showCommentPopupHandler = {showCommentPopupHandler}
+                        />
+                    }
                 </div>
             </div>
         </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getReportsByPost, resolveReport, deletePost, resolveAllReports } from '../../services/apiService';
+import { getReportsByPost, resolveReport, deletePost, resolveAllReports, getReportsForComment, deletePostComment } from '../../services/apiService';
 import '../Global/Global.css';
 import { parseISO } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
@@ -7,23 +7,49 @@ import iconEdit from '../../assets/icon-edit.png';
 import iconDelete from '../../assets/icon-delete.png';
 import iconResolve from '../../assets/icon-resolve.png';
 
-function AllReportsPopup({ togglePopup, username, post, comment, reloadPosts, showPostPopupHandler }) {
+function AllReportsPopup({ togglePopup, username, post, comment, reloadPosts, showPostPopupHandler, showCommentPopupHandler }) {
     const [reports, setReports] = useState([]);
+    const [reportType, setReportType] = useState('');
     const [resolveComment, setResolveComment] = useState([]);
     const [generalResolveComment, setGeneralResolveComment] = useState('');
 
     useEffect(() => {
         fetchData();
-    }, [username, post.id]);
+    }, []);
 
     const fetchData = async () => {
-        const result = await getReportsByPost(post.id, username);
+        if (comment == null) {
+            setReportType('post');
+            const result = await getReportsByPost(post.id, username);
 
-        if (result.isSuccess) {
-            setReports(result.data);
-            setResolveComment(result.data.map(report => report.resolveComment || ''));
+            if (result.isSuccess) {
+                const anyUnresolved = result.data.some(report => report.isResolved !== true);
+                if(!anyUnresolved) {
+                    togglePopup();
+                    return;
+                }
+                
+                setReports(result.data);
+                setResolveComment(result.data.map(report => report.resolveComment || ''));
+            } else {
+                alert(`Failed to get reports: ${result.message}`);
+            }
         } else {
-            alert(`Failed to get reports: ${result.message}`);
+            setReportType('comment');
+            const result = await getReportsForComment(comment.id, username);
+
+            if (result.isSuccess) {
+                const anyUnresolved = result.data.some(report => report.isResolved !== true);
+                if(!anyUnresolved) {
+                    togglePopup();
+                    return;
+                }
+
+                setReports(result.data);
+                setResolveComment(result.data.map(report => report.resolveComment || ''));
+            } else {
+                alert(`Failed to get reports: ${result.message}`);
+            }
         }
     };
 
@@ -59,11 +85,12 @@ function AllReportsPopup({ togglePopup, username, post, comment, reloadPosts, sh
         if (resolved) {
             alert('Report resolved succesfully.');
             fetchData();
+            reloadPosts();
         }
     }
 
     const resolveAndEdit = async (report, index) => {
-        const confirm = window.confirm('Are you sure you want to resolve report and then edit the post?');
+        const confirm = window.confirm(`Are you sure you want to resolve report and then edit the ${reportType}?`);
         if (!confirm) {
             return false;
         }
@@ -71,18 +98,26 @@ function AllReportsPopup({ togglePopup, username, post, comment, reloadPosts, sh
         const resolved = await setResolveReport(report, index);
         if (resolved) {
             togglePopup();
-            showPostPopupHandler(post.id);
+            if (reportType === 'post') {
+                showPostPopupHandler(post.id);
+            } else {
+                showCommentPopupHandler(comment, post);
+            }
         }
     };
 
     const resolveAndDelete = async (report, index) => {
-        const confirm = window.confirm('Are you sure you want to resolve report and then delete the post?');
+        const confirm = window.confirm(`Are you sure you want to resolve report and then delete the ${reportType}?`);
         if (!confirm) {
             return false;
         }
         const resolved = await setResolveReport(report, index);
         if (resolved) {
-            handleDeletePost(post.id);
+            if (reportType === 'post') {
+                handleDeletePost(post.id);
+            } else {
+                handleDeleteComment(comment.id);
+            }
         }
     };
 
@@ -91,8 +126,18 @@ function AllReportsPopup({ togglePopup, username, post, comment, reloadPosts, sh
         alert(response.message);
 
         if (response.isSuccess) {
-            reloadPosts();
             togglePopup();
+            reloadPosts();
+        }
+    };
+
+    const handleDeleteComment = async (commentID) => {
+        const response = await deletePostComment(commentID, username);
+        alert(response.message);
+
+        if (response.isSuccess) {
+            togglePopup();
+            reloadPosts();
         }
     };
 
@@ -102,7 +147,9 @@ function AllReportsPopup({ togglePopup, username, post, comment, reloadPosts, sh
             return false;
         }
 
-        const result = await resolveAllReports(post.id, username, generalResolveComment);
+        const commentID = comment !== null ? comment.id : null;
+
+        const result = await resolveAllReports(post.id, commentID, username, generalResolveComment);
         if (result.isSuccess) {
             return true;
         } else {
@@ -126,7 +173,7 @@ function AllReportsPopup({ togglePopup, username, post, comment, reloadPosts, sh
     }
 
     const resolveAllAndEdit = async () => {
-        const confirm = window.confirm('Are you sure you want to resolve all reports and then edit the post?');
+        const confirm = window.confirm(`Are you sure you want to resolve all reports and then edit the ${reportType}?`);
         if (!confirm) {
             return false;
         }
@@ -135,18 +182,27 @@ function AllReportsPopup({ togglePopup, username, post, comment, reloadPosts, sh
         if (resolved) {
             reloadPosts();
             togglePopup();
-            showPostPopupHandler(post.id);
+
+            if (reportType === 'post') {
+                showPostPopupHandler(post.id);
+            } else {
+                showCommentPopupHandler(comment, post);
+            }
         }
     };
 
     const resolveAllAndDelete = async () => {
-        const confirm = window.confirm('Are you sure you want to resolve all reports and then delete the post?');
+        const confirm = window.confirm(`Are you sure you want to resolve all reports and then delete the ${reportType}?`);
         if (!confirm) {
             return false;
         }
         const resolved = await setResolveAllReports();
         if (resolved) {
-            handleDeletePost(post.id);
+            if (reportType === 'post') {
+                handleDeletePost(post.id);
+            } else {
+                handleDeleteComment(comment.id);
+            }
         }
     };
 
@@ -172,7 +228,7 @@ function AllReportsPopup({ togglePopup, username, post, comment, reloadPosts, sh
                         </div>
                         <div className="modal-body">
                             {reports.map((report, index) => (
-                                <div key={index} className="card mb-4 me-2" style={{ width: '100%', backgroundColor: report.isResolved ? 'lightgreen' : 'none' }}>
+                                <div key={index} className="card mb-4 me-2 w-100" style={{ backgroundColor: report.isResolved ? 'lightgreen' : 'transparent' }}>
                                     <div className="card-body text-center">
                                         <p className="card-text" style={{ whiteSpace: 'pre-wrap' }}>{report.reportReason}</p>
                                         <h6 className="card-text">Reported on: {formatDate(report.createdOn)}</h6>
@@ -198,7 +254,7 @@ function AllReportsPopup({ togglePopup, username, post, comment, reloadPosts, sh
                                             }
                                             {!report.isResolved &&
                                                 <div className="col-12 text-center">
-                                                    <button className="btn" style={{ background: 'none', border: 'none' }} title="Resolve report" onClick={() => resolveHandler(report, index)}>
+                                                    <button className="btn image-btn" title="Resolve report" onClick={() => resolveHandler(report, index)}>
                                                         <img
                                                             src={iconResolve}
                                                             alt="Resolve"
@@ -206,7 +262,7 @@ function AllReportsPopup({ togglePopup, username, post, comment, reloadPosts, sh
                                                             height="24"
                                                         />
                                                     </button>
-                                                    <button className="btn" style={{ background: 'none', border: 'none' }} onClick={() => resolveAndEdit(report, index)} title="Resolve and edit post">
+                                                    <button className="btn image-btn" onClick={() => resolveAndEdit(report, index)} title='Resolve and edit'>
                                                         <img
                                                             src={iconEdit}
                                                             alt="Edit"
@@ -214,7 +270,7 @@ function AllReportsPopup({ togglePopup, username, post, comment, reloadPosts, sh
                                                             height="24"
                                                         />
                                                     </button>
-                                                    <button className="btn" style={{ background: 'none', border: 'none' }} onClick={() => resolveAndDelete(report, index)} title="Resolve and delete post">
+                                                    <button className="btn image-btn" onClick={() => resolveAndDelete(report, index)} title="Resolve and delete">
                                                         <img
                                                             src={iconDelete}
                                                             alt="Delete"
@@ -243,7 +299,7 @@ function AllReportsPopup({ togglePopup, username, post, comment, reloadPosts, sh
                                     ></textarea>
                                 </div>
                                 <div className="col-12 text-center">
-                                    <button className="btn" style={{ background: 'none', border: 'none' }} title="Resolve all reports" onClick={() => resolveAllHandler()}>
+                                    <button className="btn image-btn" title="Resolve all reports" onClick={() => resolveAllHandler()}>
                                         <img
                                             src={iconResolve}
                                             alt="Resolve"
@@ -251,7 +307,7 @@ function AllReportsPopup({ togglePopup, username, post, comment, reloadPosts, sh
                                             height="24"
                                         />
                                     </button>
-                                    <button className="btn" style={{ background: 'none', border: 'none' }} onClick={() => resolveAllAndEdit()} title="Resolve all reports and edit post">
+                                    <button className="btn image-btn" onClick={() => resolveAllAndEdit()} title="Resolve all reports and edit">
                                         <img
                                             src={iconEdit}
                                             alt="Edit"
@@ -259,7 +315,7 @@ function AllReportsPopup({ togglePopup, username, post, comment, reloadPosts, sh
                                             height="24"
                                         />
                                     </button>
-                                    <button className="btn" style={{ background: 'none', border: 'none' }} onClick={() => resolveAllAndDelete()} title="Resolve all reports and delete post">
+                                    <button className="btn image-btn" onClick={() => resolveAllAndDelete()} title="Resolve all reports and delete">
                                         <img
                                             src={iconDelete}
                                             alt="Delete"

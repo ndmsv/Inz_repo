@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { voteOnPost, deletePost, savePostComment, getSelectedPostComments, deletePostComment } from '../../services/apiService';
 import '../Global/Global.css';
+import './PostsCards.css';
 import { parseISO } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
 import upArrowRegular from '../../assets/up-arrow.png';
@@ -24,7 +25,8 @@ function PostsCards({
     showCommentPopupHandler,
     showReportPopupHandler,
     isReportPosts = false,
-    showAllReportsPopupHandler = false
+    showAllReportsPopupHandler = false,
+    isReportComments = false
 }) {
     const [commentFields, setCommentFields] = useState({});
 
@@ -176,7 +178,7 @@ function PostsCards({
                                 </div>
                                 <div className='row ms-0 me-0 mb-2 ps-0 pe-0'>
                                     <div className='col-4 text-start'>
-                                        <button className='btn' style={{ background: 'none', border: 'none' }} onClick={() => upvotePost(post)} disabled={userCards}>
+                                        <button className='btn image-btn' onClick={() => upvotePost(post)} disabled={userCards}>
                                             <img
                                                 src={
                                                     !userCards && post.voted
@@ -189,7 +191,7 @@ function PostsCards({
                                             />
                                         </button>
                                         <span>{post.votesCount}</span>
-                                        <button className='btn' style={{ background: 'none', border: 'none' }} onClick={() => downvotePost(post)} disabled={userCards}>
+                                        <button className='btn image-btn' onClick={() => downvotePost(post)} disabled={userCards}>
                                             <img
                                                 src={
                                                     !userCards && post.voted
@@ -203,14 +205,19 @@ function PostsCards({
                                         </button>
                                     </div>
                                     <div className='col-4 test-center align-items-center' style={{ display: 'grid' }}>
-                                        <h6 className='register-label mb-0' style={{ cursor: 'pointer', padding: 0 }} onClick={() => handleShowPostComments(post, false)}>
-                                            {post.comments != null ? '↑ Hide all comments (' + post.commentsCount + ') ↑' : '↓ Show all comments (' + post.commentsCount + ') ↓'}
+                                        <h6
+                                            className={`register-label mb-0 ${isReportComments ? 'text-disabled' : 'text-non-disabled'}`}
+                                            onClick={!isReportComments ? () => handleShowPostComments(post, false) : undefined}
+                                        >
+                                            {post.comments != null
+                                                ? `↑ Hide all comments (${post.commentsCount}) ↑`
+                                                : `↓ Show all comments (${post.commentsCount}) ↓`}
                                         </h6>
                                     </div>
                                     <div className='col-4 text-end'>
-                                        {!isReportPosts &&
+                                        {!isReportPosts && !isReportComments &&
                                             <>
-                                                <button className='btn' style={{ background: 'none', border: 'none' }} title='Report post' onClick={() => showReportPopupHandler(post, null)}>
+                                                <button className='btn image-btn' title='Report post' onClick={() => showReportPopupHandler(post, null)}>
                                                     <img
                                                         src={iconAlert}
                                                         alt='Alert'
@@ -219,7 +226,7 @@ function PostsCards({
                                                     />
                                                 </button>
                                                 {post.isEditible &&
-                                                    <button className='btn' style={{ background: 'none', border: 'none' }} onClick={() => showPostPopup(post.id)} title='Edit post'>
+                                                    <button className='btn image-btn'onClick={() => showPostPopup(post.id)} title='Edit post'>
                                                         <img
                                                             src={iconEdit}
                                                             alt='Edit'
@@ -229,7 +236,7 @@ function PostsCards({
                                                     </button>
                                                 }
                                                 {post.isEditible &&
-                                                    <button className='btn' style={{ background: 'none', border: 'none' }} onClick={() => handleDeletePost(post.id)} title='Delete post'>
+                                                    <button className='btn image-btn' onClick={() => handleDeletePost(post.id)} title='Delete post'>
                                                         <img
                                                             src={iconDelete}
                                                             alt='Delete'
@@ -241,7 +248,7 @@ function PostsCards({
                                             </>
                                         }
                                         {isReportPosts &&
-                                            <button className='btn' style={{ background: 'none', border: 'none' }} title='Show reports to resolve' onClick={() => showAllReportsPopupHandler(post, null)}>
+                                            <button className='btn image-btn' title='Show reports to resolve' onClick={() => showAllReportsPopupHandler(post, null)}>
                                                 <img
                                                     src={iconResolve}
                                                     alt='Resolve'
@@ -260,7 +267,7 @@ function PostsCards({
                                                     <div className='mb-3' style={{ width: '85%' }}>
                                                         {post.comments.map((comment, index) => (
                                                             <div key={index} className='card mt-3 me-2'>
-                                                                <div className='card-body text-center'>
+                                                                <div className='card-body text-center' style={{backgroundColor: isReportComments && comment.isReported ? '#ffcccb' : 'transparent'}}>
                                                                     <p className='card-text' style={{ whiteSpace: 'pre-wrap' }}>{comment.postContent}</p>
                                                                     <h6 className='card-title'>Creation date: {formatDate(comment.createdOn)}</h6>
                                                                     {comment.updatedOn &&
@@ -270,9 +277,9 @@ function PostsCards({
                                                                         <div className='col-8 offset-2 align-self-center'>
                                                                             <h6 className='card-text'>By: {comment.userDisplayName}</h6>
                                                                         </div>
-                                                                        {comment.isEditible && !isReportPosts &&
+                                                                        {comment.isEditible && !isReportPosts && !isReportComments &&
                                                                             <div className='col-2 text-end'>
-                                                                                <button className='btn' style={{ background: 'none', border: 'none' }} title='Report comment' onClick={() => showReportPopupHandler(post, comment)}>
+                                                                                <button className='btn image-btn' title='Report comment' onClick={() => showReportPopupHandler(post, comment)}>
                                                                                     <img
                                                                                         src={iconAlert}
                                                                                         alt='Alert'
@@ -280,7 +287,7 @@ function PostsCards({
                                                                                         height='24'
                                                                                     />
                                                                                 </button>
-                                                                                <button className='btn' style={{ background: 'none', border: 'none' }} onClick={() => showCommentPopupHandler(comment, post)} title='Edit comment'>
+                                                                                <button className='btn image-btn' onClick={() => showCommentPopupHandler(comment, post)} title='Edit comment'>
                                                                                     <img
                                                                                         src={iconEdit}
                                                                                         alt='Edit'
@@ -288,10 +295,22 @@ function PostsCards({
                                                                                         height='24'
                                                                                     />
                                                                                 </button>
-                                                                                <button className='btn' style={{ background: 'none', border: 'none' }} onClick={() => handleDeleteComment(comment.id)} title='Delete comment'>
+                                                                                <button className='btn image-btn' onClick={() => handleDeleteComment(comment.id)} title='Delete comment'>
                                                                                     <img
                                                                                         src={iconDelete}
                                                                                         alt='Delete'
+                                                                                        width='24'
+                                                                                        height='24'
+                                                                                    />
+                                                                                </button>
+                                                                            </div>
+                                                                        }
+                                                                        {isReportComments && comment.isReported &&
+                                                                            <div className='col-2 text-end'>
+                                                                                <button className='btn image-btn' title='Show reports to resolve' onClick={() => showAllReportsPopupHandler(post, comment)}>
+                                                                                    <img
+                                                                                        src={iconResolve}
+                                                                                        alt='Resolve'
                                                                                         width='24'
                                                                                         height='24'
                                                                                     />
@@ -307,7 +326,7 @@ function PostsCards({
                                             </div>
                                         </div>
                                     </div>
-                                    {!isReportPosts &&
+                                    {!isReportPosts && !isReportComments &&
                                         <>
                                             <div className='row ms-0 me-0 ps-0 pe-0 justify-content-center'>
                                                 <div className='col-10 mt-3 mb-2'>
@@ -332,7 +351,7 @@ function PostsCards({
                 ))
             ) : (
                 <div className='d-flex flex-column justify-content-center align-items-center' style={{ height: '30vh' }}>
-                    <h3>{userCards ? 'You have not created any posts yet!' : 'There are no posts now!'}</h3>
+                    <h3>{isReportPosts ? 'There are no unresolved reports for posts' : isReportComments? 'There are no unresolved reports for comments' : userCards ? 'You have not created any posts yet' : 'There are no posts now'}</h3>
                 </div>
             )}
         </div>

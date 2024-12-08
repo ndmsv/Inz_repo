@@ -480,10 +480,10 @@ export const reportViolation = async (postID, commentID, reportingUserLogin, rep
     }
 };
 
-export const getReportPosts = async (login) => {
+export const getReportPosts = async (login, isForComment) => {
     try {
         const response = await axios.get(`${API_URL}Report/getReportPosts`, {
-            params: { login }
+            params: { login, isForComment }
         });
         return { data: response.data, isSuccess: true };
     } catch (error) {
@@ -494,7 +494,7 @@ export const getReportPosts = async (login) => {
 export const getReportsByPost = async (postID, login) => {
     try {
         const response = await axios.get(`${API_URL}Report/getReportsByPost`, {
-            params: { postId: postID, login }
+            params: { postID, login }
         });
         return { data: response.data, isSuccess: true };
     } catch (error) {
@@ -515,14 +515,26 @@ export const resolveReport = async (reportID, resolvingUser, resolveComment) => 
     }
 };
 
-export const resolveAllReports = async (postID, resolvingUser, resolveComment) => {
+export const resolveAllReports = async (postID, commentID, resolvingUser, resolveComment) => {
     try {
         const response = await axios.post(`${API_URL}Report/resolveAllReports`, {
             postID,
+            commentID,
             resolvingUser,
             resolveComment
         });
         return { message: response.data.message, data: response.data, isSuccess: true};
+    } catch (error) {
+        return handleAxiosError(error);
+    }
+};
+
+export const getReportsForComment = async (commentID, login) => {
+    try {
+        const response = await axios.get(`${API_URL}Report/getReportsForComment`, {
+            params: { commentID, login }
+        });
+        return { data: response.data, isSuccess: true };
     } catch (error) {
         return handleAxiosError(error);
     }

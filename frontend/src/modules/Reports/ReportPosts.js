@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../Global/Navbar';
 import PostsCards from '../Forum/PostsCards';
-import CommentPopup from '../Forum/CommentPopup';
 import PostPopup from '../Forum/PostPopup';
 import AllReportsPopup from '../Forum/AllReportsPopup';
 import { getReportPosts, downloadPostFile } from '../../services/apiService';
@@ -17,7 +16,6 @@ function ReportPosts() {
     const [selectedPost, setSelectedPost] = useState(null);
     const [selectedComment, setSelectedComment] = useState(null);
     const [showPostPopup, setShowPostPopup] = useState(false);
-    const [showCommentPopup, setShowCommentPopup] = useState(false);
     const [showAllReportsPopup, setShowAllReportsPopup] = useState(false);
 
     useEffect(() => {
@@ -38,7 +36,8 @@ function ReportPosts() {
     }, []);
 
     const reloadPosts = async () => {
-        const data = await getReportPosts(username);
+        const isForComment = false;
+        const data = await getReportPosts(username, isForComment);
 
         if (data.isSuccess) {
             const updatedPosts = await Promise.all(data.data.map(async post => {
@@ -83,16 +82,6 @@ function ReportPosts() {
     const showPostPopupHandler = (postID) => {
         setSelectedPostID(postID);
         setShowPostPopup(true)
-    };
-
-    const showCommentPopupHandler = (comment, post) => {
-        setSelectedComment(comment);
-        setShowCommentPopup(true);
-        setSelectedPostID(post.id);
-    };
-
-    const toggleCommentPopup = () => {
-        setShowCommentPopup(!showCommentPopup);
     };
 
     const showAllReportsPopupHandler = (post, comment) => {
@@ -148,7 +137,6 @@ function ReportPosts() {
                             ))}
                         </ul>
                     </nav>
-                    {showCommentPopup && <CommentPopup togglePopup={toggleCommentPopup} username={username} reloadPosts={reloadPosts} postID={selectedPostID} selectedComment={selectedComment} />}
                     {showPostPopup && <PostPopup togglePopup={togglePostPopup} username={username} reloadPosts={reloadPosts} postID={selectedPostID} />}
                     {showAllReportsPopup &&
                         <AllReportsPopup

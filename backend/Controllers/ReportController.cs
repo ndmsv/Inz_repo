@@ -47,7 +47,7 @@ namespace backend.Controllers
         }
 
         [HttpGet("getReportPosts")]
-        public async Task<IActionResult> GetReportPosts([FromQuery] string login)
+        public async Task<IActionResult> GetReportPosts([FromQuery] string login, [FromQuery] bool isForComment)
         {
             try
             {
@@ -55,8 +55,8 @@ namespace backend.Controllers
                 if (user == null) return NotFound(new { message = "User not found" });
                 if (user.UserType.TypeName != "Administrator") return BadRequest(new { message = "User not with administrative permission" });
 
-                var query = _context.forum_posts.Include(s => s.PostAttachments)
-                        .Where(post => !post.IsDeleted && _context.forum_reports.Any(report => report.PostID == post.ID && !report.IsDeleted && !report.IsResolved))
+                var query = _context.forum_posts.Include(s => s.PostAttachments).Include(t => t.PostsComments).Include(u => u.ForumReports)
+                        .Where(post => !post.IsDeleted && post.ForumReports != null && post.ForumReports.Any(report => !report.IsDeleted && !report.IsResolved && (isForComment ? report.CommentID != null : report.CommentID == null)))
                         .OrderBy(post => post.CreatedOn);
 
                 var posts = await query
@@ -80,7 +80,22 @@ namespace backend.Controllers
                             FilePath = Url.Action("DownloadFile", new { attachmentId = a.ID }),
                             AddedOn = a.AddedOn
                         }).ToList() : null,
-                        CommentsCount = _context.posts_comments.Count(comment => comment.PostID == post.ID && !comment.IsDeleted)
+                        CommentsCount = _context.posts_comments.Count(comment => comment.PostID == post.ID && !comment.IsDeleted),
+                        Comments = isForComment && post.PostsComments != null ? post.PostsComments.Select(b => new PostCommentModelExtended
+                        {
+                            ID = b.ID,
+                            PostID = b.PostID,
+                            UserDisplayName = _context.Users
+                                .Where(u => u.ID == b.UserID)
+                                .Select(u => (u.Name != null && u.Surname != null) ? (u.Name + " " + u.Surname) : u.Login)
+                                .FirstOrDefault(),
+                            CreatedOn = DateTime.SpecifyKind(b.CreatedOn, DateTimeKind.Utc),
+                            UpdatedOn = b.UpdatedOn != null ? DateTime.SpecifyKind(Convert.ToDateTime(b.UpdatedOn), DateTimeKind.Utc) : null,
+                            PostContent = b.PostContent,
+                            IsDeleted = b.IsDeleted,
+                            IsEditible = b.UserID == user.ID || user.UserType.TypeName == "Administrator",
+                            IsReported = post.ForumReports.Any(report => !report.IsDeleted && !report.IsResolved && report.CommentID == b.ID)
+                        }).Where(c => !c.IsDeleted).ToList() : null
                     })
                     .ToListAsync();
 
@@ -93,7 +108,7 @@ namespace backend.Controllers
         }
 
         [HttpGet("getReportsByPost")]
-        public async Task<IActionResult> GetReportsByPost([FromQuery] string login, [FromQuery] int postId)
+        public async Task<IActionResult> GetReportsByPost([FromQuery] string login, [FromQuery] int postID)
         {
             try
             {
@@ -103,7 +118,7 @@ namespace backend.Controllers
                     return BadRequest(new { message = "User does not have administrative permissions" });
 
                 var reports = await _context.forum_reports
-                    .Where(report => report.PostID == postId && !report.IsDeleted)
+                    .Where(report => report.PostID == postID && report.CommentID == null && !report.IsDeleted)
                     .Select(report => new ForumReportResponse
                     {
                         Id = report.ID,
@@ -188,7 +203,7 @@ namespace backend.Controllers
                     {
                         foreach (var report in post.ForumReports)
                         {
-                            if (!report.IsDeleted && !report.IsResolved)
+                            if (!report.IsDeleted && !report.IsResolved && report.CommentID == model.CommentID)
                             {
                                 report.IsResolved = true;
                                 report.ResolvingUserID = user.ID;
@@ -202,6 +217,45 @@ namespace backend.Controllers
                 await _context.SaveChangesAsync();
 
                 return Ok(new { message = "Reports resolved." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("getReportsForComment")]
+        public async Task<IActionResult> GetReportsForComment([FromQuery] string login, [FromQuery] int commentID)
+        {
+            try
+            {
+                var user = await _context.Users.Include(s => s.UserType).FirstOrDefaultAsync(u => u.Login == login);
+                if (user == null) return NotFound(new { message = "User not found" });
+                if (user.UserType.TypeName != "Administrator")
+                    return BadRequest(new { message = "User does not have administrative permissions" });
+
+                var reports = await _context.forum_reports
+                    .Where(report => report.CommentID == commentID && !report.IsDeleted)
+                    .Select(report => new ForumReportResponse
+                    {
+                        Id = report.ID,
+                        ReportingUser = _context.Users
+                            .Where(u => u.ID == report.ReportingUserID)
+                            .Select(u => (u.Name != null && u.Surname != null) ? (u.Name + " " + u.Surname) : u.Login)
+                            .FirstOrDefault(),
+                        ReportReason = report.ReportReason,
+                        CreatedOn = DateTime.SpecifyKind(report.CreatedOn, DateTimeKind.Utc),
+                        IsResolved = report.IsResolved,
+                        ResolvingUser = report.IsResolved ? _context.Users
+                            .Where(u => u.ID == report.ResolvingUserID)
+                            .Select(u => (u.Name != null && u.Surname != null) ? (u.Name + " " + u.Surname) : u.Login)
+                            .FirstOrDefault() : null,
+                        ResolvedOn = report.ResolvedOn != null ? DateTime.SpecifyKind(Convert.ToDateTime(report.ResolvedOn), DateTimeKind.Utc) : null,
+                        ResolveComment = report.ResolveComment
+                    })
+                    .ToListAsync();
+
+                return Ok(reports);
             }
             catch (Exception ex)
             {

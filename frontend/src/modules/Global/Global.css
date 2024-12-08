@@ -11,3 +11,8 @@
 .card {
     background-color: whitesmoke;
 }
+
+.image-btn {
+    background: none !important;
+    border: none !important;
+}
