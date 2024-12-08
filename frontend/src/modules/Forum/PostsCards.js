@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { voteOnPost, deletePost, savePostComment, getSelectedPostComments, deletePostComment } from '../../services/apiService';
 import '../Global/Global.css';
 import './PostsCards.css';
@@ -29,6 +29,11 @@ function PostsCards({
     isReportComments = false
 }) {
     const [commentFields, setCommentFields] = useState({});
+    const [shownCommentsPostsIDs, setShownCommentsPostsIDs] = useState([]);
+
+    useEffect(() => {
+        retrieveHiddenComments();
+    }, [isLoading]);
 
     const formatDate = (dateString) => {
         const date = parseISO(dateString);
@@ -110,19 +115,21 @@ function PostsCards({
 
     const handleShowPostComments = async (post, stay) => {
         const postIndex = allPosts.findIndex(p => p.id === post.id);
-
+    
         if (postIndex !== -1) {
             const updatedPosts = [...allPosts];
-
+    
             if (updatedPosts[postIndex].comments && !stay) {
                 updatedPosts[postIndex].comments = null;
+                setShownCommentsPostsIDs(prevIDs => prevIDs.filter(id => id !== post.id));
             } else {
                 const data = await getSelectedPostComments(post.id, username);
                 if (data.isSuccess) {
                     updatedPosts[postIndex].comments = data.data;
+                    setShownCommentsPostsIDs(prevIDs => [...prevIDs, post.id]);
                 }
             }
-
+    
             setAllPosts(updatedPosts);
         } else {
             console.error('Post not found.');
@@ -142,6 +149,15 @@ function PostsCards({
             reloadPosts();
         }
     };
+
+    const retrieveHiddenComments = () => {
+        allPosts.forEach(post => {
+            if (shownCommentsPostsIDs.includes(post.id)) {
+                const postVisible = post.comments != null && post.comments.length > 0;
+                handleShowPostComments(post, postVisible);
+            }
+        });
+    }
 
     return (
         <div className='d-flex flex-wrap'>

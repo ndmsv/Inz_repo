@@ -19,36 +19,31 @@ function ReportComments() {
     const [showAllReportsPopup, setShowAllReportsPopup] = useState(false);
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setIsLoading(true);
-
-                reloadPosts();
-            } catch (error) {
-                alert('Error fetching posts:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchData();
-
+        reloadPosts();
     }, []);
 
     const reloadPosts = async () => {
-        const isForComment = true;
-        const data = await getReportPosts(username, isForComment);
+        try {
+            setIsLoading(true);
 
-        if (data.isSuccess) {
-            const updatedPosts = await Promise.all(data.data.map(async post => {
-                await fetchAndSetFiles(post);
-                return post;
-            }));
-
-            setPosts(updatedPosts);
-        }
-        else {
-            alert(data.message);
+            const isForComment = true;
+            const data = await getReportPosts(username, isForComment);
+    
+            if (data.isSuccess) {
+                const updatedPosts = await Promise.all(data.data.map(async post => {
+                    await fetchAndSetFiles(post);
+                    return post;
+                }));
+    
+                setPosts(updatedPosts);
+            }
+            else {
+                alert(data.message);
+            }
+        } catch (error) {
+            alert('Error fetching posts:', error);
+        } finally {
+            setIsLoading(false);
         }
     };
 

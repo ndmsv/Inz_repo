@@ -21,35 +21,30 @@ function UserPosts() {
     const [showReportPopup, setShowReportPopup] = useState(false);
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setIsLoading(true);
-
-                reloadPosts();
-            } catch (error) {
-                alert('Error fetching posts:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchData();
-
+        reloadPosts();
     }, []);
 
     const reloadPosts = async () => {
-        const data = await getUserPosts(username);
+        try {
+            setIsLoading(true);
 
-        if (data.isSuccess) {
-            const updatedPosts = await Promise.all(data.data.map(async post => {
-                await fetchAndSetFiles(post);
-                return post;
-            }));
+            const data = await getUserPosts(username);
 
-            setPosts(updatedPosts);
-        }
-        else {
-            alert(data.message);
+            if (data.isSuccess) {
+                const updatedPosts = await Promise.all(data.data.map(async post => {
+                    await fetchAndSetFiles(post);
+                    return post;
+                }));
+
+                setPosts(updatedPosts);
+            }
+            else {
+                alert(data.message);
+            }
+        } catch (error) {
+            alert('Error fetching posts:', error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -126,16 +121,16 @@ function UserPosts() {
                         </div>
                     </div>
                     <div className='col-md-12 mt-3'>
-                        <PostsCards 
-                            isLoading={isLoading} 
-                            currentPosts={currentPosts} 
-                            allPosts={posts} 
-                            setAllPosts={setPosts} 
-                            showPostPopup={showPostPopupHandler} 
-                            userCards={true} 
-                            username={username} 
-                            reloadPosts={reloadPosts} 
-                            showCommentPopupHandler={showCommentPopupHandler} 
+                        <PostsCards
+                            isLoading={isLoading}
+                            currentPosts={currentPosts}
+                            allPosts={posts}
+                            setAllPosts={setPosts}
+                            showPostPopup={showPostPopupHandler}
+                            userCards={true}
+                            username={username}
+                            reloadPosts={reloadPosts}
+                            showCommentPopupHandler={showCommentPopupHandler}
                             showReportPopupHandler={showReportPopupHandler} />
                     </div>
                     <nav>

@@ -23,39 +23,34 @@ function MainForum() {
     const [showReportPopup, setShowReportPopup] = useState(false);
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setIsLoading(true);
-                const btnHot = document.getElementById('btnHot');
-                if (btnHot && currentPostCategory == 'Hot') {
-                    btnHot.checked = true;
-                }
-
-                reloadPosts();
-            } catch (error) {
-                alert('Error fetching posts:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchData();
-
+        reloadPosts();
     }, [currentPostCategory, timeframeValue]);
 
     const reloadPosts = async () => {
-        const data = await getForumPosts(username, currentPostCategory, timeframeValue);
+        try {
+            setIsLoading(true);
+            const btnHot = document.getElementById('btnHot');
+            if (btnHot && currentPostCategory == 'Hot') {
+                btnHot.checked = true;
+            }
 
-        if (data.isSuccess) {
-            const updatedPosts = await Promise.all(data.data.map(async post => {
-                await fetchAndSetFiles(post);
-                return post;
-            }));
+            const data = await getForumPosts(username, currentPostCategory, timeframeValue);
 
-            setPosts(updatedPosts);
-        }
-        else {
-            alert(data.message);
+            if (data.isSuccess) {
+                const updatedPosts = await Promise.all(data.data.map(async post => {
+                    await fetchAndSetFiles(post);
+                    return post;
+                }));
+
+                setPosts(updatedPosts);
+            }
+            else {
+                alert(data.message);
+            }
+        } catch (error) {
+            alert('Error fetching posts:', error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
