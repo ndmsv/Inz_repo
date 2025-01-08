@@ -115,10 +115,10 @@ function PostsCards({
 
     const handleShowPostComments = async (post, stay) => {
         const postIndex = allPosts.findIndex(p => p.id === post.id);
-    
+
         if (postIndex !== -1) {
             const updatedPosts = [...allPosts];
-    
+
             if (updatedPosts[postIndex].comments && !stay) {
                 updatedPosts[postIndex].comments = null;
                 setShownCommentsPostsIDs(prevIDs => prevIDs.filter(id => id !== post.id));
@@ -129,7 +129,7 @@ function PostsCards({
                     setShownCommentsPostsIDs(prevIDs => [...prevIDs, post.id]);
                 }
             }
-    
+
             setAllPosts(updatedPosts);
         } else {
             console.error('Post not found.');
@@ -243,7 +243,7 @@ function PostsCards({
                                                     />
                                                 </button>
                                                 {post.isEditible &&
-                                                    <button className='btn image-btn'onClick={() => showPostPopup(post.id)} title='Edit post'>
+                                                    <button className='btn image-btn' onClick={() => showPostPopup(post.id)} title='Edit post'>
                                                         <img
                                                             src={iconEdit}
                                                             alt='Edit'
@@ -284,7 +284,7 @@ function PostsCards({
                                                     <div className='mb-3' style={{ width: '85%' }}>
                                                         {post.comments.map((comment, index) => (
                                                             <div key={index} className='card mt-3 me-2'>
-                                                                <div className='card-body text-center' style={{backgroundColor: isReportComments && comment.isReported ? '#ffcccb' : 'transparent'}}>
+                                                                <div className='card-body text-center' style={{ backgroundColor: isReportComments && comment.isReported ? '#ffcccb' : 'transparent' }}>
                                                                     <p className='card-text' style={{ whiteSpace: 'pre-wrap' }}>{comment.postContent}</p>
                                                                     <h6 className='card-title'>Creation date: {formatDate(comment.createdOn)}</h6>
                                                                     {comment.updatedOn &&
@@ -294,7 +294,7 @@ function PostsCards({
                                                                         <div className='col-8 offset-2 align-self-center'>
                                                                             <h6 className='card-text'>By: {comment.userDisplayName}</h6>
                                                                         </div>
-                                                                        {comment.isEditible && !isReportPosts && !isReportComments &&
+                                                                        {!isReportPosts && !isReportComments &&
                                                                             <div className='col-2 text-end'>
                                                                                 <button className='btn image-btn' title='Report comment' onClick={() => showReportPopupHandler(post, comment)}>
                                                                                     <img
@@ -304,22 +304,26 @@ function PostsCards({
                                                                                         height='24'
                                                                                     />
                                                                                 </button>
-                                                                                <button className='btn image-btn' onClick={() => showCommentPopupHandler(comment, post)} title='Edit comment'>
-                                                                                    <img
-                                                                                        src={iconEdit}
-                                                                                        alt='Edit'
-                                                                                        width='24'
-                                                                                        height='24'
-                                                                                    />
-                                                                                </button>
-                                                                                <button className='btn image-btn' onClick={() => handleDeleteComment(comment.id)} title='Delete comment'>
-                                                                                    <img
-                                                                                        src={iconDelete}
-                                                                                        alt='Delete'
-                                                                                        width='24'
-                                                                                        height='24'
-                                                                                    />
-                                                                                </button>
+                                                                                {comment.isEditible &&
+                                                                                    <>
+                                                                                        <button className='btn image-btn' onClick={() => showCommentPopupHandler(comment, post)} title='Edit comment'>
+                                                                                            <img
+                                                                                                src={iconEdit}
+                                                                                                alt='Edit'
+                                                                                                width='24'
+                                                                                                height='24'
+                                                                                            />
+                                                                                        </button>
+                                                                                        <button className='btn image-btn' onClick={() => handleDeleteComment(comment.id)} title='Delete comment'>
+                                                                                            <img
+                                                                                                src={iconDelete}
+                                                                                                alt='Delete'
+                                                                                                width='24'
+                                                                                                height='24'
+                                                                                            />
+                                                                                        </button>
+                                                                                    </>
+                                                                                }
                                                                             </div>
                                                                         }
                                                                         {isReportComments && comment.isReported &&
@@ -368,7 +372,7 @@ function PostsCards({
                 ))
             ) : (
                 <div className='d-flex flex-column justify-content-center align-items-center' style={{ height: '30vh' }}>
-                    <h3>{isReportPosts ? 'There are no unresolved reports for posts' : isReportComments? 'There are no unresolved reports for comments' : userCards ? 'You have not created any posts yet' : 'There are no posts now'}</h3>
+                    <h3>{isReportPosts ? 'There are no unresolved reports for posts' : isReportComments ? 'There are no unresolved reports for comments' : userCards ? 'You have not created any posts yet' : 'There are no posts now'}</h3>
                 </div>
             )}
         </div>
